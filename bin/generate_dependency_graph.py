@@ -14,6 +14,7 @@ It will create a DOT file at roo-registry/doc/dependencies.dot that shows:
 
 import sys
 import subprocess
+import json
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
@@ -24,46 +25,159 @@ from module_utils import Version, Dependency, parse_module_bazel
 
 def get_modules_and_versions(modules_dir: Path) -> Dict[str, List[Version]]:
     """
-    Scan the modules directory and return a dictionary mapping module names 
-    to lists of their available versions.
+    Get all modules and their versions from the modules directory.
+    Returns a dict mapping module name to list of versions.
     """
     modules = {}
     
     if not modules_dir.exists():
-        print(f"Warning: Modules directory '{modules_dir}' does not exist.")
         return modules
     
-    if not modules_dir.is_dir():
-        print(f"Warning: '{modules_dir}' is not a directory.")
-        return modules
-    
-    # Iterate through each subdirectory (module) in the modules directory
     for module_path in modules_dir.iterdir():
-        if not module_path.is_dir():
-            continue
-        
-        module_name = module_path.name
-        versions = []
-        
-        # Iterate through each subdirectory (version) in the module directory
-        for version_path in module_path.iterdir():
-            if not version_path.is_dir():
-                continue
+        if module_path.is_dir() and module_path.name.startswith('roo_'):
+            module_name = module_path.name
+            versions = []
             
-            version_str = version_path.name
-            try:
-                version = Version(version_str)
-                versions.append(version)
-            except ValueError as e:
-                print(f"Warning: Skipping invalid version '{version_str}' for module '{module_name}': {e}")
-                continue
-        
-        if versions:
-            # Sort versions to make it easier to find the newest
-            versions.sort()
-            modules[module_name] = versions
+            for version_path in module_path.iterdir():
+                if version_path.is_dir():
+                    try:
+                        version = Version(version_path.name)
+                        versions.append(version)
+                    except ValueError:
+                        # Skip invalid version directories
+                        continue
+            
+            if versions:
+                modules[module_name] = sorted(versions, reverse=True)
     
     return modules
+
+
+def get_sibling_modules(registry_dir: Path, registry_modules: Dict[str, List[Version]]) -> Dict[str, Version]:
+    """
+    Get all sibling roo_* directories that are not in the registry.
+    Returns a dict mapping module name to its version from MODULE.bazel or library.json.
+    """
+    siblings = {}
+    parent_dir = registry_dir.parent
+    
+    if not parent_dir.exists():
+        return siblings
+    
+    for sibling_path in parent_dir.iterdir():
+        if (sibling_path.is_dir() and 
+            sibling_path.name.startswith('roo_') and 
+            sibling_path != registry_dir and
+            sibling_path.name not in registry_modules):  # Only include if NOT in registry
+            
+            module_bazel_path = sibling_path / "MODULE.bazel"
+            library_json_path = sibling_path / "library.json"
+            
+            # Try MODULE.bazel first
+            if module_bazel_path.exists():
+                try:
+                    module_name, version_str, _ = parse_module_bazel(module_bazel_path)
+                    if version_str:
+                        version = Version(version_str)
+                        siblings[sibling_path.name] = version
+                        continue
+                except Exception as e:
+                    print(f"Warning: Failed to parse {module_bazel_path}: {e}")
+            
+            # Fall back to library.json
+            if library_json_path.exists():
+                try:
+                    import json
+                    with open(library_json_path, 'r') as f:
+                        library_data = json.load(f)
+                    
+                    version_str = library_data.get('version')
+                    if version_str:
+                        version = Version(version_str)
+                        siblings[sibling_path.name] = version
+                        print(f"Note: {sibling_path.name} uses library.json version (no MODULE.bazel)")
+                        continue
+                except Exception as e:
+                    print(f"Warning: Failed to parse {library_json_path}: {e}")
+            
+            # If we get here, the module has no parseable version info
+            print(f"Warning: {sibling_path.name} has no MODULE.bazel or library.json with version")
+    
+    return siblings
+
+
+def get_sibling_dependencies(registry_dir: Path, sibling_modules: Dict[str, Version]) -> Dict[str, List[Dependency]]:
+    """
+    Get dependencies for all sibling modules.
+    Returns a dict mapping module name to list of dependencies.
+    """
+    all_deps = {}
+    parent_dir = registry_dir.parent
+    
+    for module_name in sibling_modules:
+        sibling_path = parent_dir / module_name
+        module_bazel_path = sibling_path / "MODULE.bazel"
+        library_json_path = sibling_path / "library.json"
+        
+        dependencies = []
+        
+        # Try MODULE.bazel first
+        if module_bazel_path.exists():
+            try:
+                _, _, dependencies = parse_module_bazel(module_bazel_path)
+            except Exception as e:
+                print(f"Warning: Failed to parse dependencies from {module_bazel_path}: {e}")
+        
+        # Fall back to library.json if no MODULE.bazel or no dependencies found
+        if not dependencies and library_json_path.exists():
+            try:
+                import json
+                with open(library_json_path, 'r') as f:
+                    library_data = json.load(f)
+                
+                deps_dict = library_data.get('dependencies', {})
+                for dep_name, version_constraint in deps_dict.items():
+                    # Convert "dejwk/module_name" to "module_name"
+                    if '/' in dep_name:
+                        clean_name = dep_name.split('/')[-1]
+                    else:
+                        clean_name = dep_name
+                    
+                    # Parse version constraint (e.g., ">0", ">=1.0.0")
+                    # For simplicity, we'll use a minimum version for constraint-only deps
+                    if version_constraint.startswith('>='):
+                        version_str = version_constraint[2:]
+                    elif version_constraint.startswith('>'):
+                        version_part = version_constraint[1:]
+                        if version_part == '0':
+                            version_str = '0.0.1'  # Use minimum version for ">0"
+                        else:
+                            version_str = version_part
+                    elif version_constraint.startswith('='):
+                        version_str = version_constraint[1:]
+                    else:
+                        version_str = version_constraint
+                    
+                    # Handle special cases
+                    if version_str in ['0', '']:
+                        version_str = '0.0.1'  # Use minimum version for "0" or empty
+                    
+                    try:
+                        version = Version(version_str)
+                        dependency = Dependency(clean_name, version)
+                        dependencies.append(dependency)
+                    except Exception as e:
+                        # For ">0" and similar constraints, skip the dependency rather than warn
+                        # since these are often just "any version" constraints
+                        if version_constraint not in ['>0', '>=0', '>0.0', '>=0.0']:
+                            print(f"Warning: Could not parse version '{version_constraint}' for dependency '{clean_name}' in {module_name}: {e}")
+                        continue
+            except Exception as e:
+                print(f"Warning: Failed to parse dependencies from {library_json_path}: {e}")
+        
+        all_deps[module_name] = dependencies
+    
+    return all_deps
 
 
 def find_newest_versions(modules: Dict[str, List[Version]]) -> Dict[str, Version]:
@@ -288,15 +402,18 @@ def check_git_dirty_status(module_name: str, module_version: str) -> bool:
         return False
 
 
-def get_all_dirty_statuses(newest_versions: Dict[str, Version]) -> Dict[str, bool]:
+def get_all_dirty_statuses(newest_versions: Dict[str, Version], 
+                          sibling_modules: Dict[str, Version]) -> Dict[str, bool]:
     """
-    Check git dirty status for all modules.
+    Check git dirty status for all modules (registry and sibling).
     
     Returns a dictionary mapping module names to their dirty status.
     """
     dirty_statuses = {}
     
     print("Checking git status for modules...")
+    
+    # Check registry modules
     for module_name, version in newest_versions.items():
         is_dirty = check_git_dirty_status(module_name, str(version))
         dirty_statuses[module_name] = is_dirty
@@ -305,12 +422,22 @@ def get_all_dirty_statuses(newest_versions: Dict[str, Version]) -> Dict[str, boo
         else:
             print(f"  {module_name}: clean")
     
+    # Check sibling modules
+    for module_name, version in sibling_modules.items():
+        is_dirty = check_git_dirty_status(module_name, str(version))
+        dirty_statuses[module_name] = is_dirty
+        if is_dirty:
+            print(f"  {module_name} (sibling): DIRTY")
+        else:
+            print(f"  {module_name} (sibling): clean")
+    
     return dirty_statuses
 
 
 def generate_dot_file(output_path: Path, newest_versions: Dict[str, Version], 
                      all_dependencies: Dict[str, List[Dependency]], 
-                     dirty_statuses: Dict[str, bool]) -> bool:
+                     dirty_statuses: Dict[str, bool],
+                     sibling_modules: Dict[str, Version]) -> bool:
     """
     Generate a DOT file for the dependency graph and create SVG output.
     """
@@ -318,8 +445,12 @@ def generate_dot_file(output_path: Path, newest_versions: Dict[str, Version],
         # Create the doc directory if it doesn't exist
         output_path.parent.mkdir(parents=True, exist_ok=True)
         
+        # Combine registry and sibling modules for processing
+        all_modules = dict(newest_versions)
+        all_modules.update(sibling_modules)
+        
         # Find redundant dependencies to remove
-        redundant_deps = find_redundant_dependencies(all_dependencies, newest_versions)
+        redundant_deps = find_redundant_dependencies(all_dependencies, all_modules)
         
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write('digraph dependencies {\n')
@@ -329,16 +460,24 @@ def generate_dot_file(output_path: Path, newest_versions: Dict[str, Version],
             
             # Write nodes (modules)
             f.write('    // Modules\n')
-            for module_name in sorted(newest_versions.keys()):
-                version = newest_versions[module_name]
+            for module_name in sorted(all_modules.keys()):
+                version = all_modules[module_name]
                 label = f"{module_name}\\n{version}"
                 
-                # Choose node color based on dirty status
+                # Choose node color based on dirty status and type
                 is_dirty = dirty_statuses.get(module_name, False)
-                if is_dirty:
-                    color = "lightyellow"  # Yellowish tint for dirty modules
+                is_sibling = module_name in sibling_modules
+                
+                if is_sibling:
+                    if is_dirty:
+                        color = "plum"         # Pinkish-purple for dirty sibling modules
+                    else:
+                        color = "mistyrose"    # Light pink for clean sibling modules
                 else:
-                    color = "lightblue"    # Default color for clean modules
+                    if is_dirty:
+                        color = "khaki"        # Khaki for dirty registry modules
+                    else:
+                        color = "#b1dbab"      # Custom light green for clean registry modules
                 
                 f.write(f'    "{module_name}" [label="{label}", fillcolor="{color}"];\n')
             
@@ -347,11 +486,11 @@ def generate_dot_file(output_path: Path, newest_versions: Dict[str, Version],
             # Write edges (dependencies)
             for module_name in sorted(all_dependencies.keys()):
                 dependencies = all_dependencies[module_name]
-                checked_deps = check_dependency_versions(dependencies, newest_versions)
+                checked_deps = check_dependency_versions(dependencies, all_modules)
                 
                 for dep, is_latest in checked_deps:
                     # Only include roo modules in the graph
-                    if dep.name not in newest_versions:
+                    if dep.name not in all_modules:
                         continue
                     
                     # Check if this dependency is redundant
@@ -366,7 +505,7 @@ def generate_dot_file(output_path: Path, newest_versions: Dict[str, Version],
                             f.write(f'    "{module_name}" -> "{dep.name}";\n')
                         else:
                             # Outdated dependency - use red color
-                            latest_version = newest_versions[dep.name]
+                            latest_version = all_modules[dep.name]
                             label = f"{dep.version}\\n(latest: {latest_version})"
                             f.write(f'    "{module_name}" -> "{dep.name}" [color=red, fontcolor=red, label="{label}"];\n')
             
@@ -410,36 +549,56 @@ def main():
     print(f"Scanning modules directory: {modules_dir}")
     print(f"Output DOT file: {output_path}")
     
-    # Get all modules and their versions
+    # Get all modules and their versions from registry
     modules = get_modules_and_versions(modules_dir)
     
     if not modules:
         print("No modules found or no valid versions detected.")
         return False
     
-    # Find newest versions
+    # Find newest versions from registry
     newest_versions = find_newest_versions(modules)
     
-    # Get dependencies for all newest versions
+    # Get sibling modules (roo_* directories outside registry, not in registry)
+    sibling_modules = get_sibling_modules(registry_dir, modules)
+    
+    # Get dependencies for all newest versions (only from registry modules)
     all_dependencies = get_all_dependencies(modules_dir, newest_versions)
     
-    # Check git dirty status for all modules
-    dirty_statuses = get_all_dirty_statuses(newest_versions)
+    # Get dependencies for sibling modules
+    sibling_dependencies = get_sibling_dependencies(registry_dir, sibling_modules)
     
-    print(f"\nFound {len(newest_versions)} modules:")
+    # Combine all dependencies
+    all_dependencies.update(sibling_dependencies)
+    
+    # Check git dirty status for all modules (registry + sibling)
+    dirty_statuses = get_all_dirty_statuses(newest_versions, sibling_modules)
+    
+    # Calculate counts
+    total_modules = len(newest_versions) + len(sibling_modules)
     dirty_count = sum(1 for is_dirty in dirty_statuses.values() if is_dirty)
+    
+    print(f"\nFound {len(newest_versions)} registry modules:")
     for module_name in sorted(newest_versions.keys()):
         version = newest_versions[module_name]
         dep_count = len([dep for dep in all_dependencies.get(module_name, []) 
-                        if dep.name in newest_versions])
+                        if dep.name in newest_versions or dep.name in sibling_modules])
         is_dirty = dirty_statuses.get(module_name, False)
         status = "DIRTY" if is_dirty else "clean"
         print(f"  {module_name} v{version} ({dep_count} roo dependencies) - {status}")
     
-    print(f"\nSummary: {dirty_count} dirty modules, {len(newest_versions) - dirty_count} clean modules")
+    if sibling_modules:
+        print(f"\nFound {len(sibling_modules)} sibling modules:")
+        for module_name in sorted(sibling_modules.keys()):
+            version = sibling_modules[module_name]
+            is_dirty = dirty_statuses.get(module_name, False)
+            status = "DIRTY" if is_dirty else "clean"
+            print(f"  {module_name} v{version} (sibling) - {status}")
+    
+    print(f"\nSummary: {dirty_count} dirty modules, {total_modules - dirty_count} clean modules")
     
     # Generate DOT file
-    if generate_dot_file(output_path, newest_versions, all_dependencies, dirty_statuses):
+    if generate_dot_file(output_path, newest_versions, all_dependencies, dirty_statuses, sibling_modules):
         print(f"\n✓ Successfully generated dependency graph: {output_path}")
         
         # Check if SVG was generated
@@ -448,8 +607,10 @@ def main():
             print(f"✓ Also generated SVG visualization: {svg_path}")
         
         print(f"\nNode colors:")
-        print(f"  Light blue: Clean modules (git status matches latest tag)")
-        print(f"  Light yellow: Dirty modules (uncommitted changes or commits since tag)")
+        print(f"  Light green (#b1dbab): Clean registry modules (git status matches latest tag)")
+        print(f"  Khaki: Dirty registry modules (uncommitted changes or commits since tag)")
+        print(f"  Misty rose: Clean sibling modules")
+        print(f"  Plum: Dirty sibling modules")
         print(f"  Red edges: Outdated dependencies")
         return True
     else:
