@@ -53,25 +53,25 @@ def get_modules_and_versions(modules_dir: Path) -> Dict[str, List[Version]]:
     return modules
 
 
-def get_sibling_modules(registry_dir: Path, registry_modules: Dict[str, List[Version]]) -> Dict[str, Version]:
+def get_untracked_modules(registry_dir: Path, registry_modules: Dict[str, List[Version]]) -> Dict[str, Version]:
     """
-    Get all sibling roo_* directories that are not in the registry.
+    Get all untracked roo_* directories that are not in the registry.
     Returns a dict mapping module name to its version from MODULE.bazel or library.json.
     """
-    siblings = {}
+    untracked = {}
     parent_dir = registry_dir.parent
     
     if not parent_dir.exists():
-        return siblings
+        return untracked
     
-    for sibling_path in parent_dir.iterdir():
-        if (sibling_path.is_dir() and 
-            sibling_path.name.startswith('roo_') and 
-            sibling_path != registry_dir and
-            sibling_path.name not in registry_modules):  # Only include if NOT in registry
+    for untracked_path in parent_dir.iterdir():
+        if (untracked_path.is_dir() and 
+            untracked_path.name.startswith('roo_') and 
+            untracked_path != registry_dir and
+            untracked_path.name not in registry_modules):  # Only include if NOT in registry
             
-            module_bazel_path = sibling_path / "MODULE.bazel"
-            library_json_path = sibling_path / "library.json"
+            module_bazel_path = untracked_path / "MODULE.bazel"
+            library_json_path = untracked_path / "library.json"
             
             # Try MODULE.bazel first
             if module_bazel_path.exists():
@@ -79,7 +79,7 @@ def get_sibling_modules(registry_dir: Path, registry_modules: Dict[str, List[Ver
                     module_name, version_str, _ = parse_module_bazel(module_bazel_path)
                     if version_str:
                         version = Version(version_str)
-                        siblings[sibling_path.name] = version
+                        untracked[untracked_path.name] = version
                         continue
                 except Exception as e:
                     print(f"Warning: Failed to parse {module_bazel_path}: {e}")
@@ -94,30 +94,30 @@ def get_sibling_modules(registry_dir: Path, registry_modules: Dict[str, List[Ver
                     version_str = library_data.get('version')
                     if version_str:
                         version = Version(version_str)
-                        siblings[sibling_path.name] = version
-                        print(f"Note: {sibling_path.name} uses library.json version (no MODULE.bazel)")
+                        untracked[untracked_path.name] = version
+                        print(f"Note: {untracked_path.name} uses library.json version (no MODULE.bazel)")
                         continue
                 except Exception as e:
                     print(f"Warning: Failed to parse {library_json_path}: {e}")
             
             # If we get here, the module has no parseable version info
-            print(f"Warning: {sibling_path.name} has no MODULE.bazel or library.json with version")
+            print(f"Warning: {untracked_path.name} has no MODULE.bazel or library.json with version")
     
-    return siblings
+    return untracked
 
 
-def get_sibling_dependencies(registry_dir: Path, sibling_modules: Dict[str, Version]) -> Dict[str, List[Dependency]]:
+def get_untracked_dependencies(registry_dir: Path, untracked_modules: Dict[str, Version]) -> Dict[str, List[Dependency]]:
     """
-    Get dependencies for all sibling modules.
+    Get dependencies for all untracked modules.
     Returns a dict mapping module name to list of dependencies.
     """
     all_deps = {}
     parent_dir = registry_dir.parent
     
-    for module_name in sibling_modules:
-        sibling_path = parent_dir / module_name
-        module_bazel_path = sibling_path / "MODULE.bazel"
-        library_json_path = sibling_path / "library.json"
+    for module_name in untracked_modules:
+        untracked_path = parent_dir / module_name
+        module_bazel_path = untracked_path / "MODULE.bazel"
+        library_json_path = untracked_path / "library.json"
         
         dependencies = []
         
@@ -311,7 +311,7 @@ def find_redundant_dependencies(all_dependencies: Dict[str, List[Dependency]], n
     return redundant_deps
 
 
-def check_git_dirty_status(module_name: str, module_version: str) -> bool:
+def check_git_dirty_status(module_name: str, module_version: str, base_dir: Path) -> bool:
     """
     Check if a module's git repository is dirty.
     
@@ -323,8 +323,8 @@ def check_git_dirty_status(module_name: str, module_version: str) -> bool:
     Returns True if dirty, False if clean.
     """
     try:
-        # Get the current working directory (parent of roo-registry)
-        current_dir = Path.cwd()
+        # Use the provided base directory to find modules
+        current_dir = base_dir
         module_dir = current_dir / module_name
         
         if not module_dir.exists() or not (module_dir / ".git").exists():
@@ -348,47 +348,26 @@ def check_git_dirty_status(module_name: str, module_version: str) -> bool:
         # Check 1: Uncommitted changes (working directory dirty)
         status_output = run_git_command(["status", "--porcelain"])
         if status_output:
-            # Filter out ignored files
+            # Any changes in git status indicate dirty repository
             lines = status_output.split('\n')
-            significant_changes = []
-            
-            for line in lines:
-                if not line.strip():
-                    continue
-                
-                # Extract filename from git status line
-                # Format: "XY filename" where X and Y are status codes
-                if len(line) >= 3:
-                    filename = line[3:].strip()
-                    
-                    # Ignore MODULE.bazel.lock and bazel-* symlinks
-                    if filename == "MODULE.bazel.lock":
-                        continue
-                    if filename.startswith("bazel-"):
-                        continue
-                    
-                    significant_changes.append(line)
+            significant_changes = [line for line in lines if line.strip()]
             
             if significant_changes:
-                return True  # Has significant uncommitted changes
+                return True  # Has uncommitted changes
         
         # Check 2 & 3: Compare HEAD with tag
-        version_tag = module_version  # Try without 'v' prefix first
+        version_tag = module_version  # Use semver format (x.y.z)
         
         # Get the commit hash of the current HEAD
         head_commit = run_git_command(["rev-parse", "HEAD"])
         if not head_commit:
             return True  # Can't determine HEAD, assume dirty
         
-        # Try to get the commit hash of the version tag (try without 'v' first, then with 'v')
+        # Get the commit hash of the version tag
         tag_commit = run_git_command(["rev-parse", f"{version_tag}^{{commit}}"])
         if not tag_commit:
-            # Try with 'v' prefix
-            version_tag = f"v{module_version}"
-            tag_commit = run_git_command(["rev-parse", f"{version_tag}^{{commit}}"])
-            if not tag_commit:
-                # Tag doesn't exist in either format, assume dirty
-                return True
+            # Tag doesn't exist, assume dirty
+            return True
         
         # Compare commits
         if head_commit != tag_commit:
@@ -403,9 +382,9 @@ def check_git_dirty_status(module_name: str, module_version: str) -> bool:
 
 
 def get_all_dirty_statuses(newest_versions: Dict[str, Version], 
-                          sibling_modules: Dict[str, Version]) -> Dict[str, bool]:
+                          untracked_modules: Dict[str, Version], base_dir: Path) -> Dict[str, bool]:
     """
-    Check git dirty status for all modules (registry and sibling).
+    Check git dirty status for all modules (registry and untracked).
     
     Returns a dictionary mapping module names to their dirty status.
     """
@@ -415,21 +394,21 @@ def get_all_dirty_statuses(newest_versions: Dict[str, Version],
     
     # Check registry modules
     for module_name, version in newest_versions.items():
-        is_dirty = check_git_dirty_status(module_name, str(version))
+        is_dirty = check_git_dirty_status(module_name, str(version), base_dir)
         dirty_statuses[module_name] = is_dirty
         if is_dirty:
             print(f"  {module_name}: DIRTY")
         else:
             print(f"  {module_name}: clean")
     
-    # Check sibling modules
-    for module_name, version in sibling_modules.items():
-        is_dirty = check_git_dirty_status(module_name, str(version))
+    # Check untracked modules
+    for module_name, version in untracked_modules.items():
+        is_dirty = check_git_dirty_status(module_name, str(version), base_dir)
         dirty_statuses[module_name] = is_dirty
         if is_dirty:
-            print(f"  {module_name} (sibling): DIRTY")
+            print(f"  {module_name} (untracked): DIRTY")
         else:
-            print(f"  {module_name} (sibling): clean")
+            print(f"  {module_name} (untracked): clean")
     
     return dirty_statuses
 
@@ -437,7 +416,7 @@ def get_all_dirty_statuses(newest_versions: Dict[str, Version],
 def generate_dot_file(output_path: Path, newest_versions: Dict[str, Version], 
                      all_dependencies: Dict[str, List[Dependency]], 
                      dirty_statuses: Dict[str, bool],
-                     sibling_modules: Dict[str, Version]) -> bool:
+                     untracked_modules: Dict[str, Version]) -> bool:
     """
     Generate a DOT file for the dependency graph and create SVG output.
     """
@@ -445,9 +424,9 @@ def generate_dot_file(output_path: Path, newest_versions: Dict[str, Version],
         # Create the doc directory if it doesn't exist
         output_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # Combine registry and sibling modules for processing
+        # Combine registry and untracked modules for processing
         all_modules = dict(newest_versions)
-        all_modules.update(sibling_modules)
+        all_modules.update(untracked_modules)
         
         # Find redundant dependencies to remove
         redundant_deps = find_redundant_dependencies(all_dependencies, all_modules)
@@ -466,13 +445,13 @@ def generate_dot_file(output_path: Path, newest_versions: Dict[str, Version],
                 
                 # Choose node color based on dirty status and type
                 is_dirty = dirty_statuses.get(module_name, False)
-                is_sibling = module_name in sibling_modules
+                is_untracked = module_name in untracked_modules
                 
-                if is_sibling:
+                if is_untracked:
                     if is_dirty:
-                        color = "plum"         # Pinkish-purple for dirty sibling modules
+                        color = "plum"         # Pinkish-purple for dirty untracked modules
                     else:
-                        color = "mistyrose"    # Light pink for clean sibling modules
+                        color = "mistyrose"    # Light pink for clean untracked modules
                 else:
                     if is_dirty:
                         color = "khaki"        # Khaki for dirty registry modules
@@ -559,46 +538,46 @@ def main():
     # Find newest versions from registry
     newest_versions = find_newest_versions(modules)
     
-    # Get sibling modules (roo_* directories outside registry, not in registry)
-    sibling_modules = get_sibling_modules(registry_dir, modules)
+    # Get untracked modules (roo_* directories outside registry, not in registry)
+    untracked_modules = get_untracked_modules(registry_dir, modules)
     
     # Get dependencies for all newest versions (only from registry modules)
     all_dependencies = get_all_dependencies(modules_dir, newest_versions)
     
-    # Get dependencies for sibling modules
-    sibling_dependencies = get_sibling_dependencies(registry_dir, sibling_modules)
+    # Get dependencies for untracked modules
+    untracked_dependencies = get_untracked_dependencies(registry_dir, untracked_modules)
     
     # Combine all dependencies
-    all_dependencies.update(sibling_dependencies)
+    all_dependencies.update(untracked_dependencies)
     
-    # Check git dirty status for all modules (registry + sibling)
-    dirty_statuses = get_all_dirty_statuses(newest_versions, sibling_modules)
+    # Check git dirty status for all modules (registry + untracked)
+    dirty_statuses = get_all_dirty_statuses(newest_versions, untracked_modules, registry_dir.parent)
     
     # Calculate counts
-    total_modules = len(newest_versions) + len(sibling_modules)
+    total_modules = len(newest_versions) + len(untracked_modules)
     dirty_count = sum(1 for is_dirty in dirty_statuses.values() if is_dirty)
     
     print(f"\nFound {len(newest_versions)} registry modules:")
     for module_name in sorted(newest_versions.keys()):
         version = newest_versions[module_name]
         dep_count = len([dep for dep in all_dependencies.get(module_name, []) 
-                        if dep.name in newest_versions or dep.name in sibling_modules])
+                        if dep.name in newest_versions or dep.name in untracked_modules])
         is_dirty = dirty_statuses.get(module_name, False)
         status = "DIRTY" if is_dirty else "clean"
         print(f"  {module_name} v{version} ({dep_count} roo dependencies) - {status}")
     
-    if sibling_modules:
-        print(f"\nFound {len(sibling_modules)} sibling modules:")
-        for module_name in sorted(sibling_modules.keys()):
-            version = sibling_modules[module_name]
+    if untracked_modules:
+        print(f"\nFound {len(untracked_modules)} untracked modules:")
+        for module_name in sorted(untracked_modules.keys()):
+            version = untracked_modules[module_name]
             is_dirty = dirty_statuses.get(module_name, False)
             status = "DIRTY" if is_dirty else "clean"
-            print(f"  {module_name} v{version} (sibling) - {status}")
+            print(f"  {module_name} v{version} (untracked) - {status}")
     
     print(f"\nSummary: {dirty_count} dirty modules, {total_modules - dirty_count} clean modules")
     
     # Generate DOT file
-    if generate_dot_file(output_path, newest_versions, all_dependencies, dirty_statuses, sibling_modules):
+    if generate_dot_file(output_path, newest_versions, all_dependencies, dirty_statuses, untracked_modules):
         print(f"\n✓ Successfully generated dependency graph: {output_path}")
         
         # Check if SVG was generated
@@ -609,8 +588,8 @@ def main():
         print(f"\nNode colors:")
         print(f"  Light green (#b1dbab): Clean registry modules (git status matches latest tag)")
         print(f"  Khaki: Dirty registry modules (uncommitted changes or commits since tag)")
-        print(f"  Misty rose: Clean sibling modules")
-        print(f"  Plum: Dirty sibling modules")
+        print(f"  Misty rose: Clean untracked modules")
+        print(f"  Plum: Dirty untracked modules")
         print(f"  Red edges: Outdated dependencies")
         return True
     else:
