@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Script to determine all modules in the modules directory and find their newest versions.
