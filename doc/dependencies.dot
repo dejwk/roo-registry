@@ -14,7 +14,6 @@ digraph dependencies {
     "roo_flags" [label="roo_flags\n1.1.1", fillcolor="#b1dbab"];
     "roo_icons" [label="roo_icons\n1.2.0", fillcolor="khaki"];
     "roo_io" [label="roo_io\n2.0.2", fillcolor="#b1dbab"];
-    "roo_io_arduino" [label="roo_io_arduino\n1.2.4", fillcolor="#b1dbab"];
     "roo_io_espressif" [label="roo_io_espressif\n1.0.0", fillcolor="plum"];
     "roo_io_sdfat" [label="roo_io_sdfat\n1.0.0", fillcolor="plum"];
     "roo_locale" [label="roo_locale\n1.1.0", fillcolor="khaki"];
@@ -54,9 +53,6 @@ digraph dependencies {
     "roo_icons" -> "roo_display" [color=red, fontcolor=red, label="2.2.2\n(latest: 2.3.1)"];
     "roo_io" -> "roo_backport";
     "roo_io" -> "roo_logging";
-    "roo_io_arduino" -> "roo_testing" [color=red, fontcolor=red, label="1.1.4\n(latest: 1.1.7)"];
-    "roo_io_arduino" -> "roo_io" [color=red, fontcolor=red, label="2.0.1\n(latest: 2.0.2)"];
-    "roo_io_arduino" -> "roo_logging" [color=red, fontcolor=red, label="1.4.0\n(latest: 1.4.2)"];
     "roo_logging" -> "roo_flags";
     "roo_logging" -> "roo_threads";
     "roo_monitoring" -> "roo_collections";
