@@ -5,8 +5,8 @@ based on its MODULE.bazel file.
 
 Usage: python3 roo-registry/bin/update_library.py <module_name>
 
-This script should be run from the parent directory of roo-registry,
-and it will look for the module directory as a sibling to roo-registry.
+This script determines the base directory automatically based on its location
+and looks for module directories as siblings to roo-registry.
 The script will update existing library.json and library.properties files,
 preserving their existing content and only updating version information.
 """
@@ -155,13 +155,18 @@ def update_library_files(module_name: str, force: bool = False) -> bool:
     
     Returns True if successful, False otherwise.
     """
-    # Get the current working directory (should be parent of roo-registry)
-    current_dir = Path.cwd()
-    module_dir = current_dir / module_name
+    # Determine the base directory from the script's location
+    # Script is in roo-registry/bin/, so we need to go up two levels to get the parent of roo-registry
+    script_path = Path(__file__).resolve()
+    base_dir = script_path.parent.parent.parent  # bin -> roo-registry -> parent
+    module_dir = base_dir / module_name
+    
+    print(f"Script location: {script_path}")
+    print(f"Base directory: {base_dir}")
     
     if not module_dir.exists():
         print(f"Error: Module directory '{module_dir}' does not exist.")
-        print(f"Current directory: {current_dir}")
+        print(f"Base directory: {base_dir}")
         print(f"Expected module directory: {module_dir}")
         return False
     
