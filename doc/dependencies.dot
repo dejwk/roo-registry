@@ -33,7 +33,7 @@ digraph dependencies {
     "roo_wifi" [label="roo_wifi\n1.1.1", fillcolor="#b1dbab"];
     "roo_windows" [label="roo_windows\n1.4.1", fillcolor="#b1dbab"];
     "roo_windows_transceivers" [label="roo_windows_transceivers\n1.0.0", fillcolor="plum"];
-    "roo_windows_wifi" [label="roo_windows_wifi\n1.1.1", fillcolor="khaki"];
+    "roo_windows_wifi" [label="roo_windows_wifi\n1.1.2", fillcolor="#b1dbab"];
 
     // Dependencies
     "roo_blink" -> "roo_logging";
@@ -73,10 +73,8 @@ digraph dependencies {
     "roo_windows" -> "roo_locale";
     "roo_windows" -> "roo_icons";
     "roo_windows" -> "roo_scheduler";
-    "roo_windows_transceivers" -> "roo_testing" [color=red, fontcolor=red, label="1.1.4\n(latest: 1.1.7)"];
-    "roo_windows_transceivers" -> "roo_transceivers" [color=red, fontcolor=red, label="1.1.1\n(latest: 1.1.2)"];
-    "roo_windows_transceivers" -> "roo_windows" [color=red, fontcolor=red, label="1.4.0\n(latest: 1.4.1)"];
-    "roo_windows_wifi" -> "roo_testing" [color=red, fontcolor=red, label="1.1.4\n(latest: 1.1.7)"];
-    "roo_windows_wifi" -> "roo_wifi" [color=red, fontcolor=red, label="1.1.0\n(latest: 1.1.1)"];
-    "roo_windows_wifi" -> "roo_windows" [color=red, fontcolor=red, label="1.4.0\n(latest: 1.4.1)"];
+    "roo_windows_transceivers" -> "roo_transceivers";
+    "roo_windows_transceivers" -> "roo_windows";
+    "roo_windows_wifi" -> "roo_wifi";
+    "roo_windows_wifi" -> "roo_windows";
 }
