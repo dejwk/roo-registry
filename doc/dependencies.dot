@@ -14,7 +14,6 @@ digraph dependencies {
     "roo_flags" [label="roo_flags\n1.1.1", fillcolor="#b1dbab"];
     "roo_icons" [label="roo_icons\n1.2.1", fillcolor="#b1dbab"];
     "roo_io" [label="roo_io\n2.0.2", fillcolor="#b1dbab"];
-    "roo_io_espressif" [label="roo_io_espressif\n1.0.0", fillcolor="plum"];
     "roo_io_sdfat" [label="roo_io_sdfat\n1.0.0", fillcolor="plum"];
     "roo_locale" [label="roo_locale\n1.1.1", fillcolor="#b1dbab"];
     "roo_logging" [label="roo_logging\n1.4.2", fillcolor="#b1dbab"];
