@@ -9,7 +9,7 @@ digraph dependencies {
     "roo_collections" [label="roo_collections\n1.3.2", fillcolor="#b1dbab"];
     "roo_comms" [label="roo_comms\n1.1.1", fillcolor="#b1dbab"];
     "roo_control" [label="roo_control\n1.2.1", fillcolor="#b1dbab"];
-    "roo_dashboard" [label="roo_dashboard\n1.0.0", fillcolor="khaki"];
+    "roo_dashboard" [label="roo_dashboard\n1.0.1", fillcolor="#b1dbab"];
     "roo_display" [label="roo_display\n2.3.1", fillcolor="#b1dbab"];
     "roo_flags" [label="roo_flags\n1.1.1", fillcolor="#b1dbab"];
     "roo_icons" [label="roo_icons\n1.2.1", fillcolor="#b1dbab"];
@@ -45,8 +45,7 @@ digraph dependencies {
     "roo_comms" -> "roo_transceivers";
     "roo_control" -> "roo_quantity";
     "roo_control" -> "roo_scheduler";
-    "roo_dashboard" -> "roo_testing" [color=red, fontcolor=red, label="1.1.4\n(latest: 1.1.7)"];
-    "roo_dashboard" -> "roo_windows" [color=red, fontcolor=red, label="1.4.0\n(latest: 1.4.1)"];
+    "roo_dashboard" -> "roo_windows";
     "roo_display" -> "roo_collections";
     "roo_display" -> "roo_io";
     "roo_icons" -> "roo_display";
