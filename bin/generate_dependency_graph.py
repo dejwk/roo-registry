@@ -399,18 +399,19 @@ def find_redundant_dependencies(
     return redundant_deps
 
 
-def check_git_dirty_status(
+def check_git_status(
     module_name: str, module_version: str, base_dir: Path
-) -> bool:
+) -> str:
     """
-    Check if a module's git repository is dirty.
+    Check a module's git repository status.
 
-    A module is considered dirty if:
-    1. It has uncommitted changes, OR
-    2. It has committed changes since the last tag, OR
-    3. The latest commit doesn't match the tag for the current version
+    Returns one of four states:
+    - DIRTY: repo has uncommitted changes or is ahead of remote branch
+    - UPDATED: synced with remote, but HEAD is newer than the latest tag
+    - UNPUBLISHED: synced with remote, HEAD matches a tag, but tag doesn't match current module version
+    - CLEAN: synced with remote, HEAD matches a tag, and tag matches current module version
 
-    Returns True if dirty, False if clean.
+    Returns the status as a string.
     """
     try:
         # Use the provided base directory to find modules
@@ -418,8 +419,8 @@ def check_git_dirty_status(
         module_dir = current_dir / module_name
 
         if not module_dir.exists() or not (module_dir / ".git").exists():
-            # If module directory or .git doesn't exist, assume not dirty
-            return False
+            # If module directory or .git doesn't exist, assume clean
+            return "CLEAN"
 
         # Change to module directory for git commands
         def run_git_command(cmd: List[str]) -> str:
@@ -443,74 +444,102 @@ def check_git_dirty_status(
             significant_changes = [line for line in lines if line.strip()]
 
             if significant_changes:
-                return True  # Has uncommitted changes
+                return "DIRTY"  # Has uncommitted changes
 
-        # Check 2 & 3: Compare HEAD with tag
-        version_tag = module_version  # Use semver format (x.y.z)
+        # Check 2: Check if ahead of remote branch
+        # First try to get the remote tracking branch
+        remote_branch = run_git_command(["rev-parse", "--abbrev-ref", "@{u}"])
+        if remote_branch:
+            # Check if we're ahead of the remote
+            ahead_commits = run_git_command(["rev-list", "--count", f"{remote_branch}..HEAD"])
+            if ahead_commits and ahead_commits != "0":
+                return "DIRTY"  # Ahead of remote
+
+        # At this point, we know the repository is synced with remote (not DIRTY)
+        # Now check the relationship between HEAD and tags
 
         # Get the commit hash of the current HEAD
         head_commit = run_git_command(["rev-parse", "HEAD"])
         if not head_commit:
-            return True  # Can't determine HEAD, assume dirty
+            return "CLEAN"  # Can't determine HEAD, assume clean
 
-        # Get the commit hash of the version tag
-        tag_commit = run_git_command(["rev-parse", f"{version_tag}^{{commit}}"])
-        if not tag_commit:
-            # Tag doesn't exist, assume dirty
-            return True
+        # Get the latest tag
+        latest_tag = run_git_command(["describe", "--tags", "--abbrev=0"])
+        if not latest_tag:
+            # No tags at all, assume UPDATED (commits exist but no tags)
+            return "UPDATED"
 
-        # Compare commits
-        if head_commit != tag_commit:
-            return True  # HEAD is different from tag
+        # Get the commit hash of the latest tag
+        latest_tag_commit = run_git_command(["rev-parse", f"{latest_tag}^{{commit}}"])
+        if not latest_tag_commit:
+            return "UPDATED"  # Can't resolve tag, assume updated
 
-        return False  # Clean
+        # Check if HEAD is newer than the latest tag
+        if head_commit != latest_tag_commit:
+            # Check if there are commits since the latest tag
+            commits_since_tag = run_git_command(["rev-list", "--count", f"{latest_tag}..HEAD"])
+            if commits_since_tag and commits_since_tag != "0":
+                return "UPDATED"  # HEAD is newer than latest tag
+            else:
+                # This shouldn't happen (HEAD != tag but no commits between), but handle gracefully
+                return "UPDATED"
+
+        # At this point, HEAD matches the latest tag
+        # Check if this tag matches the current module version
+        version_tag = module_version  # Use semver format (x.y.z)
+        
+        if latest_tag == version_tag:
+            return "CLEAN"  # Tag matches current version
+        else:
+            return "UNPUBLISHED"  # Tag exists but doesn't match current version
 
     except Exception as e:
-        # If any error occurs, assume not dirty (don't want git issues to break the graph)
+        # If any error occurs, assume clean (don't want git issues to break the graph)
         print(f"Warning: Could not check git status for {module_name}: {e}")
-        return False
+        return "CLEAN"
 
 
-def get_all_dirty_statuses(
+def get_all_git_statuses(
     newest_versions: Dict[str, Version],
     untracked_modules: Dict[str, Version],
     base_dir: Path,
-) -> Dict[str, bool]:
+) -> Dict[str, str]:
     """
-    Check git dirty status for all modules (registry and untracked).
+    Check git status for all modules (registry and untracked).
 
-    Returns a dictionary mapping module names to their dirty status.
+    Returns a dictionary mapping module names to their git status:
+    'CLEAN', 'UPDATED', 'DIRTY', or 'UNPUBLISHED'.
     """
-    dirty_statuses = {}
+    git_statuses = {}
 
     print("Checking git status for modules...")
 
     # Check registry modules
     for module_name, version in newest_versions.items():
-        is_dirty = check_git_dirty_status(module_name, str(version), base_dir)
-        dirty_statuses[module_name] = is_dirty
-        if is_dirty:
-            print(f"  {module_name}: DIRTY")
+        status = check_git_status(module_name, str(version), base_dir)
+        git_statuses[module_name] = status
+        if status != "CLEAN":
+            print(f"  {module_name}: {status}")
         else:
             print(f"  {module_name}: clean")
 
     # Check untracked modules
     for module_name, version in untracked_modules.items():
-        is_dirty = check_git_dirty_status(module_name, str(version), base_dir)
-        dirty_statuses[module_name] = is_dirty
-        if is_dirty:
-            print(f"  {module_name} (untracked): DIRTY")
+        status = check_git_status(module_name, str(version), base_dir)
+        git_statuses[module_name] = status
+        if status != "CLEAN":
+            print(f"  {module_name} (untracked): {status}")
         else:
             print(f"  {module_name} (untracked): clean")
 
-    return dirty_statuses
+    return git_statuses
 
 
 def generate_dot_file(
     output_path: Path,
     newest_versions: Dict[str, Version],
     all_dependencies: Dict[str, List[Dependency]],
-    dirty_statuses: Dict[str, bool],
+    git_statuses: Dict[str, str],
     untracked_modules: Dict[str, Version],
 ) -> bool:
     """
@@ -539,19 +568,27 @@ def generate_dot_file(
                 version = all_modules[module_name]
                 label = f"{module_name}\\n{version}"
 
-                # Choose node color based on dirty status and type
-                is_dirty = dirty_statuses.get(module_name, False)
+                # Choose node color based on git status and type
+                git_status = git_statuses.get(module_name, "CLEAN")
                 is_untracked = module_name in untracked_modules
 
                 if is_untracked:
-                    if is_dirty:
+                    if git_status == "DIRTY":
                         color = "plum"  # Pinkish-purple for dirty untracked modules
-                    else:
+                    elif git_status == "UPDATED":
+                        color = "khaki"  # Same as old dirty color for updated untracked
+                    elif git_status == "UNPUBLISHED":
+                        color = "lightblue"  # Blue-ish for unpublished untracked
+                    else:  # CLEAN
                         color = "mistyrose"  # Light pink for clean untracked modules
                 else:
-                    if is_dirty:
-                        color = "khaki"  # Khaki for dirty registry modules
-                    else:
+                    if git_status == "DIRTY":
+                        color = "plum"  # Pink-ish for dirty registry modules  
+                    elif git_status == "UPDATED":
+                        color = "khaki"  # Same as old dirty color for updated modules
+                    elif git_status == "UNPUBLISHED":
+                        color = "lightblue"  # Blue-ish for unpublished modules
+                    else:  # CLEAN
                         color = (
                             "#b1dbab"  # Custom light green for clean registry modules
                         )
@@ -664,14 +701,17 @@ def main():
     # Combine all dependencies
     all_dependencies.update(untracked_dependencies)
 
-    # Check git dirty status for all modules (registry + untracked)
-    dirty_statuses = get_all_dirty_statuses(
+    # Check git status for all modules (registry + untracked)
+    git_statuses = get_all_git_statuses(
         newest_versions, untracked_modules, registry_dir.parent
     )
 
     # Calculate counts
     total_modules = len(newest_versions) + len(untracked_modules)
-    dirty_count = sum(1 for is_dirty in dirty_statuses.values() if is_dirty)
+    clean_count = sum(1 for status in git_statuses.values() if status == "CLEAN")
+    updated_count = sum(1 for status in git_statuses.values() if status == "UPDATED")
+    dirty_count = sum(1 for status in git_statuses.values() if status == "DIRTY")
+    unpublished_count = sum(1 for status in git_statuses.values() if status == "UNPUBLISHED")
 
     print(f"\nFound {len(newest_versions)} registry modules:")
     for module_name in sorted(newest_versions.keys()):
@@ -683,20 +723,20 @@ def main():
                 if dep.name in newest_versions or dep.name in untracked_modules
             ]
         )
-        is_dirty = dirty_statuses.get(module_name, False)
-        status = "DIRTY" if is_dirty else "clean"
+        git_status = git_statuses.get(module_name, "CLEAN")
+        status = git_status.lower() if git_status != "CLEAN" else "clean"
         print(f"  {module_name} v{version} ({dep_count} roo dependencies) - {status}")
 
     if untracked_modules:
         print(f"\nFound {len(untracked_modules)} untracked modules:")
         for module_name in sorted(untracked_modules.keys()):
             version = untracked_modules[module_name]
-            is_dirty = dirty_statuses.get(module_name, False)
-            status = "DIRTY" if is_dirty else "clean"
+            git_status = git_statuses.get(module_name, "CLEAN")
+            status = git_status.lower() if git_status != "CLEAN" else "clean"
             print(f"  {module_name} v{version} (untracked) - {status}")
 
     print(
-        f"\nSummary: {dirty_count} dirty modules, {total_modules - dirty_count} clean modules"
+        f"\nSummary: {clean_count} clean, {updated_count} updated, {unpublished_count} unpublished, {dirty_count} dirty modules"
     )
 
     # Generate DOT file
@@ -704,7 +744,7 @@ def main():
         output_path,
         newest_versions,
         all_dependencies,
-        dirty_statuses,
+        git_statuses,
         untracked_modules,
     ):
         print(f"\n✓ Successfully generated dependency graph: {output_path}")
@@ -719,10 +759,15 @@ def main():
             f"  Light green (#b1dbab): Clean registry modules (git status matches latest tag)"
         )
         print(
-            f"  Khaki: Dirty registry modules (uncommitted changes or commits since tag)"
+            f"  Khaki: Updated modules (commits since last tag)"
+        )
+        print(
+            f"  Light blue: Unpublished modules (latest commit doesn't match current version tag)"
+        )
+        print(
+            f"  Plum: Dirty modules (uncommitted changes or ahead of remote)"
         )
         print(f"  Misty rose: Clean untracked modules")
-        print(f"  Plum: Dirty untracked modules")
         print(f"  Red edges: Outdated dependencies")
         return True
     else:
