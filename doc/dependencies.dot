@@ -21,7 +21,7 @@ digraph dependencies {
     "roo_onewire" [label="roo_onewire\n2.0.4", fillcolor="plum"];
     "roo_powersafefs" [label="roo_powersafefs\n1.0.0", fillcolor="plum"];
     "roo_prefs" [label="roo_prefs\n1.2.3", fillcolor="#b1dbab"];
-    "roo_quantity" [label="roo_quantity\n1.1.2", fillcolor="plum"];
+    "roo_quantity" [label="roo_quantity\n1.1.3", fillcolor="#b1dbab"];
     "roo_scheduler" [label="roo_scheduler\n2.1.5", fillcolor="#b1dbab"];
     "roo_testing" [label="roo_testing\n1.1.8", fillcolor="#b1dbab"];
     "roo_threads" [label="roo_threads\n1.1.6", fillcolor="#b1dbab"];
@@ -50,7 +50,7 @@ digraph dependencies {
     "roo_comms" -> "roo_transceivers";
     "roo_control" -> "roo_testing" [color=red, fontcolor=red, label="1.1.7\n(latest: 1.1.8)"];
     "roo_control" -> "roo_logging" [color=red, fontcolor=red, label="1.4.2\n(latest: 1.4.3)"];
-    "roo_control" -> "roo_quantity";
+    "roo_control" -> "roo_quantity" [color=red, fontcolor=red, label="1.1.2\n(latest: 1.1.3)"];
     "roo_control" -> "roo_scheduler" [color=red, fontcolor=red, label="2.1.4\n(latest: 2.1.5)"];
     "roo_dashboard" -> "roo_testing" [color=red, fontcolor=red, label="1.1.7\n(latest: 1.1.8)"];
     "roo_dashboard" -> "roo_windows";
@@ -69,13 +69,11 @@ digraph dependencies {
     "roo_onewire" -> "roo_collections";
     "roo_onewire" -> "roo_logging" [color=red, fontcolor=red, label="1.4.2\n(latest: 1.4.3)"];
     "roo_onewire" -> "roo_scheduler" [color=red, fontcolor=red, label="2.1.4\n(latest: 2.1.5)"];
-    "roo_onewire" -> "roo_quantity";
+    "roo_onewire" -> "roo_quantity" [color=red, fontcolor=red, label="1.1.2\n(latest: 1.1.3)"];
     "roo_powersafefs" -> "roo_threads";
     "roo_prefs" -> "roo_logging";
     "roo_prefs" -> "roo_scheduler";
-    "roo_quantity" -> "roo_flags";
-    "roo_quantity" -> "roo_logging" [color=red, fontcolor=red, label="1.4.2\n(latest: 1.4.3)"];
-    "roo_quantity" -> "roo_time" [color=red, fontcolor=red, label="1.3.2\n(latest: 1.3.3)"];
+    "roo_quantity" -> "roo_logging";
     "roo_scheduler" -> "roo_collections";
     "roo_scheduler" -> "roo_threads";
     "roo_threads" -> "roo_time";
