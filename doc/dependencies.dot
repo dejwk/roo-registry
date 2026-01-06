@@ -18,7 +18,7 @@ digraph dependencies {
     "roo_logging" [label="roo_logging\n1.5.2", fillcolor="#b1dbab", color="black"];
     "roo_onewire" [label="roo_onewire\n2.0.7", fillcolor="plum", color="red"];
     "roo_prefs" [label="roo_prefs\n1.2.7", fillcolor="plum", color="red"];
-    "roo_quantity" [label="roo_quantity\n1.1.5", fillcolor="#b1dbab", color="red"];
+    "roo_quantity" [label="roo_quantity\n1.1.6", fillcolor="#b1dbab", color="black"];
     "roo_scheduler" [label="roo_scheduler\n2.1.6", fillcolor="#b1dbab", color="black"];
     "roo_testing" [label="roo_testing\n1.2.0", fillcolor="#b1dbab", color="black"];
     "roo_threads" [label="roo_threads\n1.2.0", fillcolor="#b1dbab", color="black"];
@@ -38,7 +38,7 @@ digraph dependencies {
     "roo_comms" -> "roo_control";
     "roo_comms" -> "roo_io";
     "roo_comms" -> "roo_transceivers";
-    "roo_control" -> "roo_quantity";
+    "roo_control" -> "roo_quantity" [color=red, fontcolor=red, label="1.1.5\n(latest: 1.1.6)"];
     "roo_control" -> "roo_scheduler";
     "roo_dashboard" -> "roo_windows";
     "roo_display" -> "roo_collections" [color=red, fontcolor=red, label="1.3.2\n(latest: 1.4.0)"];
@@ -49,10 +49,10 @@ digraph dependencies {
     "roo_logging" -> "roo_flags";
     "roo_logging" -> "roo_threads";
     "roo_onewire" -> "roo_scheduler";
-    "roo_onewire" -> "roo_quantity";
+    "roo_onewire" -> "roo_quantity" [color=red, fontcolor=red, label="1.1.5\n(latest: 1.1.6)"];
     "roo_prefs" -> "roo_logging" [color=red, fontcolor=red, label="1.5.1\n(latest: 1.5.2)"];
     "roo_prefs" -> "roo_scheduler";
-    "roo_quantity" -> "roo_logging" [color=red, fontcolor=red, label="1.5.1\n(latest: 1.5.2)"];
+    "roo_quantity" -> "roo_logging";
     "roo_scheduler" -> "roo_collections";
     "roo_scheduler" -> "roo_threads";
     "roo_threads" -> "roo_time";
