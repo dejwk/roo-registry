@@ -26,7 +26,7 @@ digraph dependencies {
     "roo_time_ds3231" [label="roo_time_ds3231\n1.1.4", fillcolor="#b1dbab"];
     "roo_transceivers" [label="roo_transceivers\n1.1.4", fillcolor="#b1dbab"];
     "roo_transport" [label="roo_transport\n1.0.2", fillcolor="plum"];
-    "roo_wifi" [label="roo_wifi\n1.1.3", fillcolor="khaki"];
+    "roo_wifi" [label="roo_wifi\n1.1.3", fillcolor="#b1dbab"];
     "roo_windows" [label="roo_windows\n1.4.1", fillcolor="plum"];
     "roo_windows_wifi" [label="roo_windows_wifi\n1.1.2", fillcolor="plum"];
 

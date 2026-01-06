@@ -417,7 +417,7 @@
 <!-- roo_wifi -->
 <g id="node23" class="node">
 <title>roo_wifi</title>
-<polygon fill="khaki" stroke="black" points="1293,-628 1221,-628 1221,-590 1293,-590 1293,-628"/>
+<polygon fill="#b1dbab" stroke="black" points="1293,-628 1221,-628 1221,-590 1293,-590 1293,-628"/>
 <text text-anchor="middle" x="1257" y="-612.8" font-family="Times,serif" font-size="14.00">roo_wifi</text>
 <text text-anchor="middle" x="1257" y="-597.8" font-family="Times,serif" font-size="14.00">1.1.3</text>
 </g>
