@@ -1,0 +1,10 @@
+
+module(name = "roo_blink", version = "1.0.3")
+
+bazel_dep(name = "googletest", version = "1.17.0")
+bazel_dep(name = "roo_testing", version = "1.2.0")
+
+bazel_dep(name = "roo_logging", version = "1.5.0")
+bazel_dep(name = "roo_scheduler", version = "2.1.6")
+bazel_dep(name = "roo_threads", version = "1.2.0")
+bazel_dep(name = "roo_time", version = "1.4.0")
