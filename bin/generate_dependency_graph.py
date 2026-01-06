@@ -2,19 +2,21 @@
 """
 Script to generate a dependencies.dot file for visualizing the roo module dependency graph.
 
-Usage: python3 roo-registry/bin/generate_dependency_graph.py
+Usage: python3 roo-registry/bin/generate_dependency_graph.py [--show_outdated]
 
 This script should be run from the parent directory of roo-registry.
 It will create a DOT file at roo-registry/doc/dependencies.dot that shows:
 - Modules as nodes with name and newest version
 - Dependencies as directed edges
 - Outdated dependencies in red
-- Transitive dependencies are removed unless they represent outdated dependencies
+- Transitive dependencies are removed (unless --show_outdated is specified)
+- Modules with outdated dependencies have red outlines (when --show_outdated is not specified)
 """
 
 import sys
 import subprocess
 import json
+import argparse
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
@@ -324,25 +326,57 @@ def check_dependency_versions(
     return checked_dependencies
 
 
-def find_redundant_dependencies(
+def find_modules_with_outdated_deps(
     all_dependencies: Dict[str, List[Dependency]], newest_versions: Dict[str, Version]
+) -> Set[str]:
+    """
+    Find all modules that have at least one outdated dependency.
+    
+    Returns a set of module names that have outdated dependencies.
+    """
+    modules_with_outdated = set()
+    
+    for module in all_dependencies:
+        dependencies = all_dependencies[module]
+        checked_deps = check_dependency_versions(dependencies, newest_versions)
+        
+        for dep, is_latest in checked_deps:
+            # Only consider roo modules
+            if dep.name not in newest_versions:
+                continue
+            
+            # If we find any outdated dependency, mark this module
+            if not is_latest:
+                modules_with_outdated.add(module)
+                break  # No need to check other dependencies
+    
+    return modules_with_outdated
+
+
+def find_redundant_dependencies(
+    all_dependencies: Dict[str, List[Dependency]], 
+    newest_versions: Dict[str, Version],
+    keep_outdated: bool = False
 ) -> Set[Tuple[str, str]]:
     """
     Find redundant dependencies that can be removed from the graph.
 
     A dependency A -> B is redundant if:
-    1. The dependency A -> B is up-to-date (not outdated), AND
-    2. There exists a path from A to B through other up-to-date dependencies
+    1. (If keep_outdated=False) There exists a path from A to B through other dependencies, OR
+    2. (If keep_outdated=True) The dependency A -> B is up-to-date AND there exists a path 
+       from A to B through other up-to-date dependencies
 
     Returns a set of tuples (from_module, to_module) representing redundant dependencies.
     """
     redundant_deps = set()
 
-    def has_path_through_updated_deps(
-        start: str, target: str, original_start: str, visited: Set[str]
+    def has_path_through_deps(
+        start: str, target: str, original_start: str, visited: Set[str], only_updated: bool
     ) -> bool:
         """
-        Check if there's a path from start to target using only up-to-date dependencies.
+        Check if there's a path from start to target.
+        If only_updated is True, use only up-to-date dependencies.
+        If only_updated is False, use any dependencies.
         original_start is used to identify the direct edge we want to exclude.
         """
         if start in visited:
@@ -366,16 +400,19 @@ def find_redundant_dependencies(
             latest_version = newest_versions[dep.name]
             is_up_to_date = dep.version == latest_version
 
-            if is_up_to_date:
-                # If we reached the target, we found a path
-                if dep.name == target:
-                    return True
+            # If we require only updated paths and this dep is outdated, skip it
+            if only_updated and not is_up_to_date:
+                continue
 
-                # Recursively check if we can reach target from this dependency
-                if has_path_through_updated_deps(
-                    dep.name, target, original_start, visited.copy()
-                ):
-                    return True
+            # If we reached the target, we found a path
+            if dep.name == target:
+                return True
+
+            # Recursively check if we can reach target from this dependency
+            if has_path_through_deps(
+                dep.name, target, original_start, visited.copy(), only_updated
+            ):
+                return True
 
         return False
 
@@ -389,11 +426,16 @@ def find_redundant_dependencies(
             if dep.name not in newest_versions:
                 continue
 
-            # Only check up-to-date dependencies for redundancy
-            if is_latest:
-                # Check if there's an alternative path through other up-to-date dependencies
-                # excluding the direct edge we're testing
-                if has_path_through_updated_deps(module, dep.name, module, set()):
+            if keep_outdated:
+                # Old behavior: Only check up-to-date dependencies for redundancy
+                if is_latest:
+                    # Check if there's an alternative path through other up-to-date dependencies
+                    if has_path_through_deps(module, dep.name, module, set(), only_updated=True):
+                        redundant_deps.add((module, dep.name))
+            else:
+                # New behavior: Check all dependencies for redundancy (regardless of version)
+                # Check if there's an alternative path through any dependencies
+                if has_path_through_deps(module, dep.name, module, set(), only_updated=False):
                     redundant_deps.add((module, dep.name))
 
     return redundant_deps
@@ -541,6 +583,7 @@ def generate_dot_file(
     all_dependencies: Dict[str, List[Dependency]],
     git_statuses: Dict[str, str],
     untracked_modules: Dict[str, Version],
+    show_outdated: bool = False,
 ) -> bool:
     """
     Generate a DOT file for the dependency graph and create SVG output.
@@ -554,7 +597,14 @@ def generate_dot_file(
         all_modules.update(untracked_modules)
 
         # Find redundant dependencies to remove
-        redundant_deps = find_redundant_dependencies(all_dependencies, all_modules)
+        redundant_deps = find_redundant_dependencies(
+            all_dependencies, all_modules, keep_outdated=show_outdated
+        )
+        
+        # Find modules with outdated dependencies (for red outline when not showing outdated)
+        modules_with_outdated = find_modules_with_outdated_deps(
+            all_dependencies, all_modules
+        ) if not show_outdated else set()
 
         with open(output_path, "w", encoding="utf-8") as f:
             f.write("digraph dependencies {\n")
@@ -593,8 +643,15 @@ def generate_dot_file(
                             "#b1dbab"  # Custom light green for clean registry modules
                         )
 
+                # Determine outline color (red if module has outdated dependencies)
+                outline_color = "red" if module_name in modules_with_outdated else "black"
+                
+                # Set outline width
+                penwidth = "2.0" if module_name in modules_with_outdated else "1.0"
+                
                 f.write(
-                    f'    "{module_name}" [label="{label}", fillcolor="{color}"];\n'
+                    f'    "{module_name}" [label="{label}", fillcolor="{color}", '
+                    f'color="{outline_color}", penwidth="{penwidth}"];\n'
                 )
 
             f.write("\n    // Dependencies\n")
@@ -612,20 +669,32 @@ def generate_dot_file(
                     # Check if this dependency is redundant
                     is_redundant = (module_name, dep.name) in redundant_deps
 
-                    # Include edge if:
-                    # 1. It's not redundant, OR
-                    # 2. It's outdated (even if redundant, we want to highlight outdated deps)
-                    if not is_redundant or not is_latest:
-                        if is_latest:
-                            # Up-to-date dependency
-                            f.write(f'    "{module_name}" -> "{dep.name}";\n')
-                        else:
-                            # Outdated dependency - use red color
-                            latest_version = all_modules[dep.name]
-                            label = f"{dep.version}\\n(latest: {latest_version})"
-                            f.write(
-                                f'    "{module_name}" -> "{dep.name}" [color=red, fontcolor=red, label="{label}"];\n'
-                            )
+                    if show_outdated:
+                        # Old behavior: Include edge if not redundant OR outdated
+                        if not is_redundant or not is_latest:
+                            if is_latest:
+                                # Up-to-date dependency
+                                f.write(f'    "{module_name}" -> "{dep.name}";\n')
+                            else:
+                                # Outdated dependency - use red color
+                                latest_version = all_modules[dep.name]
+                                label = f"{dep.version}\\n(latest: {latest_version})"
+                                f.write(
+                                    f'    "{module_name}" -> "{dep.name}" [color=red, fontcolor=red, label="{label}"];\n'
+                                )
+                    else:
+                        # New behavior: Only include if not redundant (regardless of version)
+                        if not is_redundant:
+                            if is_latest:
+                                # Up-to-date dependency
+                                f.write(f'    "{module_name}" -> "{dep.name}";\n')
+                            else:
+                                # Outdated dependency - use red color
+                                latest_version = all_modules[dep.name]
+                                label = f"{dep.version}\\n(latest: {latest_version})"
+                                f.write(
+                                    f'    "{module_name}" -> "{dep.name}" [color=red, fontcolor=red, label="{label}"];\n'
+                                )
 
             f.write("}\n")
 
@@ -662,12 +731,39 @@ def generate_dot_file(
 
 def main():
     """Main function."""
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(
+        description="Generate a dependency graph for roo modules.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+This script creates a DOT file showing module dependencies with:
+- Modules as nodes (name and newest version)
+- Dependencies as directed edges
+- Outdated dependencies in red
+- Transitive dependencies removed (unless --show_outdated is specified)
+
+By default, redundant dependencies are removed regardless of version,
+and modules with outdated dependencies have red outlines.
+
+With --show_outdated, redundant dependencies that are outdated are kept,
+and modules use normal black outlines.
+        """
+    )
+    parser.add_argument(
+        '--show_outdated',
+        action='store_true',
+        help='Keep redundant links that reference outdated dependencies (old behavior)'
+    )
+    
+    args = parser.parse_args()
+
     # Display configuration
     print("Configuration:")
     if IGNORED_MODULES:
         print(f"  Ignoring modules: {', '.join(IGNORED_MODULES)}")
     else:
         print("  No modules configured to be ignored")
+    print(f"  Show outdated mode: {'enabled' if args.show_outdated else 'disabled'}")
     print()
 
     # Get the script directory and find the roo-registry directory
@@ -746,6 +842,7 @@ def main():
         all_dependencies,
         git_statuses,
         untracked_modules,
+        show_outdated=args.show_outdated,
     ):
         print(f"\n✓ Successfully generated dependency graph: {output_path}")
 
@@ -768,6 +865,8 @@ def main():
             f"  Plum: Dirty modules (uncommitted changes or ahead of remote)"
         )
         print(f"  Misty rose: Clean untracked modules")
+        if not args.show_outdated:
+            print(f"  Red outline: Modules with outdated dependencies")
         print(f"  Red edges: Outdated dependencies")
         return True
     else:
