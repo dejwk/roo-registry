@@ -19,7 +19,7 @@
 <!-- roo_blink -->
 <g id="node2" class="node">
 <title>roo_blink</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="82,-455 0,-455 0,-417 82,-417 82,-455"/>
+<polygon fill="plum" stroke="red" points="82,-455 0,-455 0,-417 82,-417 82,-455"/>
 <text text-anchor="middle" x="41" y="-439.8" font-family="Times,serif" font-size="14.00">roo_blink</text>
 <text text-anchor="middle" x="41" y="-424.8" font-family="Times,serif" font-size="14.00">1.0.4</text>
 </g>
@@ -67,7 +67,7 @@
 <!-- roo_comms -->
 <g id="node4" class="node">
 <title>roo_comms</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="401.5,-663 304.5,-663 304.5,-625 401.5,-625 401.5,-663"/>
+<polygon fill="plum" stroke="red" points="401.5,-663 304.5,-663 304.5,-625 401.5,-625 401.5,-663"/>
 <text text-anchor="middle" x="353" y="-647.8" font-family="Times,serif" font-size="14.00">roo_comms</text>
 <text text-anchor="middle" x="353" y="-632.8" font-family="Times,serif" font-size="14.00">1.1.3</text>
 </g>
@@ -80,7 +80,7 @@
 <!-- roo_control -->
 <g id="node5" class="node">
 <title>roo_control</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="298.5,-455 201.5,-455 201.5,-417 298.5,-417 298.5,-455"/>
+<polygon fill="plum" stroke="red" points="298.5,-455 201.5,-455 201.5,-417 298.5,-417 298.5,-455"/>
 <text text-anchor="middle" x="250" y="-439.8" font-family="Times,serif" font-size="14.00">roo_control</text>
 <text text-anchor="middle" x="250" y="-424.8" font-family="Times,serif" font-size="14.00">1.2.3</text>
 </g>
@@ -93,7 +93,7 @@
 <!-- roo_io -->
 <g id="node10" class="node">
 <title>roo_io</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="545.5,-359 486.5,-359 486.5,-321 545.5,-321 545.5,-359"/>
+<polygon fill="plum" stroke="red" points="545.5,-359 486.5,-359 486.5,-321 545.5,-321 545.5,-359"/>
 <text text-anchor="middle" x="516" y="-343.8" font-family="Times,serif" font-size="14.00">roo_io</text>
 <text text-anchor="middle" x="516" y="-328.8" font-family="Times,serif" font-size="14.00">2.1.1</text>
 </g>
@@ -106,7 +106,7 @@
 <!-- roo_transceivers -->
 <g id="node21" class="node">
 <title>roo_transceivers</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="330.5,-551 195.5,-551 195.5,-513 330.5,-513 330.5,-551"/>
+<polygon fill="plum" stroke="red" points="330.5,-551 195.5,-551 195.5,-513 330.5,-513 330.5,-551"/>
 <text text-anchor="middle" x="263" y="-535.8" font-family="Times,serif" font-size="14.00">roo_transceivers</text>
 <text text-anchor="middle" x="263" y="-520.8" font-family="Times,serif" font-size="14.00">1.1.4</text>
 </g>
@@ -119,7 +119,7 @@
 <!-- roo_quantity -->
 <g id="node15" class="node">
 <title>roo_quantity</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="468.5,-359 361.5,-359 361.5,-321 468.5,-321 468.5,-359"/>
+<polygon fill="#b1dbab" stroke="red" points="468.5,-359 361.5,-359 361.5,-321 468.5,-321 468.5,-359"/>
 <text text-anchor="middle" x="415" y="-343.8" font-family="Times,serif" font-size="14.00">roo_quantity</text>
 <text text-anchor="middle" x="415" y="-328.8" font-family="Times,serif" font-size="14.00">1.1.5</text>
 </g>
@@ -138,14 +138,14 @@
 <!-- roo_dashboard -->
 <g id="node6" class="node">
 <title>roo_dashboard</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="568,-759 446,-759 446,-721 568,-721 568,-759"/>
+<polygon fill="plum" stroke="red" points="568,-759 446,-759 446,-721 568,-721 568,-759"/>
 <text text-anchor="middle" x="507" y="-743.8" font-family="Times,serif" font-size="14.00">roo_dashboard</text>
 <text text-anchor="middle" x="507" y="-728.8" font-family="Times,serif" font-size="14.00">1.0.1</text>
 </g>
 <!-- roo_windows -->
 <g id="node24" class="node">
 <title>roo_windows</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="561.5,-663 452.5,-663 452.5,-625 561.5,-625 561.5,-663"/>
+<polygon fill="plum" stroke="red" points="561.5,-663 452.5,-663 452.5,-625 561.5,-625 561.5,-663"/>
 <text text-anchor="middle" x="507" y="-647.8" font-family="Times,serif" font-size="14.00">roo_windows</text>
 <text text-anchor="middle" x="507" y="-632.8" font-family="Times,serif" font-size="14.00">1.4.1</text>
 </g>
@@ -158,7 +158,7 @@
 <!-- roo_display -->
 <g id="node7" class="node">
 <title>roo_display</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="745,-455 647,-455 647,-417 745,-417 745,-455"/>
+<polygon fill="plum" stroke="red" points="745,-455 647,-455 647,-417 745,-417 745,-455"/>
 <text text-anchor="middle" x="696" y="-439.8" font-family="Times,serif" font-size="14.00">roo_display</text>
 <text text-anchor="middle" x="696" y="-424.8" font-family="Times,serif" font-size="14.00">2.3.1</text>
 </g>
@@ -188,7 +188,7 @@
 <!-- roo_icons -->
 <g id="node9" class="node">
 <title>roo_icons</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="720.5,-551 637.5,-551 637.5,-513 720.5,-513 720.5,-551"/>
+<polygon fill="plum" stroke="red" points="720.5,-551 637.5,-551 637.5,-513 720.5,-513 720.5,-551"/>
 <text text-anchor="middle" x="679" y="-535.8" font-family="Times,serif" font-size="14.00">roo_icons</text>
 <text text-anchor="middle" x="679" y="-520.8" font-family="Times,serif" font-size="14.00">1.2.1</text>
 </g>
@@ -241,7 +241,7 @@
 <!-- roo_onewire -->
 <g id="node13" class="node">
 <title>roo_onewire</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="421,-455 317,-455 317,-417 421,-417 421,-455"/>
+<polygon fill="plum" stroke="red" points="421,-455 317,-455 317,-417 421,-417 421,-455"/>
 <text text-anchor="middle" x="369" y="-439.8" font-family="Times,serif" font-size="14.00">roo_onewire</text>
 <text text-anchor="middle" x="369" y="-424.8" font-family="Times,serif" font-size="14.00">2.0.7</text>
 </g>
@@ -260,7 +260,7 @@
 <!-- roo_prefs -->
 <g id="node14" class="node">
 <title>roo_prefs</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="183.5,-455 100.5,-455 100.5,-417 183.5,-417 183.5,-455"/>
+<polygon fill="plum" stroke="red" points="183.5,-455 100.5,-455 100.5,-417 183.5,-417 183.5,-455"/>
 <text text-anchor="middle" x="142" y="-439.8" font-family="Times,serif" font-size="14.00">roo_prefs</text>
 <text text-anchor="middle" x="142" y="-424.8" font-family="Times,serif" font-size="14.00">1.2.7</text>
 </g>
@@ -346,7 +346,7 @@
 <!-- roo_transport -->
 <g id="node22" class="node">
 <title>roo_transport</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="629,-455 515,-455 515,-417 629,-417 629,-455"/>
+<polygon fill="plum" stroke="red" points="629,-455 515,-455 515,-417 629,-417 629,-455"/>
 <text text-anchor="middle" x="572" y="-439.8" font-family="Times,serif" font-size="14.00">roo_transport</text>
 <text text-anchor="middle" x="572" y="-424.8" font-family="Times,serif" font-size="14.00">1.0.2</text>
 </g>
@@ -402,7 +402,7 @@
 <!-- roo_windows_wifi -->
 <g id="node25" class="node">
 <title>roo_windows_wifi</title>
-<polygon fill="plum" stroke="red" stroke-width="2" points="290.5,-759 149.5,-759 149.5,-721 290.5,-721 290.5,-759"/>
+<polygon fill="plum" stroke="red" points="290.5,-759 149.5,-759 149.5,-721 290.5,-721 290.5,-759"/>
 <text text-anchor="middle" x="220" y="-743.8" font-family="Times,serif" font-size="14.00">roo_windows_wifi</text>
 <text text-anchor="middle" x="220" y="-728.8" font-family="Times,serif" font-size="14.00">1.1.2</text>
 </g>

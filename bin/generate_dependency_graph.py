@@ -646,12 +646,9 @@ def generate_dot_file(
                 # Determine outline color (red if module has outdated dependencies)
                 outline_color = "red" if module_name in modules_with_outdated else "black"
                 
-                # Set outline width
-                penwidth = "2.0" if module_name in modules_with_outdated else "1.0"
-                
                 f.write(
                     f'    "{module_name}" [label="{label}", fillcolor="{color}", '
-                    f'color="{outline_color}", penwidth="{penwidth}"];\n'
+                    f'color="{outline_color}"];\n'
                 )
 
             f.write("\n    // Dependencies\n")
