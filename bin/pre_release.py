@@ -15,6 +15,7 @@ Example: python3 roo-registry/bin/pre_release.py roo_display --patch
 """
 
 import sys
+import os
 import subprocess
 import argparse
 import re
@@ -176,9 +177,14 @@ def run_bazel_tests(module_dir: Path) -> bool:
     print(f"\nRunning bazel tests in {module_dir}...")
     
     try:
-        # Run bazel test
+        # Run bazel test with explicit bazelrc to use user's cache settings
+        home_bazelrc = os.path.expanduser("~/.bazelrc")
+        bazel_cmd = ["bazel", "test", "..."]
+        if os.path.exists(home_bazelrc):
+            bazel_cmd.insert(1, f"--bazelrc={home_bazelrc}")
+        
         result = subprocess.run(
-            ["bazel", "test", "..."],
+            bazel_cmd,
             cwd=module_dir,
             capture_output=False,  # Show output in real-time
             text=True,
@@ -192,8 +198,11 @@ def run_bazel_tests(module_dir: Path) -> bool:
         
         # Clean up
         print("Cleaning up bazel artifacts...")
+        clean_cmd = ["bazel", "clean"]
+        if os.path.exists(home_bazelrc):
+            clean_cmd.insert(1, f"--bazelrc={home_bazelrc}")
         subprocess.run(
-            ["bazel", "clean"],
+            clean_cmd,
             cwd=module_dir,
             capture_output=True,
             text=True,
