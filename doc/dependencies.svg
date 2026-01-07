@@ -26,7 +26,7 @@
 <!-- roo_logging -->
 <g id="node12" class="node">
 <title>roo_logging</title>
-<polygon fill="#b1dbab" stroke="black" points="344,-263 244,-263 244,-225 344,-225 344,-263"/>
+<polygon fill="khaki" stroke="black" points="344,-263 244,-263 244,-225 344,-225 344,-263"/>
 <text text-anchor="middle" x="294" y="-247.8" font-family="Times,serif" font-size="14.00">roo_logging</text>
 <text text-anchor="middle" x="294" y="-232.8" font-family="Times,serif" font-size="14.00">1.5.2</text>
 </g>
