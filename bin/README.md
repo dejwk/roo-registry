@@ -23,10 +23,71 @@ Generates a visual dependency graph of all roo modules in DOT and SVG format.
 
 **Usage:**
 ```bash
-python3 generate_dependency_graph.py
+python3 generate_dependency_graph.py [--show_outdated]
 ```
 
+**Options:**
+- `--show_outdated`: Keep redundant links that reference outdated dependencies
+
+**Purpose:** 
+- Creates a `dependencies.dot` file in `roo-registry/doc/`
+- Shows modules as nodes with their newest versions
+- Shows dependencies as directed edges
+- Highlights outdated dependencies in red
+- By default, removes redundant transitive dependencies
+- Modules with outdated dependencies have red outlines
+
 **Note:** Should be run from the parent directory of roo-registry.
+
+### `post_release.py`
+Finalizes a module release by updating the registry and publishing.
+
+**Usage:**
+```bash
+python3 post_release.py <module_name> [--skip-publish]
+```
+
+**Example:**
+```bash
+python3 post_release.py roo_display
+```
+
+**Options:**
+- `--skip-publish`: Skip publishing to PlatformIO
+
+**Purpose:**
+- Cleans bazel artifacts and pulls latest changes
+- Adds the new version to the registry using add.sh
+- Updates the dependency graph
+- Amends the commit to include dependency graph changes
+- Pushes to remote
+- Publishes to PlatformIO registry
+
+### `pre_release.py`
+Prepares a module for release by incrementing version and updating files.
+
+**Usage:**
+```bash
+python3 pre_release.py <module_name> --major|--minor|--patch [--skip-tests]
+```
+
+**Example:**
+```bash
+python3 pre_release.py roo_display --patch
+```
+
+**Options:**
+- `--major`: Increment major version (x.0.0)
+- `--minor`: Increment minor version (0.x.0) 
+- `--patch`: Increment patch version (0.0.x)
+- `--skip-tests`: Skip running bazel tests
+
+**Purpose:**
+- Verifies git status is clean and up-to-date
+- Increments the version number in MODULE.bazel
+- Updates library.json and library.properties
+- Runs bazel tests
+- Commits and pushes the changes
 
 ### `update_deps.py`
 Scans the modules directory to find all modules and their available versions.
@@ -59,6 +120,7 @@ python3 update_library.py roo_display
 - Updates library metadata files
 - Preserves existing content while updating version information
 - Synchronizes dependency information from MODULE.bazel files
+- Updates dependencies to the latest available version from the registry
 
 ### `update_module_versions.py`
 Updates all roo module version references across all modules in the registry.
