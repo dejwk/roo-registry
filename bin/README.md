@@ -77,6 +77,21 @@ python3 update_module_versions.py [--dry-run]
 - Identifies current versions of each module
 - Updates version references in MODULE.bazel and library.json files across all modules
 
+### `sync.py`
+Synchronizes the local state of all roo modules with GitHub repositories.
+
+**Usage:**
+```bash
+python3 sync.py
+```
+
+**Purpose:**
+- Pushes any non-pushed committed changes from roo-registry repository
+- Pulls remote changes to roo-registry with rebase
+- Discovers all tracked modules from roo-registry/modules directory
+- For each module: pushes local changes and pulls remote changes with rebase
+- Provides summary of uncommitted changes and sync failures
+
 ### `module_utils.py`
 Shared utility library for working with roo modules and their dependencies.
 
