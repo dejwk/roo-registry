@@ -5,8 +5,177 @@ Shared utilities for working with roo modules and their dependencies.
 
 import os
 import re
-from typing import List, Tuple, Dict, Set
+import subprocess
+from typing import List, Tuple, Dict, Set, Optional
 from pathlib import Path
+
+
+def run_git_command(repo_path: Path, command: List[str], timeout: int = 30) -> Tuple[bool, str, str]:
+    """
+    Run a git command in the specified repository.
+    Returns (success, stdout, stderr).
+    """
+    try:
+        result = subprocess.run(
+            ["git"] + command,
+            cwd=repo_path,
+            capture_output=True,
+            text=True,
+            timeout=timeout
+        )
+        return result.returncode == 0, result.stdout.strip(), result.stderr.strip()
+    except subprocess.TimeoutExpired:
+        return False, "", "Command timed out"
+    except Exception as e:
+        return False, "", str(e)
+
+
+def get_git_status(repo_path: Path) -> Tuple[bool, List[str]]:
+    """
+    Check if repository has uncommitted changes.
+    Returns (has_changes, list_of_changes).
+    """
+    success, stdout, stderr = run_git_command(repo_path, ["status", "--porcelain"])
+    if not success:
+        return False, []
+    
+    changes = [line.strip() for line in stdout.split('\n') if line.strip()]
+    return len(changes) > 0, changes
+
+
+def get_current_branch(repo_path: Path) -> Tuple[bool, str]:
+    """
+    Get the current branch name.
+    Returns (success, branch_name_or_error_msg).
+    """
+    success, branch, stderr = run_git_command(repo_path, ["branch", "--show-current"])
+    if not success:
+        return False, f"Could not determine current branch: {stderr}"
+    
+    if not branch:
+        return False, "Not on any branch (detached HEAD)"
+    
+    return True, branch
+
+
+def get_upstream_branch(repo_path: Path, branch: str) -> Tuple[bool, str]:
+    """
+    Get the upstream branch for the given branch.
+    Returns (success, upstream_branch_or_error_msg).
+    """
+    success, upstream, stderr = run_git_command(
+        repo_path, ["rev-parse", "--abbrev-ref", f"{branch}@{{upstream}}"]
+    )
+    if not success:
+        return False, f"No upstream branch configured for {branch}"
+    
+    return True, upstream
+
+
+def count_commits_between(repo_path: Path, base: str, head: str) -> Tuple[bool, int, str]:
+    """
+    Count commits between two references.
+    Returns (success, commit_count, error_msg_if_failed).
+    """
+    success, commits, stderr = run_git_command(
+        repo_path, ["rev-list", f"{base}..{head}", "--count"]
+    )
+    if not success:
+        return False, 0, stderr
+    
+    try:
+        count = int(commits)
+        return True, count, ""
+    except ValueError:
+        return False, 0, f"Invalid commit count: {commits}"
+
+
+def has_unpushed_commits(repo_path: Path) -> Tuple[bool, str]:
+    """
+    Check if repository has unpushed commits.
+    Returns (has_unpushed, info_message).
+    """
+    # Get current branch
+    success, branch = get_current_branch(repo_path)
+    if not success:
+        return False, branch  # branch contains error message
+    
+    # Get upstream branch
+    success, upstream = get_upstream_branch(repo_path, branch)
+    if not success:
+        return False, upstream  # upstream contains error message
+    
+    # Count unpushed commits
+    success, count, error = count_commits_between(repo_path, upstream, branch)
+    if not success:
+        return False, f"Could not check unpushed commits: {error}"
+    
+    return count > 0, f"{count} unpushed commits on {branch}"
+
+
+def has_remote_changes(repo_path: Path) -> Tuple[bool, str]:
+    """
+    Check if there are remote changes to pull.
+    Returns (has_remote_changes, info_message).
+    """
+    # First, fetch to get latest remote info
+    success, _, stderr = run_git_command(repo_path, ["fetch"])
+    if not success:
+        return False, f"Could not fetch from remote: {stderr}"
+    
+    # Get current branch
+    success, branch = get_current_branch(repo_path)
+    if not success:
+        return False, branch  # branch contains error message
+    
+    # Get upstream branch  
+    success, upstream = get_upstream_branch(repo_path, branch)
+    if not success:
+        return False, upstream  # upstream contains error message
+    
+    # Count remote changes
+    success, count, error = count_commits_between(repo_path, branch, upstream)
+    if not success:
+        return False, f"Could not check remote changes: {error}"
+    
+    return count > 0, f"{count} remote changes available" if count > 0 else "No remote changes"
+
+
+def git_push(repo_path: Path) -> Tuple[bool, str]:
+    """Push commits to remote. Returns (success, message)."""
+    success, stdout, stderr = run_git_command(repo_path, ["push"])
+    if success:
+        return True, "Successfully pushed"
+    else:
+        return False, f"Push failed: {stderr or stdout}"
+
+
+def git_pull_rebase(repo_path: Path) -> Tuple[bool, str]:
+    """Pull with rebase from remote. Returns (success, message)."""
+    success, stdout, stderr = run_git_command(repo_path, ["pull", "--rebase"])
+    if success:
+        return True, "Successfully pulled with rebase"
+    else:
+        return False, f"Pull rebase failed: {stderr or stdout}"
+
+
+def git_clone(repo_url: str, target_path: Path, timeout: int = 60) -> Tuple[bool, str]:
+    """Clone a repository from GitHub. Returns (success, message)."""
+    try:
+        result = subprocess.run(
+            ["git", "clone", repo_url, str(target_path)],
+            capture_output=True,
+            text=True,
+            timeout=timeout
+        )
+        if result.returncode == 0:
+            return True, "Successfully cloned"
+        else:
+            return False, f"Clone failed: {result.stderr or result.stdout}"
+    except subprocess.TimeoutExpired:
+        return False, "Clone timed out"
+    except Exception as e:
+        return False, f"Clone failed: {str(e)}"
 
 
 class Version:

@@ -13,143 +13,15 @@ Usage: python3 roo-registry/bin/sync.py
 
 import os
 import sys
-import subprocess
 from pathlib import Path
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Dict
 
-
-def run_git_command(repo_path: Path, command: List[str]) -> Tuple[bool, str, str]:
-    """
-    Run a git command in the specified repository.
-    Returns (success, stdout, stderr).
-    """
-    try:
-        result = subprocess.run(
-            ["git"] + command,
-            cwd=repo_path,
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-        return result.returncode == 0, result.stdout.strip(), result.stderr.strip()
-    except subprocess.TimeoutExpired:
-        return False, "", "Command timed out"
-    except Exception as e:
-        return False, "", str(e)
-
-
-def has_uncommitted_changes(repo_path: Path) -> Tuple[bool, List[str]]:
-    """Check if repository has uncommitted changes. Returns (has_changes, list_of_changes)."""
-    success, stdout, stderr = run_git_command(repo_path, ["status", "--porcelain"])
-    if not success:
-        return False, []
-    
-    changes = [line.strip() for line in stdout.split('\n') if line.strip()]
-    return len(changes) > 0, changes
-
-
-def has_unpushed_commits(repo_path: Path) -> Tuple[bool, str]:
-    """Check if repository has unpushed commits. Returns (has_unpushed, branch_info)."""
-    # Get current branch
-    success, branch, stderr = run_git_command(repo_path, ["branch", "--show-current"])
-    if not success:
-        return False, f"Could not determine current branch: {stderr}"
-    
-    if not branch:
-        return False, "Not on any branch (detached HEAD)"
-    
-    # Check if branch has upstream
-    success, upstream, stderr = run_git_command(
-        repo_path, ["rev-parse", "--abbrev-ref", f"{branch}@{{upstream}}"]
-    )
-    if not success:
-        return False, f"No upstream branch configured for {branch}"
-    
-    # Check for unpushed commits
-    success, commits, stderr = run_git_command(
-        repo_path, ["rev-list", f"{upstream}..{branch}", "--count"]
-    )
-    if not success:
-        return False, f"Could not check unpushed commits: {stderr}"
-    
-    try:
-        count = int(commits)
-        return count > 0, f"{count} unpushed commits on {branch}"
-    except ValueError:
-        return False, f"Invalid commit count: {commits}"
-
-
-def git_push(repo_path: Path) -> Tuple[bool, str]:
-    """Push commits to remote. Returns (success, message)."""
-    success, stdout, stderr = run_git_command(repo_path, ["push"])
-    if success:
-        return True, "Successfully pushed"
-    else:
-        return False, f"Push failed: {stderr or stdout}"
-
-
-def has_remote_changes(repo_path: Path) -> Tuple[bool, str]:
-    """Check if there are remote changes to pull. Returns (has_remote_changes, info)."""
-    # First, fetch to get latest remote info
-    success, _, stderr = run_git_command(repo_path, ["fetch"])
-    if not success:
-        return False, f"Could not fetch from remote: {stderr}"
-    
-    # Get current branch
-    success, branch, stderr = run_git_command(repo_path, ["branch", "--show-current"])
-    if not success:
-        return False, f"Could not determine current branch: {stderr}"
-    
-    if not branch:
-        return False, "Not on any branch (detached HEAD)"
-    
-    # Check if branch has upstream
-    success, upstream, stderr = run_git_command(
-        repo_path, ["rev-parse", "--abbrev-ref", f"{branch}@{{upstream}}"]
-    )
-    if not success:
-        return False, f"No upstream branch configured for {branch}"
-    
-    # Check for commits ahead on remote
-    success, commits, stderr = run_git_command(
-        repo_path, ["rev-list", f"{branch}..{upstream}", "--count"]
-    )
-    if not success:
-        return False, f"Could not check remote changes: {stderr}"
-    
-    try:
-        count = int(commits)
-        return count > 0, f"{count} remote changes available" if count > 0 else "No remote changes"
-    except ValueError:
-        return False, f"Invalid remote change count: {commits}"
-
-
-def git_pull_rebase(repo_path: Path) -> Tuple[bool, str]:
-    """Pull with rebase from remote. Returns (success, message)."""
-    success, stdout, stderr = run_git_command(repo_path, ["pull", "--rebase"])
-    if success:
-        return True, "Successfully pulled with rebase"
-    else:
-        return False, f"Pull rebase failed: {stderr or stdout}"
-
-
-def git_clone(repo_url: str, target_path: Path) -> Tuple[bool, str]:
-    """Clone a repository from GitHub. Returns (success, message)."""
-    try:
-        result = subprocess.run(
-            ["git", "clone", repo_url, str(target_path)],
-            capture_output=True,
-            text=True,
-            timeout=60
-        )
-        if result.returncode == 0:
-            return True, "Successfully cloned"
-        else:
-            return False, f"Clone failed: {result.stderr or result.stdout}"
-    except subprocess.TimeoutExpired:
-        return False, "Clone timed out"
-    except Exception as e:
-        return False, f"Clone failed: {str(e)}"
+# Add the bin directory to the path to import module_utils
+sys.path.insert(0, str(Path(__file__).parent))
+from module_utils import (
+    run_git_command, get_git_status, has_unpushed_commits, 
+    has_remote_changes, git_push, git_pull_rebase, git_clone
+)
 
 
 def sync_repository(repo_path: Path, repo_name: str, clone_url: str = None) -> Tuple[bool, List[str]]:
@@ -311,14 +183,14 @@ def main():
     modules_with_uncommitted = []
     
     # Check roo-registry
-    has_changes, changes = has_uncommitted_changes(registry_dir)
+    has_changes, changes = get_git_status(registry_dir)
     if has_changes:
         modules_with_uncommitted.append(("roo-registry", changes))
     
     # Check each module
     for module_name, module_path, _ in module_repos:
         if module_path.exists():  # Only check if directory exists
-            has_changes, changes = has_uncommitted_changes(module_path)
+            has_changes, changes = get_git_status(module_path)
             if has_changes:
                 modules_with_uncommitted.append((module_name, changes))
     
