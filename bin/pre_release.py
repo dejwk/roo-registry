@@ -24,7 +24,11 @@ from typing import Tuple, Optional
 
 # Add the bin directory to the path to import module_utils
 sys.path.insert(0, str(Path(__file__).parent))
-from module_utils import Version
+from module_utils import (
+    Version, parse_module_bazel, get_git_status, run_git_command, 
+    has_remote_changes, count_commits_between, get_current_branch, 
+    get_upstream_branch, git_push
+)
 
 
 def run_command(cmd: list, cwd: Optional[Path] = None, check: bool = True) -> subprocess.CompletedProcess:
@@ -50,54 +54,56 @@ def check_git_status(module_dir: Path) -> bool:
     """
     print(f"Checking git status in {module_dir}...")
     
-    # Check for uncommitted changes
-    result = run_command(["git", "status", "--porcelain"], cwd=module_dir, check=False)
-    if result.stdout.strip():
+    # Check for uncommitted changes using module_utils
+    has_changes, changes = get_git_status(module_dir)
+    if has_changes:
         print(f"Error: Git working directory is not clean in {module_dir}")
         print("Uncommitted changes:")
-        print(result.stdout)
+        for change in changes:
+            print(f"  {change}")
         return False
     
     # Fetch from remote to get latest information
     print("Fetching from remote...")
-    run_command(["git", "fetch"], cwd=module_dir)
+    success, _, stderr = run_git_command(module_dir, ["fetch"])
+    if not success:
+        print(f"Error: Failed to fetch from remote: {stderr}")
+        return False
     
-    # Check if up-to-date with upstream
-    result = run_command(
-        ["git", "rev-parse", "--abbrev-ref", "@{u}"],
-        cwd=module_dir,
-        check=False
-    )
+    # Check if up-to-date with upstream using module_utils
+    success, branch = get_current_branch(module_dir)
+    if not success:
+        if "Not on any branch" in branch:
+            print("Warning: In detached HEAD state, skipping upstream checks")
+            return True
+        print(f"Error: {branch}")
+        return False
     
-    if result.returncode != 0:
-        print("Warning: No upstream branch configured")
-        # Allow continuing if no upstream is set
+    success, upstream_branch = get_upstream_branch(module_dir, branch)
+    if not success:
+        print("Warning: No upstream branch configured, skipping upstream checks")
         return True
     
-    upstream_branch = result.stdout.strip()
-    
     # Check if local is behind remote
-    result = run_command(
-        ["git", "rev-list", "--count", f"HEAD..{upstream_branch}"],
-        cwd=module_dir,
-        check=False
-    )
+    success, behind_count, error = count_commits_between(module_dir, branch, upstream_branch)
+    if not success:
+        print(f"Error: Could not check if behind remote: {error}")
+        return False
     
-    if result.returncode == 0 and result.stdout.strip() != "0":
-        print(f"Error: Local branch is behind {upstream_branch}")
-        print(f"Please pull the latest changes first")
+    if behind_count > 0:
+        print(f"Error: Local branch is {behind_count} commits behind {upstream_branch}")
+        print("Please pull the latest changes first")
         return False
     
     # Check if local is ahead of remote
-    result = run_command(
-        ["git", "rev-list", "--count", f"{upstream_branch}..HEAD"],
-        cwd=module_dir,
-        check=False
-    )
+    success, ahead_count, error = count_commits_between(module_dir, upstream_branch, branch)
+    if not success:
+        print(f"Error: Could not check if ahead of remote: {error}")
+        return False
     
-    if result.returncode == 0 and result.stdout.strip() != "0":
-        print(f"Error: Local branch is ahead of {upstream_branch}")
-        print(f"Please push or reset your local changes first")
+    if ahead_count > 0:
+        print(f"Error: Local branch is {ahead_count} commits ahead of {upstream_branch}")
+        print("Please push or reset your local changes first")
         return False
     
     print("✓ Git status is clean and up-to-date")
@@ -301,19 +307,28 @@ def pre_release(module_name: str, bump_type: str, skip_tests: bool = False) -> b
     for file in files_to_add:
         file_path = module_dir / file
         if file_path.exists():
-            run_command(["git", "add", file], cwd=module_dir)
-            print(f"  Staged: {file}")
+            success, _, stderr = run_git_command(module_dir, ["add", file])
+            if success:
+                print(f"  Staged: {file}")
+            else:
+                print(f"  Warning: Failed to stage {file}: {stderr}")
     
     # Step 8: Git commit
     commit_message = f"Bump version to {new_version}"
     print(f"\nCommitting changes with message: '{commit_message}'")
-    run_command(["git", "commit", "-m", commit_message], cwd=module_dir)
+    success, _, stderr = run_git_command(module_dir, ["commit", "-m", commit_message])
+    if not success:
+        print(f"Error: Failed to commit changes: {stderr}")
+        return False
     print("✓ Changes committed")
     
-    # Step 9: Git push
+    # Step 9: Git push using module_utils
     print(f"\nPushing to remote...")
-    run_command(["git", "push"], cwd=module_dir)
-    print("✓ Changes pushed to remote")
+    success, message = git_push(module_dir)
+    if not success:
+        print(f"Error: {message}")
+        return False
+    print(f"✓ {message}")
     
     print(f"\n✓ Successfully prepared {module_name} version {new_version} for release")
     return True

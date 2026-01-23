@@ -30,7 +30,7 @@ IGNORED_MODULES = [
 
 # Add the bin directory to the path to import module_utils
 sys.path.insert(0, str(Path(__file__).parent))
-from module_utils import Version, Dependency, parse_module_bazel
+from module_utils import Version, Dependency, parse_module_bazel, run_git_command
 
 
 def should_ignore_module(module_name: str) -> bool:
@@ -465,22 +465,9 @@ def check_git_status(
             return "CLEAN"
 
         # Change to module directory for git commands
-        def run_git_command(cmd: List[str]) -> str:
-            """Run git command in module directory and return output."""
-            result = subprocess.run(
-                ["git"] + cmd,
-                cwd=module_dir,
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
-            if result.returncode != 0:
-                return ""
-            return result.stdout.strip()
-
         # Check 1: Uncommitted changes (working directory dirty)
-        status_output = run_git_command(["status", "--porcelain"])
-        if status_output:
+        success, status_output, _ = run_git_command(module_dir, ["status", "--porcelain"])
+        if success and status_output:
             # Any changes in git status indicate dirty repository
             lines = status_output.split("\n")
             significant_changes = [line for line in lines if line.strip()]
@@ -490,37 +477,37 @@ def check_git_status(
 
         # Check 2: Check if ahead of remote branch
         # First try to get the remote tracking branch
-        remote_branch = run_git_command(["rev-parse", "--abbrev-ref", "@{u}"])
-        if remote_branch:
+        success, remote_branch, _ = run_git_command(module_dir, ["rev-parse", "--abbrev-ref", "@{u}"])
+        if success and remote_branch:
             # Check if we're ahead of the remote
-            ahead_commits = run_git_command(["rev-list", "--count", f"{remote_branch}..HEAD"])
-            if ahead_commits and ahead_commits != "0":
+            success, ahead_commits, _ = run_git_command(module_dir, ["rev-list", "--count", f"{remote_branch}..HEAD"])
+            if success and ahead_commits and ahead_commits != "0":
                 return "DIRTY"  # Ahead of remote
 
         # At this point, we know the repository is synced with remote (not DIRTY)
         # Now check the relationship between HEAD and tags
 
         # Get the commit hash of the current HEAD
-        head_commit = run_git_command(["rev-parse", "HEAD"])
-        if not head_commit:
+        success, head_commit, _ = run_git_command(module_dir, ["rev-parse", "HEAD"])
+        if not success or not head_commit:
             return "CLEAN"  # Can't determine HEAD, assume clean
 
         # Get the latest tag
-        latest_tag = run_git_command(["describe", "--tags", "--abbrev=0"])
-        if not latest_tag:
+        success, latest_tag, _ = run_git_command(module_dir, ["describe", "--tags", "--abbrev=0"])
+        if not success or not latest_tag:
             # No tags at all, assume UPDATED (commits exist but no tags)
             return "UPDATED"
 
         # Get the commit hash of the latest tag
-        latest_tag_commit = run_git_command(["rev-parse", f"{latest_tag}^{{commit}}"])
-        if not latest_tag_commit:
+        success, latest_tag_commit, _ = run_git_command(module_dir, ["rev-parse", f"{latest_tag}^{{commit}}"])
+        if not success or not latest_tag_commit:
             return "UPDATED"  # Can't resolve tag, assume updated
 
         # Check if HEAD is newer than the latest tag
         if head_commit != latest_tag_commit:
             # Check if there are commits since the latest tag
-            commits_since_tag = run_git_command(["rev-list", "--count", f"{latest_tag}..HEAD"])
-            if commits_since_tag and commits_since_tag != "0":
+            success, commits_since_tag, _ = run_git_command(module_dir, ["rev-list", "--count", f"{latest_tag}..HEAD"])
+            if success and commits_since_tag and commits_since_tag != "0":
                 return "UPDATED"  # HEAD is newer than latest tag
             else:
                 # This shouldn't happen (HEAD != tag but no commits between), but handle gracefully

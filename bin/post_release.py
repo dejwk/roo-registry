@@ -24,7 +24,7 @@ from typing import Optional
 
 # Add the bin directory to the path to import module_utils
 sys.path.insert(0, str(Path(__file__).parent))
-from module_utils import parse_module_bazel
+from module_utils import parse_module_bazel, run_git_command, git_push
 
 
 def run_command(cmd: list, cwd: Optional[Path] = None, check: bool = True, show_output: bool = False) -> subprocess.CompletedProcess:
@@ -65,7 +65,10 @@ def clean_and_pull_module(module_dir: Path) -> bool:
     
     # Run git pull
     print("  Running git pull...")
-    run_command(["git", "pull"], cwd=module_dir)
+    success, _, stderr = run_git_command(module_dir, ["pull"])
+    if not success:
+        print(f"  Warning: Git pull failed: {stderr}")
+        return False
     print("  ✓ Git pull completed")
     
     return True
@@ -155,9 +158,12 @@ def amend_commit_with_graph(registry_dir: Path) -> bool:
     for file in graph_files:
         file_path = doc_dir / file
         if file_path.exists():
-            run_command(["git", "add", str(file_path)], cwd=registry_dir)
-            staged_files.append(file)
-            print(f"  Staged: {file}")
+            success, _, stderr = run_git_command(registry_dir, ["add", str(file_path)])
+            if success:
+                staged_files.append(file)
+                print(f"  Staged: {file}")
+            else:
+                print(f"  Warning: Failed to stage {file}: {stderr}")
         else:
             print(f"  Warning: {file} not found")
     
@@ -166,10 +172,10 @@ def amend_commit_with_graph(registry_dir: Path) -> bool:
         return True
     
     # Amend the last commit
-    run_command(
-        ["git", "commit", "--amend", "--no-edit"],
-        cwd=registry_dir
-    )
+    success, _, stderr = run_git_command(registry_dir, ["commit", "--amend", "--no-edit"])
+    if not success:
+        print(f"  Error: Failed to amend commit: {stderr}")
+        return False
     
     print(f"✓ Amended commit with dependency graph files")
     return True
@@ -182,7 +188,10 @@ def push_registry_changes(registry_dir: Path) -> bool:
     print(f"\nPushing registry changes...")
     
     # Need to force push since we amended the commit
-    run_command(["git", "push", "--force-with-lease"], cwd=registry_dir)
+    success, _, stderr = run_git_command(registry_dir, ["push", "--force-with-lease"])
+    if not success:
+        print(f"  Error: Failed to push: {stderr}")
+        return False
     
     print(f"✓ Registry changes pushed to remote")
     return True
