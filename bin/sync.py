@@ -19,7 +19,7 @@ from typing import List, Tuple, Dict
 # Add the bin directory to the path to import module_utils
 sys.path.insert(0, str(Path(__file__).parent))
 from module_utils import (
-    run_git_command, get_git_status, has_unpushed_commits, 
+    get_git_status, has_unpushed_commits, 
     has_remote_changes, git_push, git_pull_rebase, git_clone
 )
 

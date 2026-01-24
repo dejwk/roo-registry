@@ -24,7 +24,7 @@ from typing import Optional
 
 # Add the bin directory to the path to import module_utils
 sys.path.insert(0, str(Path(__file__).parent))
-from module_utils import parse_module_bazel, run_git_command, git_push
+from module_utils import parse_module_bazel, git_push
 
 
 def run_command(cmd: list, cwd: Optional[Path] = None, check: bool = True, show_output: bool = False) -> subprocess.CompletedProcess:
@@ -65,9 +65,14 @@ def clean_and_pull_module(module_dir: Path) -> bool:
     
     # Run git pull
     print("  Running git pull...")
-    success, _, stderr = run_git_command(module_dir, ["pull"])
-    if not success:
-        print(f"  Warning: Git pull failed: {stderr}")
+    try:
+        repo = git.Repo(module_dir)
+        origin = repo.remotes.origin
+        current_branch = repo.active_branch.name
+        repo.git.pull('origin', current_branch)
+        print("    Git pull successful")
+    except Exception as e:
+        print(f"  Warning: Git pull failed: {str(e)}")
         return False
     print("  ✓ Git pull completed")
     
@@ -172,9 +177,12 @@ def amend_commit_with_graph(registry_dir: Path) -> bool:
         return True
     
     # Amend the last commit
-    success, _, stderr = run_git_command(registry_dir, ["commit", "--amend", "--no-edit"])
-    if not success:
-        print(f"  Error: Failed to amend commit: {stderr}")
+    try:
+        repo = git.Repo(registry_dir)
+        repo.git.commit('--amend', '--no-edit')
+        print("  Amended commit with dependency graph updates")
+    except Exception as e:
+        print(f"  Error: Failed to amend commit: {str(e)}")
         return False
     
     print(f"✓ Amended commit with dependency graph files")
@@ -188,9 +196,14 @@ def push_registry_changes(registry_dir: Path) -> bool:
     print(f"\nPushing registry changes...")
     
     # Need to force push since we amended the commit
-    success, _, stderr = run_git_command(registry_dir, ["push", "--force-with-lease"])
-    if not success:
-        print(f"  Error: Failed to push: {stderr}")
+    try:
+        repo = git.Repo(registry_dir)
+        origin = repo.remotes.origin
+        current_branch = repo.active_branch.name
+        repo.git.push('--force-with-lease', 'origin', current_branch)
+        print("  Registry changes pushed successfully")
+    except Exception as e:
+        print(f"  Error: Failed to push: {str(e)}")
         return False
     
     print(f"✓ Registry changes pushed to remote")

@@ -25,7 +25,7 @@ from typing import Tuple, Optional
 # Add the bin directory to the path to import module_utils
 sys.path.insert(0, str(Path(__file__).parent))
 from module_utils import (
-    Version, parse_module_bazel, get_git_status, run_git_command, 
+    Version, parse_module_bazel, get_git_status,
     has_remote_changes, count_commits_between, get_current_branch, 
     get_upstream_branch, git_push
 )
@@ -65,9 +65,13 @@ def check_git_status(module_dir: Path) -> bool:
     
     # Fetch from remote to get latest information
     print("Fetching from remote...")
-    success, _, stderr = run_git_command(module_dir, ["fetch"])
-    if not success:
-        print(f"Error: Failed to fetch from remote: {stderr}")
+    try:
+        repo = git.Repo(module_dir)
+        origin = repo.remotes.origin
+        origin.fetch()
+        print("  Fetched successfully")
+    except Exception as e:
+        print(f"Error: Failed to fetch from remote: {str(e)}")
         return False
     
     # Check if up-to-date with upstream using module_utils
@@ -316,9 +320,12 @@ def pre_release(module_name: str, bump_type: str, skip_tests: bool = False) -> b
     # Step 8: Git commit
     commit_message = f"Bump version to {new_version}"
     print(f"\nCommitting changes with message: '{commit_message}'")
-    success, _, stderr = run_git_command(module_dir, ["commit", "-m", commit_message])
-    if not success:
-        print(f"Error: Failed to commit changes: {stderr}")
+    try:
+        repo = git.Repo(module_dir)
+        repo.index.commit(commit_message)
+        print("  Committed successfully")
+    except Exception as e:
+        print(f"Error: Failed to commit changes: {str(e)}")
         return False
     print("✓ Changes committed")
     

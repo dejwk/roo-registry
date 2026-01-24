@@ -20,6 +20,15 @@ import argparse
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
+# Check for GitPython availability
+try:
+    import git
+except ImportError:
+    raise ImportError(
+        "GitPython is required but not installed.\n"
+        "Install it with: pip install GitPython"
+    )
+
 # Configuration: Modules to ignore in dependency analysis
 # Add module names to this list to exclude them from the dependency graph
 IGNORED_MODULES = [
@@ -30,7 +39,7 @@ IGNORED_MODULES = [
 
 # Add the bin directory to the path to import module_utils
 sys.path.insert(0, str(Path(__file__).parent))
-from module_utils import Version, Dependency, parse_module_bazel, run_git_command
+from module_utils import Version, Dependency, parse_module_bazel
 
 
 def should_ignore_module(module_name: str) -> bool:
@@ -464,60 +473,68 @@ def check_git_status(
             # If module directory or .git doesn't exist, assume clean
             return "CLEAN"
 
-        # Change to module directory for git commands
-        # Check 1: Uncommitted changes (working directory dirty)
-        success, status_output, _ = run_git_command(module_dir, ["status", "--porcelain"])
-        if success and status_output:
-            # Any changes in git status indicate dirty repository
-            lines = status_output.split("\n")
-            significant_changes = [line for line in lines if line.strip()]
+        # Initialize GitPython repo
+        repo = git.Repo(module_dir)
 
-            if significant_changes:
-                return "DIRTY"  # Has uncommitted changes
+        # Check 1: Uncommitted changes (working directory dirty)
+        if repo.is_dirty(untracked_files=True):
+            return "DIRTY"  # Has uncommitted changes
 
         # Check 2: Check if ahead of remote branch
-        # First try to get the remote tracking branch
-        success, remote_branch, _ = run_git_command(module_dir, ["rev-parse", "--abbrev-ref", "@{u}"])
-        if success and remote_branch:
-            # Check if we're ahead of the remote
-            success, ahead_commits, _ = run_git_command(module_dir, ["rev-list", "--count", f"{remote_branch}..HEAD"])
-            if success and ahead_commits and ahead_commits != "0":
-                return "DIRTY"  # Ahead of remote
+        try:
+            current_branch = repo.active_branch
+            tracking_branch = current_branch.tracking_branch()
+            
+            if tracking_branch:
+                # Check if we're ahead of the remote
+                commits_ahead = list(repo.iter_commits(f'{tracking_branch}..{current_branch}'))
+                if len(commits_ahead) > 0:
+                    return "DIRTY"  # Ahead of remote
+        except Exception:
+            # If we can't determine remote status, continue with tag checking
+            pass
 
         # At this point, we know the repository is synced with remote (not DIRTY)
         # Now check the relationship between HEAD and tags
 
         # Get the commit hash of the current HEAD
-        success, head_commit, _ = run_git_command(module_dir, ["rev-parse", "HEAD"])
-        if not success or not head_commit:
+        try:
+            head_commit = repo.head.commit.hexsha
+        except Exception:
             return "CLEAN"  # Can't determine HEAD, assume clean
 
         # Get the latest tag
-        success, latest_tag, _ = run_git_command(module_dir, ["describe", "--tags", "--abbrev=0"])
-        if not success or not latest_tag:
-            # No tags at all, assume UPDATED (commits exist but no tags)
+        try:
+            # Get all tags sorted by creation date
+            tags = sorted(repo.tags, key=lambda t: t.commit.committed_date, reverse=True)
+            if not tags:
+                # No tags at all, assume UPDATED (commits exist but no tags)
+                return "UPDATED"
+            
+            latest_tag = tags[0]
+            latest_tag_commit = latest_tag.commit.hexsha
+        except Exception:
+            # No tags or error getting tags, assume UPDATED
             return "UPDATED"
-
-        # Get the commit hash of the latest tag
-        success, latest_tag_commit, _ = run_git_command(module_dir, ["rev-parse", f"{latest_tag}^{{commit}}"])
-        if not success or not latest_tag_commit:
-            return "UPDATED"  # Can't resolve tag, assume updated
 
         # Check if HEAD is newer than the latest tag
         if head_commit != latest_tag_commit:
             # Check if there are commits since the latest tag
-            success, commits_since_tag, _ = run_git_command(module_dir, ["rev-list", "--count", f"{latest_tag}..HEAD"])
-            if success and commits_since_tag and commits_since_tag != "0":
-                return "UPDATED"  # HEAD is newer than latest tag
-            else:
-                # This shouldn't happen (HEAD != tag but no commits between), but handle gracefully
+            try:
+                commits_since_tag = list(repo.iter_commits(f'{latest_tag}..HEAD'))
+                if len(commits_since_tag) > 0:
+                    return "UPDATED"  # HEAD is newer than latest tag
+                else:
+                    # This shouldn't happen (HEAD != tag but no commits between), but handle gracefully
+                    return "UPDATED"
+            except Exception:
                 return "UPDATED"
 
         # At this point, HEAD matches the latest tag
         # Check if this tag matches the current module version
         version_tag = module_version  # Use semver format (x.y.z)
         
-        if latest_tag == version_tag:
+        if str(latest_tag) == version_tag:
             return "CLEAN"  # Tag matches current version
         else:
             return "UNPUBLISHED"  # Tag exists but doesn't match current version
