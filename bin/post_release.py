@@ -77,8 +77,8 @@ def clean_and_pull_module(module_dir: Path) -> bool:
     try:
         repo = git.Repo(module_dir)
         origin = repo.remotes.origin
-        current_branch = repo.active_branch.name
-        repo.git.pull('origin', current_branch)
+        # Pull from the configured upstream (equivalent to 'git pull')
+        origin.pull()
         print("    Git pull successful")
     except Exception as e:
         print(f"  Warning: Git pull failed: {str(e)}")

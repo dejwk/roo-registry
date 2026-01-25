@@ -170,11 +170,9 @@ def git_pull_rebase(repo_path: Path) -> Tuple[bool, str]:
     """Pull with rebase from remote. Returns (success, message)."""
     try:
         repo = git.Repo(repo_path)
-        origin = repo.remotes.origin
-        current_branch = repo.active_branch.name
         
-        # Pull with rebase
-        repo.git.pull('--rebase', 'origin', current_branch)
+        # Pull with rebase (equivalent to 'git pull --rebase')
+        repo.git.pull('--rebase')
         return True, "Successfully pulled with rebase"
     except Exception as e:
         return False, f"Pull rebase failed: {str(e)}"
