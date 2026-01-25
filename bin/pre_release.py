@@ -22,6 +22,15 @@ import re
 from pathlib import Path
 from typing import Tuple, Optional
 
+# Check for GitPython availability
+try:
+    import git
+except ImportError:
+    raise ImportError(
+        "GitPython is required but not installed.\n"
+        "Install it with: pip install GitPython"
+    )
+
 # Add the bin directory to the path to import module_utils
 sys.path.insert(0, str(Path(__file__).parent))
 from module_utils import (
@@ -308,14 +317,19 @@ def pre_release(module_name: str, bump_type: str, skip_tests: bool = False) -> b
     # Step 7: Git add
     print(f"\nStaging changes...")
     files_to_add = ["MODULE.bazel", "library.json", "library.properties"]
-    for file in files_to_add:
-        file_path = module_dir / file
-        if file_path.exists():
-            success, _, stderr = run_git_command(module_dir, ["add", file])
-            if success:
+    
+    try:
+        repo = git.Repo(module_dir)
+        for file in files_to_add:
+            file_path = module_dir / file
+            if file_path.exists():
+                repo.index.add([str(file)])
                 print(f"  Staged: {file}")
             else:
-                print(f"  Warning: Failed to stage {file}: {stderr}")
+                print(f"  Warning: {file} not found, skipping")
+    except Exception as e:
+        print(f"Error staging files: {str(e)}")
+        return False
     
     # Step 8: Git commit
     commit_message = f"Bump version to {new_version}"

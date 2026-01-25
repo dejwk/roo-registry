@@ -22,6 +22,15 @@ import re
 from pathlib import Path
 from typing import Optional
 
+# Check for GitPython availability
+try:
+    import git
+except ImportError:
+    raise ImportError(
+        "GitPython is required but not installed.\n"
+        "Install it with: pip install GitPython"
+    )
+
 # Add the bin directory to the path to import module_utils
 sys.path.insert(0, str(Path(__file__).parent))
 from module_utils import parse_module_bazel, git_push
@@ -160,17 +169,19 @@ def amend_commit_with_graph(registry_dir: Path) -> bool:
     graph_files = ["dependencies.dot", "dependencies.svg"]
     
     staged_files = []
-    for file in graph_files:
-        file_path = doc_dir / file
-        if file_path.exists():
-            success, _, stderr = run_git_command(registry_dir, ["add", str(file_path)])
-            if success:
+    try:
+        repo = git.Repo(registry_dir)
+        for file in graph_files:
+            file_path = doc_dir / file
+            if file_path.exists():
+                repo.index.add([str(file_path)])
                 staged_files.append(file)
                 print(f"  Staged: {file}")
             else:
-                print(f"  Warning: Failed to stage {file}: {stderr}")
-        else:
-            print(f"  Warning: {file} not found")
+                print(f"  Warning: {file} not found in {doc_dir}")
+    except Exception as e:
+        print(f"  Error staging files: {str(e)}")
+        return False
     
     if not staged_files:
         print(f"  Warning: No dependency graph files found to add")
