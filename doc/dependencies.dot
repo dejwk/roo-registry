@@ -9,17 +9,17 @@ digraph dependencies {
     "roo_collections" [label="roo_collections\n1.4.1", fillcolor="#b1dbab", color="black"];
     "roo_comms" [label="roo_comms\n1.1.3", fillcolor="#b1dbab", color="red"];
     "roo_control" [label="roo_control\n1.2.4", fillcolor="#b1dbab", color="black"];
-    "roo_dashboard" [label="roo_dashboard\n1.0.1", fillcolor="plum", color="red"];
+    "roo_dashboard" [label="roo_dashboard\n1.0.1", fillcolor="khaki", color="red"];
     "roo_display" [label="roo_display\n2.3.2", fillcolor="khaki", color="red"];
     "roo_flags" [label="roo_flags\n1.2.1", fillcolor="#b1dbab", color="black"];
     "roo_icons" [label="roo_icons\n1.2.1", fillcolor="#b1dbab", color="red"];
-    "roo_io" [label="roo_io\n2.1.2", fillcolor="plum", color="red"];
+    "roo_io" [label="roo_io\n2.1.2", fillcolor="khaki", color="red"];
     "roo_io_sdfat" [label="roo_io_sdfat\n1.0.0", fillcolor="plum", color="black"];
     "roo_locale" [label="roo_locale\n1.1.1", fillcolor="#b1dbab", color="black"];
     "roo_logging" [label="roo_logging\n1.5.3", fillcolor="#b1dbab", color="black"];
     "roo_monitoring" [label="roo_monitoring\n1.0.0", fillcolor="khaki", color="red"];
     "roo_onewire" [label="roo_onewire\n2.0.8", fillcolor="#b1dbab", color="black"];
-    "roo_powersafefs" [label="roo_powersafefs\n1.0.0", fillcolor="plum", color="red"];
+    "roo_powersafefs" [label="roo_powersafefs\n1.0.0", fillcolor="khaki", color="black"];
     "roo_prefs" [label="roo_prefs\n1.2.8", fillcolor="#b1dbab", color="black"];
     "roo_quantity" [label="roo_quantity\n1.1.7", fillcolor="#b1dbab", color="black"];
     "roo_scheduler" [label="roo_scheduler\n2.1.7", fillcolor="#b1dbab", color="black"];
@@ -32,7 +32,7 @@ digraph dependencies {
     "roo_wifi" [label="roo_wifi\n1.1.3", fillcolor="#b1dbab", color="red"];
     "roo_windows" [label="roo_windows\n1.4.2", fillcolor="#b1dbab", color="red"];
     "roo_windows_transceivers" [label="roo_windows_transceivers\n1.0.0", fillcolor="khaki", color="red"];
-    "roo_windows_wifi" [label="roo_windows_wifi\n1.1.3", fillcolor="plum", color="red"];
+    "roo_windows_wifi" [label="roo_windows_wifi\n1.1.3", fillcolor="khaki", color="red"];
 
     // Dependencies
     "roo_blink" -> "roo_logging";
@@ -56,7 +56,7 @@ digraph dependencies {
     "roo_monitoring" -> "roo_io" [color=red, fontcolor=red, label="2.0.3\n(latest: 2.1.2)"];
     "roo_onewire" -> "roo_scheduler";
     "roo_onewire" -> "roo_quantity";
-    "roo_powersafefs" -> "roo_threads" [color=red, fontcolor=red, label="1.1.6\n(latest: 1.2.1)"];
+    "roo_powersafefs" -> "roo_threads";
     "roo_prefs" -> "roo_logging";
     "roo_prefs" -> "roo_scheduler";
     "roo_quantity" -> "roo_logging";
