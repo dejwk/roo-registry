@@ -7,12 +7,12 @@ digraph dependencies {
     "roo_backport" [label="roo_backport\n1.2.1", fillcolor="#b1dbab", color="black"];
     "roo_blink" [label="roo_blink\n1.0.5", fillcolor="#b1dbab", color="black"];
     "roo_collections" [label="roo_collections\n1.4.1", fillcolor="#b1dbab", color="black"];
-    "roo_comms" [label="roo_comms\n1.1.3", fillcolor="#b1dbab", color="red"];
+    "roo_comms" [label="roo_comms\n1.1.3", fillcolor="plum", color="red"];
     "roo_control" [label="roo_control\n1.2.4", fillcolor="#b1dbab", color="black"];
     "roo_dashboard" [label="roo_dashboard\n1.0.1", fillcolor="khaki", color="red"];
     "roo_display" [label="roo_display\n2.3.2", fillcolor="khaki", color="red"];
     "roo_flags" [label="roo_flags\n1.2.1", fillcolor="#b1dbab", color="black"];
-    "roo_icons" [label="roo_icons\n1.2.1", fillcolor="#b1dbab", color="red"];
+    "roo_icons" [label="roo_icons\n1.2.1", fillcolor="plum", color="red"];
     "roo_io" [label="roo_io\n2.1.3", fillcolor="#b1dbab", color="black"];
     "roo_locale" [label="roo_locale\n1.1.1", fillcolor="#b1dbab", color="black"];
     "roo_logging" [label="roo_logging\n1.5.3", fillcolor="#b1dbab", color="black"];
@@ -25,9 +25,9 @@ digraph dependencies {
     "roo_time" [label="roo_time\n1.4.1", fillcolor="#b1dbab", color="black"];
     "roo_time_ds3231" [label="roo_time_ds3231\n1.1.5", fillcolor="#b1dbab", color="black"];
     "roo_transceivers" [label="roo_transceivers\n1.1.4", fillcolor="khaki", color="red"];
-    "roo_transport" [label="roo_transport\n1.1.0", fillcolor="khaki", color="red"];
-    "roo_wifi" [label="roo_wifi\n1.1.3", fillcolor="#b1dbab", color="red"];
-    "roo_windows" [label="roo_windows\n1.4.2", fillcolor="#b1dbab", color="red"];
+    "roo_transport" [label="roo_transport\n1.1.1", fillcolor="#b1dbab", color="black"];
+    "roo_wifi" [label="roo_wifi\n1.1.3", fillcolor="plum", color="red"];
+    "roo_windows" [label="roo_windows\n1.4.2", fillcolor="plum", color="red"];
     "roo_windows_wifi" [label="roo_windows_wifi\n1.1.3", fillcolor="khaki", color="red"];
 
     // Dependencies
@@ -59,8 +59,8 @@ digraph dependencies {
     "roo_time" -> "roo_testing";
     "roo_time_ds3231" -> "roo_time";
     "roo_transceivers" -> "roo_prefs" [color=red, fontcolor=red, label="1.2.7\n(latest: 1.2.8)"];
-    "roo_transport" -> "roo_collections" [color=red, fontcolor=red, label="1.4.0\n(latest: 1.4.1)"];
-    "roo_transport" -> "roo_io" [color=red, fontcolor=red, label="2.1.2\n(latest: 2.1.3)"];
+    "roo_transport" -> "roo_collections";
+    "roo_transport" -> "roo_io";
     "roo_wifi" -> "roo_prefs" [color=red, fontcolor=red, label="1.2.7\n(latest: 1.2.8)"];
     "roo_windows" -> "roo_locale";
     "roo_windows" -> "roo_icons";
