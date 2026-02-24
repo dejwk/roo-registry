@@ -12,9 +12,9 @@
 <!-- roo_backport -->
 <g id="node1" class="node">
 <title>roo_backport</title>
-<polygon fill="plum" stroke="black" points="614,-209 504,-209 504,-171 614,-171 614,-209"/>
-<text text-anchor="middle" x="559" y="-193.8" font-family="Times,serif" font-size="14.00">roo_backport</text>
-<text text-anchor="middle" x="559" y="-178.8" font-family="Times,serif" font-size="14.00">1.2.1</text>
+<polygon fill="#b1dbab" stroke="black" points="600,-209 490,-209 490,-171 600,-171 600,-209"/>
+<text text-anchor="middle" x="545" y="-193.8" font-family="Times,serif" font-size="14.00">roo_backport</text>
+<text text-anchor="middle" x="545" y="-178.8" font-family="Times,serif" font-size="14.00">1.2.2</text>
 </g>
 <!-- roo_blink -->
 <g id="node2" class="node">
@@ -52,15 +52,17 @@
 <!-- roo_collections -->
 <g id="node3" class="node">
 <title>roo_collections</title>
-<polygon fill="plum" stroke="black" points="678,-401 556,-401 556,-363 678,-363 678,-401"/>
+<polygon fill="plum" stroke="red" points="678,-401 556,-401 556,-363 678,-363 678,-401"/>
 <text text-anchor="middle" x="617" y="-385.8" font-family="Times,serif" font-size="14.00">roo_collections</text>
 <text text-anchor="middle" x="617" y="-370.8" font-family="Times,serif" font-size="14.00">1.4.1</text>
 </g>
 <!-- roo_collections&#45;&gt;roo_backport -->
 <g id="edge3" class="edge">
 <title>roo_collections&#45;&gt;roo_backport</title>
-<path fill="none" stroke="black" d="M611.44,-362.78C601.26,-329.44 579.58,-258.43 567.53,-218.94"/>
-<polygon fill="black" stroke="black" points="570.81,-217.71 564.54,-209.16 564.12,-219.75 570.81,-217.71"/>
+<path fill="none" stroke="red" d="M610.1,-362.78C597.44,-329.37 570.44,-258.13 555.49,-218.69"/>
+<polygon fill="red" stroke="red" points="558.7,-217.27 551.88,-209.16 552.15,-219.75 558.7,-217.27"/>
+<text text-anchor="middle" x="621" y="-289" font-family="Times,serif" font-size="10.00" fill="red">1.2.1</text>
+<text text-anchor="middle" x="621" y="-278" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.2.2)</text>
 </g>
 <!-- roo_comms -->
 <g id="node4" class="node">
@@ -222,8 +224,10 @@
 <!-- roo_logging&#45;&gt;roo_backport -->
 <g id="edge15" class="edge">
 <title>roo_logging&#45;&gt;roo_backport</title>
-<path fill="none" stroke="black" d="M392.04,-268.51C408.44,-262.75 426.65,-255.97 443,-249 467.83,-238.41 494.84,-225.02 516.55,-213.78"/>
-<polygon fill="black" stroke="black" points="518.26,-216.83 525.5,-209.1 515.02,-210.63 518.26,-216.83"/>
+<path fill="none" stroke="red" d="M392,-269.12C408.49,-263.37 426.75,-256.45 443,-249 465.06,-238.89 488.68,-225.63 507.63,-214.34"/>
+<polygon fill="red" stroke="red" points="509.49,-217.3 516.25,-209.14 505.88,-211.3 509.49,-217.3"/>
+<text text-anchor="middle" x="517" y="-241" font-family="Times,serif" font-size="10.00" fill="red">1.2.1</text>
+<text text-anchor="middle" x="517" y="-230" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.2.2)</text>
 </g>
 <!-- roo_logging&#45;&gt;roo_flags -->
 <g id="edge16" class="edge">

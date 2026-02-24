@@ -4,9 +4,9 @@ digraph dependencies {
     edge [fontsize=10];
 
     // Modules
-    "roo_backport" [label="roo_backport\n1.2.1", fillcolor="plum", color="black"];
+    "roo_backport" [label="roo_backport\n1.2.2", fillcolor="#b1dbab", color="black"];
     "roo_blink" [label="roo_blink\n1.0.5", fillcolor="plum", color="red"];
-    "roo_collections" [label="roo_collections\n1.4.1", fillcolor="plum", color="black"];
+    "roo_collections" [label="roo_collections\n1.4.1", fillcolor="plum", color="red"];
     "roo_comms" [label="roo_comms\n1.1.3", fillcolor="plum", color="red"];
     "roo_control" [label="roo_control\n1.2.4", fillcolor="plum", color="red"];
     "roo_dashboard" [label="roo_dashboard\n1.0.1", fillcolor="khaki", color="red"];
@@ -36,7 +36,7 @@ digraph dependencies {
     // Dependencies
     "roo_blink" -> "roo_logging";
     "roo_blink" -> "roo_scheduler";
-    "roo_collections" -> "roo_backport";
+    "roo_collections" -> "roo_backport" [color=red, fontcolor=red, label="1.2.1\n(latest: 1.2.2)"];
     "roo_comms" -> "roo_blink" [color=red, fontcolor=red, label="1.0.4\n(latest: 1.0.5)"];
     "roo_comms" -> "roo_control" [color=red, fontcolor=red, label="1.2.3\n(latest: 1.2.4)"];
     "roo_comms" -> "roo_io" [color=red, fontcolor=red, label="2.1.1\n(latest: 2.1.4)"];
@@ -48,7 +48,7 @@ digraph dependencies {
     "roo_display" -> "roo_io" [color=red, fontcolor=red, label="2.1.2\n(latest: 2.1.4)"];
     "roo_icons" -> "roo_display" [color=red, fontcolor=red, label="2.3.1\n(latest: 2.3.2)"];
     "roo_io" -> "roo_logging";
-    "roo_logging" -> "roo_backport";
+    "roo_logging" -> "roo_backport" [color=red, fontcolor=red, label="1.2.1\n(latest: 1.2.2)"];
     "roo_logging" -> "roo_flags" [color=red, fontcolor=red, label="1.2.1\n(latest: 1.2.2)"];
     "roo_logging" -> "roo_threads" [color=red, fontcolor=red, label="1.2.1\n(latest: 1.2.2)"];
     "roo_monitoring" -> "roo_collections";
