@@ -41,7 +41,7 @@
 <!-- roo_scheduler -->
 <g id="node19" class="node">
 <title>roo_scheduler</title>
-<polygon fill="khaki" stroke="black" points="421,-497 305,-497 305,-459 421,-459 421,-497"/>
+<polygon fill="#b1dbab" stroke="black" points="421,-497 305,-497 305,-459 421,-459 421,-497"/>
 <text text-anchor="middle" x="363" y="-481.8" font-family="Times,serif" font-size="14.00">roo_scheduler</text>
 <text text-anchor="middle" x="363" y="-466.8" font-family="Times,serif" font-size="14.00">2.1.8</text>
 </g>
