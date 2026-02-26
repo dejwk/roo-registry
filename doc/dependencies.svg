@@ -41,9 +41,9 @@
 <!-- roo_scheduler -->
 <g id="node19" class="node">
 <title>roo_scheduler</title>
-<polygon fill="khaki" stroke="red" points="424,-497 308,-497 308,-459 424,-459 424,-497"/>
+<polygon fill="#b1dbab" stroke="black" points="424,-497 308,-497 308,-459 424,-459 424,-497"/>
 <text text-anchor="middle" x="366" y="-481.8" font-family="Times,serif" font-size="14.00">roo_scheduler</text>
-<text text-anchor="middle" x="366" y="-466.8" font-family="Times,serif" font-size="14.00">2.1.8</text>
+<text text-anchor="middle" x="366" y="-466.8" font-family="Times,serif" font-size="14.00">2.1.9</text>
 </g>
 <!-- roo_blink&#45;&gt;roo_scheduler -->
 <g id="edge2" class="edge">
@@ -51,7 +51,7 @@
 <path fill="none" stroke="red" d="M868.74,-557.38C865.8,-556.5 862.87,-555.7 860,-555 800.76,-540.59 784.25,-546.37 724,-537 669.13,-528.47 655.97,-522.87 601,-515 527.1,-504.42 507.4,-510.59 434,-497 433.9,-496.98 433.8,-496.96 433.7,-496.94"/>
 <polygon fill="red" stroke="red" points="434.6,-493.56 424.11,-495 433.21,-500.42 434.6,-493.56"/>
 <text text-anchor="middle" x="757" y="-529" font-family="Times,serif" font-size="10.00" fill="red">2.1.7</text>
-<text text-anchor="middle" x="757" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.8)</text>
+<text text-anchor="middle" x="757" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.9)</text>
 </g>
 <!-- roo_collections -->
 <g id="node3" class="node">
@@ -145,7 +145,7 @@
 <path fill="none" stroke="red" d="M969.32,-557.68C966.17,-556.75 963.05,-555.85 960,-555 928.24,-546.11 916.7,-553.25 888,-537 875.97,-530.19 878.66,-520.56 866,-515 822.01,-495.7 481.5,-504.19 434,-497 433.9,-496.98 433.8,-496.97 433.69,-496.95"/>
 <polygon fill="red" stroke="red" points="434.52,-493.55 424.06,-495.26 433.31,-500.44 434.52,-493.55"/>
 <text text-anchor="middle" x="921" y="-529" font-family="Times,serif" font-size="10.00" fill="red">2.1.7</text>
-<text text-anchor="middle" x="921" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.8)</text>
+<text text-anchor="middle" x="921" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.9)</text>
 </g>
 <!-- roo_dashboard -->
 <g id="node6" class="node">
@@ -307,7 +307,7 @@
 <path fill="none" stroke="red" d="M746.95,-557.9C742.26,-556.81 737.56,-555.82 733,-555 646.04,-539.31 617.39,-568.94 535,-537 519.92,-531.15 520.59,-521.99 506,-515 476.26,-500.74 465.94,-505.22 434,-497 433.9,-496.97 433.8,-496.95 433.7,-496.92"/>
 <polygon fill="red" stroke="red" points="434.78,-493.59 424.22,-494.47 433.03,-500.36 434.78,-493.59"/>
 <text text-anchor="middle" x="568" y="-529" font-family="Times,serif" font-size="10.00" fill="red">2.1.7</text>
-<text text-anchor="middle" x="568" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.8)</text>
+<text text-anchor="middle" x="568" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.9)</text>
 </g>
 <!-- roo_powersafefs -->
 <g id="node16" class="node">
@@ -345,7 +345,7 @@
 <path fill="none" stroke="red" d="M483.29,-557.9C469.16,-552.12 453.53,-544.98 440,-537 423.81,-527.46 407.22,-514.77 393.86,-503.7"/>
 <polygon fill="red" stroke="red" points="395.89,-500.83 385.99,-497.05 391.38,-506.18 395.89,-500.83"/>
 <text text-anchor="middle" x="473" y="-529" font-family="Times,serif" font-size="10.00" fill="red">2.1.7</text>
-<text text-anchor="middle" x="473" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.8)</text>
+<text text-anchor="middle" x="473" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.9)</text>
 </g>
 <!-- roo_quantity&#45;&gt;roo_logging -->
 <g id="edge26" class="edge">
@@ -468,7 +468,7 @@
 <path fill="none" stroke="red" d="M316.13,-650.77C324.15,-635.68 335.1,-613.48 342,-593 351.63,-564.41 358.19,-530.44 361.98,-507.06"/>
 <polygon fill="red" stroke="red" points="365.45,-507.54 363.53,-497.12 358.53,-506.46 365.45,-507.54"/>
 <text text-anchor="middle" x="386" y="-577" font-family="Times,serif" font-size="10.00" fill="red">2.1.6</text>
-<text text-anchor="middle" x="386" y="-566" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.8)</text>
+<text text-anchor="middle" x="386" y="-566" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.9)</text>
 </g>
 <!-- roo_windows_transceivers -->
 <g id="node28" class="node">
