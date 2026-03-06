@@ -1,0 +1,10 @@
+{
+    "url": "https://github.com/lvgl/lvgl/archive/refs/tags/v9.4.0.zip",
+    "integrity": "sha256-HS9j4eZsDSToKxTkJla4jwrhLqXv21liNB89yt51PvU=",
+    "strip_prefix": "lvgl-9.4.0",
+    "patches": {
+        "add_build_bazel.patch": "sha256-dOEPyMxtGi6Eav2TOZa14qad6azaJVEaHTcvyy75i/4=",
+        "add_lv_conf.patch": "sha256-1BgHywI5c/i3cz+PGrzalaTQuOq989WWdxZjdlimoS8="
+    },
+    "patch_strip": 1
+}

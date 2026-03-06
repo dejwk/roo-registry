@@ -1,0 +1,20 @@
+diff --git a/BUILD.bazel b/BUILD.bazel
+new file mode 100644
+index 0000000..75ce14c
+--- /dev/null
++++ b/BUILD.bazel
+@@ -0,0 +1,14 @@
++load("@rules_cc//cc:cc_library.bzl", "cc_library")
++
++package(default_visibility = ["//visibility:public"])
++
++licenses(["notice"])
++
++cc_library(
++    name = "lvgl",
++    srcs = glob(["src/**/*.c"]),
++    hdrs = glob(["**/*.h"]),
++    defines = ["LV_LVGL_H_INCLUDE_SIMPLE"],
++    includes = ["."],
++)
++

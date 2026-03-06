@@ -1,0 +1,15 @@
+diff --git a/lv_conf.h b/lv_conf.h
+new file mode 100644
+index 0000000..4f63f39
+--- /dev/null
++++ b/lv_conf.h
+@@ -0,0 +1,9 @@
++/* Default LVGL config for Bazel module consumers.
++ *
++ * To override, pass e.g.:
++ *   --copt=-DLV_CONF_PATH=\"my_lv_conf.h\"
++ *   --copt=-I/path/to/header
++ */
++#ifndef LV_CONF_H
++#define LV_CONF_H
++#endif
