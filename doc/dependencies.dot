@@ -11,7 +11,7 @@ digraph dependencies {
     "roo_control" [label="roo_control\n1.2.5", fillcolor="#b1dbab", color="red"];
     "roo_dashboard" [label="roo_dashboard\n1.0.1", fillcolor="khaki", color="red"];
     "roo_display" [label="roo_display\n3.0.4", fillcolor="#b1dbab", color="black"];
-    "roo_display_lvgl" [label="roo_display_lvgl\n1.0.0", fillcolor="khaki", color="red"];
+    "roo_display_lvgl" [label="roo_display_lvgl\n1.0.0", fillcolor="#b1dbab", color="red"];
     "roo_flags" [label="roo_flags\n1.2.3", fillcolor="#b1dbab", color="black"];
     "roo_fonts_basic" [label="roo_fonts_basic\n1.0.2", fillcolor="#b1dbab", color="red"];
     "roo_fonts_material" [label="roo_fonts_material\n1.0.0", fillcolor="#b1dbab", color="red"];

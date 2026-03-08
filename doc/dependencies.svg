@@ -181,7 +181,7 @@
 <!-- roo_display_lvgl -->
 <g id="node8" class="node">
 <title>roo_display_lvgl</title>
-<polygon fill="khaki" stroke="red" points="959.5,-572 851.5,-572 851.5,-534 959.5,-534 959.5,-572"/>
+<polygon fill="#b1dbab" stroke="red" points="959.5,-572 851.5,-572 851.5,-534 959.5,-534 959.5,-572"/>
 <text text-anchor="middle" x="905.5" y="-556.8" font-family="Times,serif" font-size="14.00">roo_display_lvgl</text>
 <text text-anchor="middle" x="905.5" y="-541.8" font-family="Times,serif" font-size="14.00">1.0.0</text>
 </g>
