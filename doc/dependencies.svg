@@ -12,9 +12,9 @@
 <!-- roo_backport -->
 <g id="node1" class="node">
 <title>roo_backport</title>
-<polygon fill="#b1dbab" stroke="black" points="549,-209 460,-209 460,-171 549,-171 549,-209"/>
-<text text-anchor="middle" x="504.5" y="-193.8" font-family="Times,serif" font-size="14.00">roo_backport</text>
-<text text-anchor="middle" x="504.5" y="-178.8" font-family="Times,serif" font-size="14.00">1.2.2</text>
+<polygon fill="#b1dbab" stroke="black" points="567,-209 478,-209 478,-171 567,-171 567,-209"/>
+<text text-anchor="middle" x="522.5" y="-193.8" font-family="Times,serif" font-size="14.00">roo_backport</text>
+<text text-anchor="middle" x="522.5" y="-178.8" font-family="Times,serif" font-size="14.00">1.2.2</text>
 </g>
 <!-- roo_blink -->
 <g id="node2" class="node">
@@ -26,43 +26,43 @@
 <!-- roo_logging -->
 <g id="node16" class="node">
 <title>roo_logging</title>
-<polygon fill="#b1dbab" stroke="black" points="415,-305 332,-305 332,-267 415,-267 415,-305"/>
-<text text-anchor="middle" x="373.5" y="-289.8" font-family="Times,serif" font-size="14.00">roo_logging</text>
-<text text-anchor="middle" x="373.5" y="-274.8" font-family="Times,serif" font-size="14.00">1.5.6</text>
+<polygon fill="#b1dbab" stroke="red" points="414,-305 331,-305 331,-267 414,-267 414,-305"/>
+<text text-anchor="middle" x="372.5" y="-289.8" font-family="Times,serif" font-size="14.00">roo_logging</text>
+<text text-anchor="middle" x="372.5" y="-274.8" font-family="Times,serif" font-size="14.00">1.5.6</text>
 </g>
 <!-- roo_blink&#45;&gt;roo_logging -->
 <g id="edge1" class="edge">
 <title>roo_blink&#45;&gt;roo_logging</title>
-<path fill="none" stroke="red" d="M232.14,-555C227.43,-531.99 222.03,-491.27 233.5,-459 245.35,-425.67 312.32,-351.57 349.17,-312.4"/>
-<polygon fill="red" stroke="red" points="351.79,-314.73 356.12,-305.06 346.7,-309.92 351.79,-314.73"/>
-<text text-anchor="middle" x="284.5" y="-433" font-family="Times,serif" font-size="10.00" fill="red">1.5.5</text>
-<text text-anchor="middle" x="284.5" y="-422" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.5.6)</text>
+<path fill="none" stroke="red" d="M231.81,-554.6C226.82,-531.52 221.09,-491.09 232.5,-459 244.35,-425.67 311.32,-351.57 348.17,-312.4"/>
+<polygon fill="red" stroke="red" points="350.79,-314.73 355.12,-305.06 345.7,-309.92 350.79,-314.73"/>
+<text text-anchor="middle" x="283.5" y="-433" font-family="Times,serif" font-size="10.00" fill="red">1.5.5</text>
+<text text-anchor="middle" x="283.5" y="-422" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.5.6)</text>
 </g>
 <!-- roo_scheduler -->
 <g id="node22" class="node">
 <title>roo_scheduler</title>
-<polygon fill="#b1dbab" stroke="red" points="336,-497 243,-497 243,-459 336,-459 336,-497"/>
-<text text-anchor="middle" x="289.5" y="-481.8" font-family="Times,serif" font-size="14.00">roo_scheduler</text>
-<text text-anchor="middle" x="289.5" y="-466.8" font-family="Times,serif" font-size="14.00">2.1.9</text>
+<polygon fill="#b1dbab" stroke="red" points="335,-497 242,-497 242,-459 335,-459 335,-497"/>
+<text text-anchor="middle" x="288.5" y="-481.8" font-family="Times,serif" font-size="14.00">roo_scheduler</text>
+<text text-anchor="middle" x="288.5" y="-466.8" font-family="Times,serif" font-size="14.00">2.1.9</text>
 </g>
 <!-- roo_blink&#45;&gt;roo_scheduler -->
 <g id="edge2" class="edge">
 <title>roo_blink&#45;&gt;roo_scheduler</title>
-<path fill="none" stroke="black" d="M249.16,-554.97C252.96,-549.31 257.03,-542.98 260.5,-537 266.18,-527.21 271.87,-516.17 276.68,-506.37"/>
-<polygon fill="black" stroke="black" points="279.98,-507.6 281.18,-497.07 273.68,-504.55 279.98,-507.6"/>
+<path fill="none" stroke="black" d="M246.68,-554.69C249.83,-549.02 253.31,-542.75 256.5,-537 262.11,-526.86 268.27,-515.71 273.67,-505.93"/>
+<polygon fill="black" stroke="black" points="276.8,-507.48 278.57,-497.03 270.67,-504.1 276.8,-507.48"/>
 </g>
 <!-- roo_collections -->
 <g id="node3" class="node">
 <title>roo_collections</title>
-<polygon fill="#b1dbab" stroke="black" points="659.5,-401 559.5,-401 559.5,-363 659.5,-363 659.5,-401"/>
-<text text-anchor="middle" x="609.5" y="-385.8" font-family="Times,serif" font-size="14.00">roo_collections</text>
-<text text-anchor="middle" x="609.5" y="-370.8" font-family="Times,serif" font-size="14.00">1.4.3</text>
+<polygon fill="#b1dbab" stroke="black" points="658.5,-401 558.5,-401 558.5,-363 658.5,-363 658.5,-401"/>
+<text text-anchor="middle" x="608.5" y="-385.8" font-family="Times,serif" font-size="14.00">roo_collections</text>
+<text text-anchor="middle" x="608.5" y="-370.8" font-family="Times,serif" font-size="14.00">1.4.3</text>
 </g>
 <!-- roo_collections&#45;&gt;roo_backport -->
 <g id="edge3" class="edge">
 <title>roo_collections&#45;&gt;roo_backport</title>
-<path fill="none" stroke="black" d="M599.43,-362.78C580.85,-329.16 541.09,-257.22 519.39,-217.94"/>
-<polygon fill="black" stroke="black" points="522.44,-216.22 514.54,-209.16 516.31,-219.61 522.44,-216.22"/>
+<path fill="none" stroke="black" d="M600.25,-362.78C585.1,-329.3 552.75,-257.82 534.92,-218.44"/>
+<polygon fill="black" stroke="black" points="538.03,-216.83 530.72,-209.16 531.66,-219.72 538.03,-216.83"/>
 </g>
 <!-- roo_comms -->
 <g id="node4" class="node">
@@ -93,17 +93,17 @@
 <!-- roo_io -->
 <g id="node13" class="node">
 <title>roo_io</title>
-<polygon fill="#b1dbab" stroke="red" points="509.5,-401 455.5,-401 455.5,-363 509.5,-363 509.5,-401"/>
-<text text-anchor="middle" x="482.5" y="-385.8" font-family="Times,serif" font-size="14.00">roo_io</text>
-<text text-anchor="middle" x="482.5" y="-370.8" font-family="Times,serif" font-size="14.00">2.1.6</text>
+<polygon fill="#b1dbab" stroke="red" points="508.5,-401 454.5,-401 454.5,-363 508.5,-363 508.5,-401"/>
+<text text-anchor="middle" x="481.5" y="-385.8" font-family="Times,serif" font-size="14.00">roo_io</text>
+<text text-anchor="middle" x="481.5" y="-370.8" font-family="Times,serif" font-size="14.00">2.1.6</text>
 </g>
 <!-- roo_comms&#45;&gt;roo_io -->
 <g id="edge6" class="edge">
 <title>roo_comms&#45;&gt;roo_io</title>
-<path fill="none" stroke="red" d="M219.82,-751.28C225.71,-749.65 231.72,-748.16 237.5,-747 276.91,-739.1 388.63,-756.97 417.5,-729 473.53,-674.72 429.37,-632.21 440.5,-555 446.66,-512.26 444.89,-500.86 455.5,-459 459.62,-442.73 465.81,-425.02 471.22,-410.8"/>
-<polygon fill="red" stroke="red" points="474.62,-411.72 474.98,-401.13 468.09,-409.18 474.62,-411.72"/>
-<text text-anchor="middle" x="467.5" y="-577" font-family="Times,serif" font-size="10.00" fill="red">2.1.5</text>
-<text text-anchor="middle" x="467.5" y="-566" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.6)</text>
+<path fill="none" stroke="red" d="M219.82,-751.28C225.71,-749.65 231.72,-748.16 237.5,-747 276.91,-739.1 387.19,-755.41 417.5,-729 437.49,-711.58 431.5,-697.52 431.5,-671 431.5,-671 431.5,-671 431.5,-477 431.5,-452.06 445.39,-427.3 458.53,-409.45"/>
+<polygon fill="red" stroke="red" points="461.5,-411.33 464.85,-401.28 455.96,-407.05 461.5,-411.33"/>
+<text text-anchor="middle" x="458.5" y="-577" font-family="Times,serif" font-size="10.00" fill="red">2.1.5</text>
+<text text-anchor="middle" x="458.5" y="-566" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.6)</text>
 </g>
 <!-- roo_transceivers -->
 <g id="node27" class="node">
@@ -123,21 +123,21 @@
 <!-- roo_quantity -->
 <g id="node21" class="node">
 <title>roo_quantity</title>
-<polygon fill="#b1dbab" stroke="red" points="186.5,-497 100.5,-497 100.5,-459 186.5,-459 186.5,-497"/>
-<text text-anchor="middle" x="143.5" y="-481.8" font-family="Times,serif" font-size="14.00">roo_quantity</text>
-<text text-anchor="middle" x="143.5" y="-466.8" font-family="Times,serif" font-size="14.00">1.1.8</text>
+<polygon fill="#b1dbab" stroke="red" points="185.5,-497 99.5,-497 99.5,-459 185.5,-459 185.5,-497"/>
+<text text-anchor="middle" x="142.5" y="-481.8" font-family="Times,serif" font-size="14.00">roo_quantity</text>
+<text text-anchor="middle" x="142.5" y="-466.8" font-family="Times,serif" font-size="14.00">1.1.8</text>
 </g>
 <!-- roo_control&#45;&gt;roo_quantity -->
 <g id="edge8" class="edge">
 <title>roo_control&#45;&gt;roo_quantity</title>
-<path fill="none" stroke="black" d="M143.5,-554.88C143.5,-541.35 143.5,-522.62 143.5,-507.15"/>
-<polygon fill="black" stroke="black" points="147,-507.07 143.5,-497.07 140,-507.07 147,-507.07"/>
+<path fill="none" stroke="black" d="M143.31,-554.88C143.16,-541.35 142.96,-522.62 142.8,-507.15"/>
+<polygon fill="black" stroke="black" points="146.3,-507.03 142.69,-497.07 139.3,-507.11 146.3,-507.03"/>
 </g>
 <!-- roo_control&#45;&gt;roo_scheduler -->
 <g id="edge9" class="edge">
 <title>roo_control&#45;&gt;roo_scheduler</title>
-<path fill="none" stroke="black" d="M171.65,-554.88C194.78,-539.99 227.71,-518.78 252.88,-502.57"/>
-<polygon fill="black" stroke="black" points="254.92,-505.42 261.44,-497.07 251.13,-499.54 254.92,-505.42"/>
+<path fill="none" stroke="black" d="M171.46,-554.88C194.43,-539.99 227.13,-518.78 252.13,-502.57"/>
+<polygon fill="black" stroke="black" points="254.14,-505.45 260.63,-497.07 250.33,-499.57 254.14,-505.45"/>
 </g>
 <!-- roo_dashboard -->
 <g id="node6" class="node">
@@ -164,21 +164,21 @@
 <!-- roo_display -->
 <g id="node7" class="node">
 <title>roo_display</title>
-<polygon fill="plum" stroke="black" points="671.5,-497 591.5,-497 591.5,-459 671.5,-459 671.5,-497"/>
-<text text-anchor="middle" x="631.5" y="-481.8" font-family="Times,serif" font-size="14.00">roo_display</text>
-<text text-anchor="middle" x="631.5" y="-466.8" font-family="Times,serif" font-size="14.00">3.0.4</text>
+<polygon fill="plum" stroke="black" points="669.5,-497 589.5,-497 589.5,-459 669.5,-459 669.5,-497"/>
+<text text-anchor="middle" x="629.5" y="-481.8" font-family="Times,serif" font-size="14.00">roo_display</text>
+<text text-anchor="middle" x="629.5" y="-466.8" font-family="Times,serif" font-size="14.00">3.0.4</text>
 </g>
 <!-- roo_display&#45;&gt;roo_collections -->
 <g id="edge11" class="edge">
 <title>roo_display&#45;&gt;roo_collections</title>
-<path fill="none" stroke="black" d="M628.58,-458.86C626.61,-447.37 623.77,-432.23 620.5,-419 619.85,-416.35 619.12,-413.62 618.35,-410.89"/>
-<polygon fill="black" stroke="black" points="621.68,-409.8 615.49,-401.21 614.96,-411.79 621.68,-409.8"/>
+<path fill="none" stroke="black" d="M626.97,-458.85C625.22,-447.36 622.65,-432.22 619.5,-419 618.87,-416.35 618.15,-413.61 617.39,-410.87"/>
+<polygon fill="black" stroke="black" points="620.73,-409.8 614.55,-401.19 614.01,-411.77 620.73,-409.8"/>
 </g>
 <!-- roo_display&#45;&gt;roo_io -->
 <g id="edge12" class="edge">
 <title>roo_display&#45;&gt;roo_io</title>
-<path fill="none" stroke="black" d="M591.24,-463.99C560.14,-453.91 522.25,-441.57 521.5,-441 510.76,-432.88 502.01,-420.91 495.53,-409.94"/>
-<polygon fill="black" stroke="black" points="498.54,-408.14 490.64,-401.08 492.41,-411.52 498.54,-408.14"/>
+<path fill="none" stroke="black" d="M589.23,-462.94C585.27,-461.59 581.31,-460.26 577.5,-459 552.28,-450.65 541.77,-456.92 520.5,-441 509.72,-432.94 500.96,-420.97 494.49,-410"/>
+<polygon fill="black" stroke="black" points="497.5,-408.19 489.61,-401.12 491.36,-411.57 497.5,-408.19"/>
 </g>
 <!-- roo_display_lvgl -->
 <g id="node8" class="node">
@@ -190,17 +190,17 @@
 <!-- roo_display_lvgl&#45;&gt;roo_display -->
 <g id="edge13" class="edge">
 <title>roo_display_lvgl&#45;&gt;roo_display</title>
-<path fill="none" stroke="red" d="M882.75,-554.74C864.97,-541.48 839.05,-524.29 813.5,-515 760.28,-495.66 740.42,-509.76 681.47,-496.85"/>
-<polygon fill="red" stroke="red" points="682.2,-493.43 671.66,-494.54 680.59,-500.24 682.2,-493.43"/>
+<path fill="none" stroke="red" d="M882.76,-554.73C864.98,-541.45 839.06,-524.26 813.5,-515 759.48,-495.43 739.32,-509.88 679.59,-496.88"/>
+<polygon fill="red" stroke="red" points="680.19,-493.42 669.66,-494.55 678.59,-500.24 680.19,-493.42"/>
 <text text-anchor="middle" x="883.5" y="-529" font-family="Times,serif" font-size="10.00" fill="red">3.0.3</text>
 <text text-anchor="middle" x="883.5" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 3.0.4)</text>
 </g>
 <!-- roo_flags -->
 <g id="node9" class="node">
 <title>roo_flags</title>
-<polygon fill="#b1dbab" stroke="black" points="407.5,-209 339.5,-209 339.5,-171 407.5,-171 407.5,-209"/>
-<text text-anchor="middle" x="373.5" y="-193.8" font-family="Times,serif" font-size="14.00">roo_flags</text>
-<text text-anchor="middle" x="373.5" y="-178.8" font-family="Times,serif" font-size="14.00">1.2.3</text>
+<polygon fill="#b1dbab" stroke="black" points="439.5,-209 371.5,-209 371.5,-171 439.5,-171 439.5,-209"/>
+<text text-anchor="middle" x="405.5" y="-193.8" font-family="Times,serif" font-size="14.00">roo_flags</text>
+<text text-anchor="middle" x="405.5" y="-178.8" font-family="Times,serif" font-size="14.00">1.2.3</text>
 </g>
 <!-- roo_fonts_basic -->
 <g id="node10" class="node">
@@ -212,10 +212,10 @@
 <!-- roo_fonts_basic&#45;&gt;roo_display -->
 <g id="edge14" class="edge">
 <title>roo_fonts_basic&#45;&gt;roo_display</title>
-<path fill="none" stroke="red" d="M567.19,-554.96C575.04,-543.23 585.86,-527.8 596.5,-515 599.4,-511.51 602.56,-507.95 605.77,-504.5"/>
-<polygon fill="red" stroke="red" points="608.39,-506.82 612.76,-497.17 603.33,-501.99 608.39,-506.82"/>
-<text text-anchor="middle" x="623.5" y="-529" font-family="Times,serif" font-size="10.00" fill="red">3.0.2</text>
-<text text-anchor="middle" x="623.5" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 3.0.4)</text>
+<path fill="none" stroke="red" d="M566.48,-554.9C573.9,-543.15 584.18,-527.72 594.5,-515 597.36,-511.48 600.5,-507.9 603.69,-504.44"/>
+<polygon fill="red" stroke="red" points="606.32,-506.75 610.67,-497.1 601.24,-501.93 606.32,-506.75"/>
+<text text-anchor="middle" x="621.5" y="-529" font-family="Times,serif" font-size="10.00" fill="red">3.0.2</text>
+<text text-anchor="middle" x="621.5" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 3.0.4)</text>
 </g>
 <!-- roo_fonts_material -->
 <g id="node11" class="node">
@@ -227,8 +227,8 @@
 <!-- roo_fonts_material&#45;&gt;roo_display -->
 <g id="edge15" class="edge">
 <title>roo_fonts_material&#45;&gt;roo_display</title>
-<path fill="none" stroke="red" d="M675.09,-554.88C667.09,-540.96 655.93,-521.53 646.91,-505.82"/>
-<polygon fill="red" stroke="red" points="649.9,-504 641.88,-497.07 643.83,-507.48 649.9,-504"/>
+<path fill="none" stroke="red" d="M674.7,-554.88C666.41,-540.96 654.84,-521.53 645.48,-505.82"/>
+<polygon fill="red" stroke="red" points="648.39,-503.87 640.26,-497.07 642.38,-507.45 648.39,-503.87"/>
 <text text-anchor="middle" x="690.5" y="-529" font-family="Times,serif" font-size="10.00" fill="red">3.0.2</text>
 <text text-anchor="middle" x="690.5" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 3.0.4)</text>
 </g>
@@ -242,18 +242,18 @@
 <!-- roo_icons&#45;&gt;roo_display -->
 <g id="edge16" class="edge">
 <title>roo_icons&#45;&gt;roo_display</title>
-<path fill="none" stroke="red" d="M777.65,-554.88C762.73,-542.54 741.77,-526.42 721.5,-515 713.96,-510.75 697.96,-504.11 681.51,-497.68"/>
-<polygon fill="red" stroke="red" points="682.42,-494.28 671.83,-493.94 679.9,-500.81 682.42,-494.28"/>
+<path fill="none" stroke="red" d="M777.68,-554.84C762.77,-542.47 741.81,-526.34 721.5,-515 717.24,-512.62 698.57,-505.23 679.15,-497.77"/>
+<polygon fill="red" stroke="red" points="680.2,-494.42 669.61,-494.12 677.7,-500.96 680.2,-494.42"/>
 <text text-anchor="middle" x="782.5" y="-529" font-family="Times,serif" font-size="10.00" fill="red">3.0.2</text>
 <text text-anchor="middle" x="782.5" y="-518" font-family="Times,serif" font-size="10.00" fill="red">(latest: 3.0.4)</text>
 </g>
 <!-- roo_io&#45;&gt;roo_logging -->
 <g id="edge17" class="edge">
 <title>roo_io&#45;&gt;roo_logging</title>
-<path fill="none" stroke="red" d="M461.48,-362.88C444.59,-348.31 420.7,-327.71 402.08,-311.64"/>
-<polygon fill="red" stroke="red" points="404.31,-308.95 394.45,-305.07 399.74,-314.25 404.31,-308.95"/>
-<text text-anchor="middle" x="465.5" y="-337" font-family="Times,serif" font-size="10.00" fill="red">1.5.5</text>
-<text text-anchor="middle" x="465.5" y="-326" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.5.6)</text>
+<path fill="none" stroke="red" d="M460.48,-362.88C443.59,-348.31 419.7,-327.71 401.08,-311.64"/>
+<polygon fill="red" stroke="red" points="403.31,-308.95 393.45,-305.07 398.74,-314.25 403.31,-308.95"/>
+<text text-anchor="middle" x="464.5" y="-337" font-family="Times,serif" font-size="10.00" fill="red">1.5.5</text>
+<text text-anchor="middle" x="464.5" y="-326" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.5.6)</text>
 </g>
 <!-- roo_io_sdfat -->
 <g id="node14" class="node">
@@ -272,46 +272,48 @@
 <!-- roo_logging&#45;&gt;roo_backport -->
 <g id="edge18" class="edge">
 <title>roo_logging&#45;&gt;roo_backport</title>
-<path fill="none" stroke="black" d="M398.76,-266.88C419.33,-252.12 448.54,-231.15 471.05,-215"/>
-<polygon fill="black" stroke="black" points="473.24,-217.74 479.32,-209.07 469.15,-212.05 473.24,-217.74"/>
+<path fill="none" stroke="black" d="M401.42,-266.88C425.18,-251.99 459.02,-230.78 484.88,-214.57"/>
+<polygon fill="black" stroke="black" points="487.05,-217.34 493.67,-209.07 483.34,-211.41 487.05,-217.34"/>
 </g>
 <!-- roo_logging&#45;&gt;roo_flags -->
 <g id="edge19" class="edge">
 <title>roo_logging&#45;&gt;roo_flags</title>
-<path fill="none" stroke="black" d="M373.5,-266.88C373.5,-253.35 373.5,-234.62 373.5,-219.15"/>
-<polygon fill="black" stroke="black" points="377,-219.07 373.5,-209.07 370,-219.07 377,-219.07"/>
+<path fill="none" stroke="black" d="M383.27,-266.73C386.24,-261.17 389.25,-254.95 391.5,-249 395.1,-239.46 398,-228.69 400.21,-219.04"/>
+<polygon fill="black" stroke="black" points="403.66,-219.63 402.33,-209.12 396.82,-218.16 403.66,-219.63"/>
 </g>
 <!-- roo_threads -->
 <g id="node24" class="node">
 <title>roo_threads</title>
-<polygon fill="#b1dbab" stroke="black" points="300.5,-209 220.5,-209 220.5,-171 300.5,-171 300.5,-209"/>
-<text text-anchor="middle" x="260.5" y="-193.8" font-family="Times,serif" font-size="14.00">roo_threads</text>
-<text text-anchor="middle" x="260.5" y="-178.8" font-family="Times,serif" font-size="14.00">1.2.4</text>
+<polygon fill="#b1dbab" stroke="black" points="299.5,-209 219.5,-209 219.5,-171 299.5,-171 299.5,-209"/>
+<text text-anchor="middle" x="259.5" y="-193.8" font-family="Times,serif" font-size="14.00">roo_threads</text>
+<text text-anchor="middle" x="259.5" y="-178.8" font-family="Times,serif" font-size="14.00">1.2.5</text>
 </g>
 <!-- roo_logging&#45;&gt;roo_threads -->
 <g id="edge20" class="edge">
 <title>roo_logging&#45;&gt;roo_threads</title>
-<path fill="none" stroke="black" d="M358.45,-266.84C347.95,-254.78 333.24,-239.01 318.5,-227 313.19,-222.67 307.32,-218.47 301.42,-214.55"/>
-<polygon fill="black" stroke="black" points="303.12,-211.47 292.81,-209.02 299.34,-217.37 303.12,-211.47"/>
+<path fill="none" stroke="red" d="M351.85,-266.74C345.8,-261.18 339.27,-254.96 333.5,-249 324.52,-239.71 324.22,-235.51 314.5,-227 309.71,-222.81 304.4,-218.73 299.01,-214.92"/>
+<polygon fill="red" stroke="red" points="300.8,-211.91 290.57,-209.18 296.87,-217.7 300.8,-211.91"/>
+<text text-anchor="middle" x="360.5" y="-241" font-family="Times,serif" font-size="10.00" fill="red">1.2.4</text>
+<text text-anchor="middle" x="360.5" y="-230" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.2.5)</text>
 </g>
 <!-- roo_monitoring -->
 <g id="node17" class="node">
 <title>roo_monitoring</title>
-<polygon fill="#b1dbab" stroke="red" points="566.5,-497 464.5,-497 464.5,-459 566.5,-459 566.5,-497"/>
-<text text-anchor="middle" x="515.5" y="-481.8" font-family="Times,serif" font-size="14.00">roo_monitoring</text>
-<text text-anchor="middle" x="515.5" y="-466.8" font-family="Times,serif" font-size="14.00">1.1.1</text>
+<polygon fill="#b1dbab" stroke="red" points="568.5,-497 466.5,-497 466.5,-459 568.5,-459 568.5,-497"/>
+<text text-anchor="middle" x="517.5" y="-481.8" font-family="Times,serif" font-size="14.00">roo_monitoring</text>
+<text text-anchor="middle" x="517.5" y="-466.8" font-family="Times,serif" font-size="14.00">1.1.1</text>
 </g>
 <!-- roo_monitoring&#45;&gt;roo_collections -->
 <g id="edge21" class="edge">
 <title>roo_monitoring&#45;&gt;roo_collections</title>
-<path fill="none" stroke="black" d="M566.75,-462.25C577.53,-457.06 587.92,-450.14 595.5,-441 602.44,-432.63 606.05,-421.37 607.88,-410.99"/>
-<polygon fill="black" stroke="black" points="611.35,-411.43 609.18,-401.06 604.41,-410.52 611.35,-411.43"/>
+<path fill="none" stroke="black" d="M568.84,-460.9C578.49,-455.85 587.68,-449.34 594.5,-441 601.38,-432.58 604.97,-421.31 606.82,-410.94"/>
+<polygon fill="black" stroke="black" points="610.29,-411.39 608.13,-401.02 603.35,-410.47 610.29,-411.39"/>
 </g>
 <!-- roo_monitoring&#45;&gt;roo_io -->
 <g id="edge22" class="edge">
 <title>roo_monitoring&#45;&gt;roo_io</title>
-<path fill="none" stroke="black" d="M504.73,-458.73C501.76,-453.17 498.75,-446.95 496.5,-441 492.9,-431.46 490,-420.69 487.79,-411.04"/>
-<polygon fill="black" stroke="black" points="491.18,-410.16 485.67,-401.12 484.34,-411.63 491.18,-410.16"/>
+<path fill="none" stroke="black" d="M504.93,-458.9C501.49,-453.35 498.02,-447.09 495.5,-441 491.6,-431.58 488.63,-420.83 486.45,-411.17"/>
+<polygon fill="black" stroke="black" points="489.84,-410.31 484.39,-401.23 482.99,-411.73 489.84,-410.31"/>
 </g>
 <!-- roo_onewire -->
 <g id="node18" class="node">
@@ -323,29 +325,29 @@
 <!-- roo_onewire&#45;&gt;roo_quantity -->
 <g id="edge24" class="edge">
 <title>roo_onewire&#45;&gt;roo_quantity</title>
-<path fill="none" stroke="black" d="M55.76,-554.92C65.04,-542.9 78.13,-527.14 91.5,-515 95.98,-510.93 100.94,-506.95 105.96,-503.2"/>
-<polygon fill="black" stroke="black" points="108.32,-505.81 114.41,-497.14 104.24,-500.13 108.32,-505.81"/>
+<path fill="none" stroke="black" d="M55.79,-554.96C65.09,-542.96 78.19,-527.2 91.5,-515 95.95,-510.92 100.88,-506.91 105.87,-503.13"/>
+<polygon fill="black" stroke="black" points="108.23,-505.74 114.25,-497.02 104.11,-500.08 108.23,-505.74"/>
 </g>
 <!-- roo_onewire&#45;&gt;roo_scheduler -->
 <g id="edge23" class="edge">
 <title>roo_onewire&#45;&gt;roo_scheduler</title>
-<path fill="none" stroke="black" d="M85.24,-556.73C126.15,-541.17 188.1,-517.59 233.05,-500.48"/>
-<polygon fill="black" stroke="black" points="234.56,-503.65 242.66,-496.83 232.07,-497.11 234.56,-503.65"/>
+<path fill="none" stroke="black" d="M85.07,-556.73C125.81,-541.17 187.52,-517.59 232.28,-500.48"/>
+<polygon fill="black" stroke="black" points="233.76,-503.67 241.85,-496.83 231.26,-497.13 233.76,-503.67"/>
 </g>
 <!-- roo_powersafefs -->
 <g id="node19" class="node">
 <title>roo_powersafefs</title>
-<polygon fill="khaki" stroke="red" points="314,-305 207,-305 207,-267 314,-267 314,-305"/>
-<text text-anchor="middle" x="260.5" y="-289.8" font-family="Times,serif" font-size="14.00">roo_powersafefs</text>
-<text text-anchor="middle" x="260.5" y="-274.8" font-family="Times,serif" font-size="14.00">1.0.0</text>
+<polygon fill="khaki" stroke="red" points="313,-305 206,-305 206,-267 313,-267 313,-305"/>
+<text text-anchor="middle" x="259.5" y="-289.8" font-family="Times,serif" font-size="14.00">roo_powersafefs</text>
+<text text-anchor="middle" x="259.5" y="-274.8" font-family="Times,serif" font-size="14.00">1.0.0</text>
 </g>
 <!-- roo_powersafefs&#45;&gt;roo_threads -->
 <g id="edge25" class="edge">
 <title>roo_powersafefs&#45;&gt;roo_threads</title>
-<path fill="none" stroke="red" d="M260.5,-266.88C260.5,-253.35 260.5,-234.62 260.5,-219.15"/>
-<polygon fill="red" stroke="red" points="264,-219.07 260.5,-209.07 257,-219.07 264,-219.07"/>
-<text text-anchor="middle" x="287.5" y="-241" font-family="Times,serif" font-size="10.00" fill="red">1.2.1</text>
-<text text-anchor="middle" x="287.5" y="-230" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.2.4)</text>
+<path fill="none" stroke="red" d="M259.5,-266.88C259.5,-253.35 259.5,-234.62 259.5,-219.15"/>
+<polygon fill="red" stroke="red" points="263,-219.07 259.5,-209.07 256,-219.07 263,-219.07"/>
+<text text-anchor="middle" x="286.5" y="-241" font-family="Times,serif" font-size="10.00" fill="red">1.2.1</text>
+<text text-anchor="middle" x="286.5" y="-230" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.2.5)</text>
 </g>
 <!-- roo_prefs -->
 <g id="node20" class="node">
@@ -357,79 +359,79 @@
 <!-- roo_prefs&#45;&gt;roo_logging -->
 <g id="edge26" class="edge">
 <title>roo_prefs&#45;&gt;roo_logging</title>
-<path fill="none" stroke="red" d="M329.28,-554.74C333.94,-539.44 340.38,-516.98 344.5,-497 357.78,-432.61 366.65,-355.84 370.79,-315.31"/>
-<polygon fill="red" stroke="red" points="374.3,-315.41 371.81,-305.12 367.34,-314.72 374.3,-315.41"/>
-<text text-anchor="middle" x="385.5" y="-433" font-family="Times,serif" font-size="10.00" fill="red">1.5.5</text>
-<text text-anchor="middle" x="385.5" y="-422" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.5.6)</text>
+<path fill="none" stroke="red" d="M328.97,-554.72C333.39,-539.41 339.52,-516.93 343.5,-497 356.39,-432.53 365.41,-355.79 369.68,-315.29"/>
+<polygon fill="red" stroke="red" points="373.19,-315.41 370.74,-305.1 366.23,-314.69 373.19,-315.41"/>
+<text text-anchor="middle" x="384.5" y="-433" font-family="Times,serif" font-size="10.00" fill="red">1.5.5</text>
+<text text-anchor="middle" x="384.5" y="-422" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.5.6)</text>
 </g>
 <!-- roo_prefs&#45;&gt;roo_scheduler -->
 <g id="edge27" class="edge">
 <title>roo_prefs&#45;&gt;roo_scheduler</title>
-<path fill="none" stroke="black" d="M316.94,-554.88C312.01,-541.22 305.15,-522.26 299.52,-506.71"/>
-<polygon fill="black" stroke="black" points="302.73,-505.28 296.04,-497.07 296.15,-507.66 302.73,-505.28"/>
+<path fill="none" stroke="black" d="M316.75,-554.88C311.67,-541.22 304.61,-522.26 298.82,-506.71"/>
+<polygon fill="black" stroke="black" points="302,-505.22 295.23,-497.07 295.44,-507.66 302,-505.22"/>
 </g>
 <!-- roo_quantity&#45;&gt;roo_logging -->
 <g id="edge28" class="edge">
 <title>roo_quantity&#45;&gt;roo_logging</title>
-<path fill="none" stroke="red" d="M152.02,-458.99C163.81,-435.25 186.83,-392.99 214.5,-363 224.63,-352.02 255.25,-329.89 268.5,-323 288.58,-312.56 296.8,-312.96 322.07,-304.99"/>
-<polygon fill="red" stroke="red" points="323.37,-308.25 331.77,-301.79 321.18,-301.6 323.37,-308.25"/>
-<text text-anchor="middle" x="241.5" y="-385" font-family="Times,serif" font-size="10.00" fill="red">1.5.5</text>
-<text text-anchor="middle" x="241.5" y="-374" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.5.6)</text>
+<path fill="none" stroke="red" d="M151.02,-458.99C162.81,-435.25 185.83,-392.99 213.5,-363 223.63,-352.02 254.25,-329.89 267.5,-323 287.58,-312.56 295.8,-312.96 321.07,-304.99"/>
+<polygon fill="red" stroke="red" points="322.37,-308.25 330.77,-301.79 320.18,-301.6 322.37,-308.25"/>
+<text text-anchor="middle" x="240.5" y="-385" font-family="Times,serif" font-size="10.00" fill="red">1.5.5</text>
+<text text-anchor="middle" x="240.5" y="-374" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.5.6)</text>
 </g>
 <!-- roo_scheduler&#45;&gt;roo_collections -->
 <g id="edge29" class="edge">
 <title>roo_scheduler&#45;&gt;roo_collections</title>
-<path fill="none" stroke="black" d="M336.03,-464.71C361.36,-457.92 393.22,-449.22 421.5,-441 464.56,-428.49 512.89,-413.56 549.77,-401.98"/>
-<polygon fill="black" stroke="black" points="550.88,-405.3 559.36,-398.96 548.78,-398.62 550.88,-405.3"/>
+<path fill="none" stroke="black" d="M335.03,-464.71C360.36,-457.92 392.22,-449.22 420.5,-441 463.56,-428.49 511.89,-413.56 548.77,-401.98"/>
+<polygon fill="black" stroke="black" points="549.88,-405.3 558.36,-398.96 547.78,-398.62 549.88,-405.3"/>
 </g>
 <!-- roo_scheduler&#45;&gt;roo_threads -->
 <g id="edge30" class="edge">
 <title>roo_scheduler&#45;&gt;roo_threads</title>
-<path fill="none" stroke="red" d="M284.41,-458.8C280.87,-447.15 275.68,-431.87 269.5,-419 256.53,-391.99 205.83,-333.78 197.5,-305 192.81,-288.78 191.77,-282.89 197.5,-267 204.47,-247.68 218.71,-229.8 231.9,-216.24"/>
-<polygon fill="red" stroke="red" points="234.4,-218.69 239.06,-209.17 229.48,-213.7 234.4,-218.69"/>
-<text text-anchor="middle" x="246.5" y="-337" font-family="Times,serif" font-size="10.00" fill="red">1.2.3</text>
-<text text-anchor="middle" x="246.5" y="-326" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.2.4)</text>
+<path fill="none" stroke="red" d="M283.41,-458.8C279.87,-447.15 274.68,-431.87 268.5,-419 255.53,-391.99 204.83,-333.78 196.5,-305 191.81,-288.78 190.77,-282.89 196.5,-267 203.47,-247.68 217.71,-229.8 230.9,-216.24"/>
+<polygon fill="red" stroke="red" points="233.4,-218.69 238.06,-209.17 228.48,-213.7 233.4,-218.69"/>
+<text text-anchor="middle" x="245.5" y="-337" font-family="Times,serif" font-size="10.00" fill="red">1.2.3</text>
+<text text-anchor="middle" x="245.5" y="-326" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.2.5)</text>
 </g>
 <!-- roo_testing -->
 <g id="node23" class="node">
 <title>roo_testing</title>
-<polygon fill="#b1dbab" stroke="black" points="219,-38 142,-38 142,0 219,0 219,-38"/>
-<text text-anchor="middle" x="180.5" y="-22.8" font-family="Times,serif" font-size="14.00">roo_testing</text>
-<text text-anchor="middle" x="180.5" y="-7.8" font-family="Times,serif" font-size="14.00">1.3.5</text>
+<polygon fill="#b1dbab" stroke="black" points="218,-38 141,-38 141,0 218,0 218,-38"/>
+<text text-anchor="middle" x="179.5" y="-22.8" font-family="Times,serif" font-size="14.00">roo_testing</text>
+<text text-anchor="middle" x="179.5" y="-7.8" font-family="Times,serif" font-size="14.00">1.3.5</text>
 </g>
 <!-- roo_time -->
 <g id="node25" class="node">
 <title>roo_time</title>
-<polygon fill="#b1dbab" stroke="black" points="213.5,-113 147.5,-113 147.5,-75 213.5,-75 213.5,-113"/>
-<text text-anchor="middle" x="180.5" y="-97.8" font-family="Times,serif" font-size="14.00">roo_time</text>
-<text text-anchor="middle" x="180.5" y="-82.8" font-family="Times,serif" font-size="14.00">1.4.4</text>
+<polygon fill="#b1dbab" stroke="black" points="212.5,-113 146.5,-113 146.5,-75 212.5,-75 212.5,-113"/>
+<text text-anchor="middle" x="179.5" y="-97.8" font-family="Times,serif" font-size="14.00">roo_time</text>
+<text text-anchor="middle" x="179.5" y="-82.8" font-family="Times,serif" font-size="14.00">1.4.4</text>
 </g>
 <!-- roo_threads&#45;&gt;roo_time -->
 <g id="edge31" class="edge">
 <title>roo_threads&#45;&gt;roo_time</title>
-<path fill="none" stroke="black" d="M250.8,-170.76C243.99,-158.81 234.22,-143.2 223.5,-131 220.13,-127.17 216.34,-123.39 212.44,-119.82"/>
-<polygon fill="black" stroke="black" points="214.72,-117.16 204.89,-113.22 210.12,-122.44 214.72,-117.16"/>
+<path fill="none" stroke="black" d="M249.8,-170.76C242.99,-158.81 233.22,-143.2 222.5,-131 219.13,-127.17 215.34,-123.39 211.44,-119.82"/>
+<polygon fill="black" stroke="black" points="213.72,-117.16 203.89,-113.22 209.12,-122.44 213.72,-117.16"/>
 </g>
 <!-- roo_time&#45;&gt;roo_testing -->
 <g id="edge32" class="edge">
 <title>roo_time&#45;&gt;roo_testing</title>
-<path fill="none" stroke="black" d="M180.5,-74.96C180.5,-66.88 180.5,-57.18 180.5,-48.18"/>
-<polygon fill="black" stroke="black" points="184,-48.09 180.5,-38.09 177,-48.09 184,-48.09"/>
+<path fill="none" stroke="black" d="M179.5,-74.96C179.5,-66.88 179.5,-57.18 179.5,-48.18"/>
+<polygon fill="black" stroke="black" points="183,-48.09 179.5,-38.09 176,-48.09 183,-48.09"/>
 </g>
 <!-- roo_time_ds3231 -->
 <g id="node26" class="node">
 <title>roo_time_ds3231</title>
-<polygon fill="#b1dbab" stroke="red" points="202.5,-209 90.5,-209 90.5,-171 202.5,-171 202.5,-209"/>
-<text text-anchor="middle" x="146.5" y="-193.8" font-family="Times,serif" font-size="14.00">roo_time_ds3231</text>
-<text text-anchor="middle" x="146.5" y="-178.8" font-family="Times,serif" font-size="14.00">1.1.6</text>
+<polygon fill="#b1dbab" stroke="red" points="201.5,-209 89.5,-209 89.5,-171 201.5,-171 201.5,-209"/>
+<text text-anchor="middle" x="145.5" y="-193.8" font-family="Times,serif" font-size="14.00">roo_time_ds3231</text>
+<text text-anchor="middle" x="145.5" y="-178.8" font-family="Times,serif" font-size="14.00">1.1.6</text>
 </g>
 <!-- roo_time_ds3231&#45;&gt;roo_time -->
 <g id="edge33" class="edge">
 <title>roo_time_ds3231&#45;&gt;roo_time</title>
-<path fill="none" stroke="red" d="M153.06,-170.88C157.99,-157.22 164.85,-138.26 170.48,-122.71"/>
-<polygon fill="red" stroke="red" points="173.85,-123.66 173.96,-113.07 167.27,-121.28 173.85,-123.66"/>
-<text text-anchor="middle" x="194.5" y="-145" font-family="Times,serif" font-size="10.00" fill="red">1.4.3</text>
-<text text-anchor="middle" x="194.5" y="-134" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.4.4)</text>
+<path fill="none" stroke="red" d="M152.06,-170.88C156.99,-157.22 163.85,-138.26 169.48,-122.71"/>
+<polygon fill="red" stroke="red" points="172.85,-123.66 172.96,-113.07 166.27,-121.28 172.85,-123.66"/>
+<text text-anchor="middle" x="193.5" y="-145" font-family="Times,serif" font-size="10.00" fill="red">1.4.3</text>
+<text text-anchor="middle" x="193.5" y="-134" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.4.4)</text>
 </g>
 <!-- roo_transceivers&#45;&gt;roo_prefs -->
 <g id="edge34" class="edge">
@@ -440,23 +442,23 @@
 <!-- roo_transport -->
 <g id="node28" class="node">
 <title>roo_transport</title>
-<polygon fill="#b1dbab" stroke="red" points="779,-497 690,-497 690,-459 779,-459 779,-497"/>
-<text text-anchor="middle" x="734.5" y="-481.8" font-family="Times,serif" font-size="14.00">roo_transport</text>
-<text text-anchor="middle" x="734.5" y="-466.8" font-family="Times,serif" font-size="14.00">1.1.2</text>
+<polygon fill="#b1dbab" stroke="red" points="777,-497 688,-497 688,-459 777,-459 777,-497"/>
+<text text-anchor="middle" x="732.5" y="-481.8" font-family="Times,serif" font-size="14.00">roo_transport</text>
+<text text-anchor="middle" x="732.5" y="-466.8" font-family="Times,serif" font-size="14.00">1.1.2</text>
 </g>
 <!-- roo_transport&#45;&gt;roo_collections -->
 <g id="edge35" class="edge">
 <title>roo_transport&#45;&gt;roo_collections</title>
-<path fill="none" stroke="black" d="M710.4,-458.88C690.86,-444.18 663.14,-423.34 641.7,-407.21"/>
-<polygon fill="black" stroke="black" points="643.62,-404.28 633.53,-401.07 639.42,-409.88 643.62,-404.28"/>
+<path fill="none" stroke="black" d="M708.59,-458.88C689.21,-444.18 661.71,-423.34 640.44,-407.21"/>
+<polygon fill="black" stroke="black" points="642.42,-404.32 632.34,-401.07 638.19,-409.9 642.42,-404.32"/>
 </g>
 <!-- roo_transport&#45;&gt;roo_io -->
 <g id="edge36" class="edge">
 <title>roo_transport&#45;&gt;roo_io</title>
-<path fill="none" stroke="red" d="M689.81,-461.75C686.67,-460.79 683.54,-459.86 680.5,-459 646.68,-449.43 636.65,-452.66 603.5,-441 574.01,-430.63 542.19,-415.19 518.59,-402.85"/>
-<polygon fill="red" stroke="red" points="520.12,-399.7 509.65,-398.12 516.85,-405.89 520.12,-399.7"/>
-<text text-anchor="middle" x="630.5" y="-433" font-family="Times,serif" font-size="10.00" fill="red">2.1.5</text>
-<text text-anchor="middle" x="630.5" y="-422" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.6)</text>
+<path fill="none" stroke="red" d="M687.81,-461.75C684.67,-460.79 681.54,-459.86 678.5,-459 644.68,-449.43 634.63,-452.72 601.5,-441 572.42,-430.72 541.09,-415.41 517.73,-403.11"/>
+<polygon fill="red" stroke="red" points="519.35,-400.01 508.88,-398.39 516.05,-406.18 519.35,-400.01"/>
+<text text-anchor="middle" x="628.5" y="-433" font-family="Times,serif" font-size="10.00" fill="red">2.1.5</text>
+<text text-anchor="middle" x="628.5" y="-422" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.1.6)</text>
 </g>
 <!-- roo_wifi -->
 <g id="node29" class="node">
@@ -500,8 +502,8 @@
 <!-- roo_windows&#45;&gt;roo_scheduler -->
 <g id="edge42" class="edge">
 <title>roo_windows&#45;&gt;roo_scheduler</title>
-<path fill="none" stroke="black" d="M554.2,-656.24C514.19,-643.76 455.26,-622.34 409.5,-593 398.97,-586.25 347.29,-535.99 315.28,-504.49"/>
-<polygon fill="black" stroke="black" points="317.58,-501.84 308,-497.31 312.66,-506.83 317.58,-501.84"/>
+<path fill="none" stroke="black" d="M554.23,-656.19C514.24,-643.68 455.32,-622.24 409.5,-593 398.91,-586.24 346.79,-535.98 314.51,-504.49"/>
+<polygon fill="black" stroke="black" points="316.76,-501.8 307.16,-497.31 311.86,-506.8 316.76,-501.8"/>
 </g>
 <!-- roo_windows_transceivers -->
 <g id="node31" class="node">
