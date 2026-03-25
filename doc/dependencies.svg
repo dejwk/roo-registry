@@ -164,7 +164,7 @@
 <!-- roo_display -->
 <g id="node7" class="node">
 <title>roo_display</title>
-<polygon fill="plum" stroke="red" points="830,-497 732,-497 732,-459 830,-459 830,-497"/>
+<polygon fill="khaki" stroke="red" points="830,-497 732,-497 732,-459 830,-459 830,-497"/>
 <text text-anchor="middle" x="781" y="-481.8" font-family="Times,serif" font-size="14.00">roo_display</text>
 <text text-anchor="middle" x="781" y="-466.8" font-family="Times,serif" font-size="14.00">3.0.4</text>
 </g>
