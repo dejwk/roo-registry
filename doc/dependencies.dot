@@ -10,7 +10,7 @@ digraph dependencies {
     "roo_comms" [label="roo_comms\n1.1.4", fillcolor="#b1dbab", color="red"];
     "roo_control" [label="roo_control\n1.2.5", fillcolor="#b1dbab", color="red"];
     "roo_dashboard" [label="roo_dashboard\n1.0.1", fillcolor="khaki", color="red"];
-    "roo_display" [label="roo_display\n3.0.4", fillcolor="khaki", color="red"];
+    "roo_display" [label="roo_display\n3.1.0", fillcolor="khaki", color="black"];
     "roo_display_lvgl" [label="roo_display_lvgl\n1.0.0", fillcolor="khaki", color="red"];
     "roo_flags" [label="roo_flags\n1.2.3", fillcolor="#b1dbab", color="black"];
     "roo_fonts_basic" [label="roo_fonts_basic\n1.0.2", fillcolor="#b1dbab", color="red"];
@@ -48,11 +48,11 @@ digraph dependencies {
     "roo_control" -> "roo_scheduler";
     "roo_dashboard" -> "roo_windows" [color=red, fontcolor=red, label="1.4.1\n(latest: 1.5.0)"];
     "roo_display" -> "roo_collections";
-    "roo_display" -> "roo_io" [color=red, fontcolor=red, label="2.1.6\n(latest: 2.2.0)"];
-    "roo_display_lvgl" -> "roo_display" [color=red, fontcolor=red, label="3.0.3\n(latest: 3.0.4)"];
-    "roo_fonts_basic" -> "roo_display" [color=red, fontcolor=red, label="3.0.2\n(latest: 3.0.4)"];
-    "roo_fonts_material" -> "roo_display" [color=red, fontcolor=red, label="3.0.2\n(latest: 3.0.4)"];
-    "roo_icons" -> "roo_display" [color=red, fontcolor=red, label="3.0.2\n(latest: 3.0.4)"];
+    "roo_display" -> "roo_io";
+    "roo_display_lvgl" -> "roo_display" [color=red, fontcolor=red, label="3.0.3\n(latest: 3.1.0)"];
+    "roo_fonts_basic" -> "roo_display" [color=red, fontcolor=red, label="3.0.2\n(latest: 3.1.0)"];
+    "roo_fonts_material" -> "roo_display" [color=red, fontcolor=red, label="3.0.2\n(latest: 3.1.0)"];
+    "roo_icons" -> "roo_display" [color=red, fontcolor=red, label="3.0.2\n(latest: 3.1.0)"];
     "roo_io" -> "roo_logging";
     "roo_logging" -> "roo_backport";
     "roo_logging" -> "roo_flags";
