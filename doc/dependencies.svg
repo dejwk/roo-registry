@@ -95,7 +95,7 @@
 <title>roo_io</title>
 <polygon fill="#b1dbab" stroke="black" points="601.5,-422 542.5,-422 542.5,-384 601.5,-384 601.5,-422"/>
 <text text-anchor="middle" x="572" y="-406.8" font-family="Times,serif" font-size="14.00">roo_io</text>
-<text text-anchor="middle" x="572" y="-391.8" font-family="Times,serif" font-size="14.00">2.2.1</text>
+<text text-anchor="middle" x="572" y="-391.8" font-family="Times,serif" font-size="14.00">2.2.2</text>
 </g>
 <!-- roo_comms&#45;&gt;roo_io -->
 <g id="edge6" class="edge">
@@ -103,7 +103,7 @@
 <path fill="none" stroke="red" d="M200.34,-786C134.72,-783.15 26,-767.1 26,-692 26,-692 26,-692 26,-498 26,-402.2 371.82,-438.41 490,-422 503.92,-420.07 518.99,-417.04 532.36,-414.01"/>
 <polygon fill="red" stroke="red" points="533.27,-417.39 542.21,-411.71 531.68,-410.57 533.27,-417.39"/>
 <text text-anchor="middle" x="59" y="-598" font-family="Times,serif" font-size="10.00" fill="red">2.1.5</text>
-<text text-anchor="middle" x="59" y="-587" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.2.1)</text>
+<text text-anchor="middle" x="59" y="-587" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.2.2)</text>
 </g>
 <!-- roo_transceivers -->
 <g id="node27" class="node">
@@ -164,7 +164,7 @@
 <!-- roo_display -->
 <g id="node7" class="node">
 <title>roo_display</title>
-<polygon fill="plum" stroke="red" points="932,-518 834,-518 834,-480 932,-480 932,-518"/>
+<polygon fill="khaki" stroke="red" points="932,-518 834,-518 834,-480 932,-480 932,-518"/>
 <text text-anchor="middle" x="883" y="-502.8" font-family="Times,serif" font-size="14.00">roo_display</text>
 <text text-anchor="middle" x="883" y="-487.8" font-family="Times,serif" font-size="14.00">3.1.1</text>
 </g>
@@ -180,7 +180,7 @@
 <path fill="none" stroke="red" d="M837.06,-479.97C796.61,-464.15 742.52,-443.18 732,-440 726.19,-438.24 657.07,-422.84 611.6,-412.76"/>
 <polygon fill="red" stroke="red" points="612.25,-409.32 601.73,-410.57 610.73,-416.15 612.25,-409.32"/>
 <text text-anchor="middle" x="821" y="-454" font-family="Times,serif" font-size="10.00" fill="red">2.2.0</text>
-<text text-anchor="middle" x="821" y="-443" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.2.1)</text>
+<text text-anchor="middle" x="821" y="-443" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.2.2)</text>
 </g>
 <!-- roo_display_3_1_1 -->
 <g id="node8" class="node">
@@ -201,7 +201,7 @@
 <path fill="none" stroke="red" d="M699.11,-479.97C686.91,-474.56 673.78,-468.36 662,-462 643.1,-451.79 622.91,-438.97 606.46,-427.99"/>
 <polygon fill="red" stroke="red" points="607.98,-424.79 597.74,-422.1 604.07,-430.59 607.98,-424.79"/>
 <text text-anchor="middle" x="695" y="-454" font-family="Times,serif" font-size="10.00" fill="red">2.2.0</text>
-<text text-anchor="middle" x="695" y="-443" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.2.1)</text>
+<text text-anchor="middle" x="695" y="-443" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.2.2)</text>
 </g>
 <!-- roo_display_lvgl -->
 <g id="node9" class="node">
@@ -327,7 +327,7 @@
 <path fill="none" stroke="red" d="M968.7,-479.9C930.95,-464.76 879.51,-444.88 858,-440 769.24,-419.87 743.97,-435.79 654,-422 640.11,-419.87 625.05,-416.79 611.67,-413.78"/>
 <polygon fill="red" stroke="red" points="612.35,-410.35 601.82,-411.51 610.77,-417.17 612.35,-410.35"/>
 <text text-anchor="middle" x="952" y="-454" font-family="Times,serif" font-size="10.00" fill="red">2.1.6</text>
-<text text-anchor="middle" x="952" y="-443" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.2.1)</text>
+<text text-anchor="middle" x="952" y="-443" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.2.2)</text>
 </g>
 <!-- roo_onewire -->
 <g id="node18" class="node">
@@ -476,7 +476,7 @@
 <path fill="none" stroke="red" d="M566.2,-479.97C560.46,-474.91 555.21,-468.88 552,-462 547.42,-452.2 549.62,-441.05 553.95,-431.16"/>
 <polygon fill="red" stroke="red" points="557.12,-432.64 558.59,-422.15 550.9,-429.44 557.12,-432.64"/>
 <text text-anchor="middle" x="585" y="-454" font-family="Times,serif" font-size="10.00" fill="red">2.1.5</text>
-<text text-anchor="middle" x="585" y="-443" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.2.1)</text>
+<text text-anchor="middle" x="585" y="-443" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.2.2)</text>
 </g>
 <!-- roo_wifi -->
 <g id="node29" class="node">
