@@ -3,15 +3,16 @@
 Script to update library.json and library.properties files for a given module
 based on its MODULE.bazel file.
 
-Usage: python3 roo-registry/bin/update_library.py <module_name>
+Usage: python3 roo-registry/bin/update_library.py <module_name> [--nolatest_deps]
 
 This script determines the base directory automatically based on its location
 and looks for module directories as siblings to roo-registry.
 The script will update existing library.json and library.properties files,
 preserving their existing content and only updating version information.
 
-It also inspects the roo-registry/modules directory to determine the latest
-versions of all dependencies and updates them to the latest available version.
+By default, it also inspects the roo-registry/modules directory and updates Roo
+dependencies to the latest registered versions. With --nolatest_deps, exact
+MODULE.bazel dependency versions are preserved and validated instead.
 """
 
 import sys
@@ -51,6 +52,11 @@ def get_latest_versions_from_registry(registry_dir: Path) -> Dict[str, Version]:
             if version_path.is_dir():
                 try:
                     version = Version(version_path.name)
+                    if not (
+                        (version_path / "MODULE.bazel").is_file()
+                        and (version_path / "source.json").is_file()
+                    ):
+                        continue
                     versions.append(version)
                 except ValueError:
                     # Skip invalid version directories
@@ -60,6 +66,60 @@ def get_latest_versions_from_registry(registry_dir: Path) -> Dict[str, Version]:
             latest_versions[module_name] = max(versions)
     
     return latest_versions
+
+
+def registry_version_exists(
+    registry_dir: Path,
+    dependency: Dependency,
+) -> bool:
+    """Return whether a complete Roo registry entry exists for a dependency."""
+    version_dir = (
+        registry_dir
+        / "modules"
+        / dependency.name
+        / str(dependency.version)
+    )
+    return (
+        version_dir.is_dir()
+        and (version_dir / "MODULE.bazel").is_file()
+        and (version_dir / "source.json").is_file()
+    )
+
+
+def get_missing_registry_dependencies(
+    dependencies: List[Dependency],
+    registry_dir: Path,
+) -> List[Dependency]:
+    """Return exact Roo dependency versions absent from the local registry."""
+    return [
+        dependency
+        for dependency in dependencies
+        if dependency.name.startswith("roo_")
+        and not registry_version_exists(registry_dir, dependency)
+    ]
+
+
+def validate_registry_dependencies(
+    dependencies: List[Dependency],
+    registry_dir: Path,
+) -> bool:
+    """Validate that all exact Roo dependency versions are registered."""
+    missing = get_missing_registry_dependencies(dependencies, registry_dir)
+    if not missing:
+        print("All exact Roo dependency versions exist in the registry")
+        return True
+
+    print("Error: Roo dependencies are missing from the local registry:")
+    for dependency in missing:
+        expected = (
+            registry_dir
+            / "modules"
+            / dependency.name
+            / str(dependency.version)
+        )
+        print(f"  {dependency} (expected {expected})")
+    print("Register the missing dependency releases before preparing this module.")
+    return False
 
 
 def update_dependencies_to_latest(
@@ -105,22 +165,34 @@ def update_module_bazel(
         # Create a mapping of dependency names to their new versions
         dep_map = {dep.name: str(dep.version) for dep in updated_dependencies}
         
-        # Pattern to match bazel_dep lines
-        # Example: bazel_dep(name = "roo_display", version = "2.2.0")
-        pattern = r'bazel_dep\s*\(\s*name\s*=\s*"([^"]+)"\s*,\s*version\s*=\s*"([^"]+)"\s*\)'
-        
+        # Replace only the version string so multiline formatting, argument
+        # order, comments, and trailing commas remain intact.
+        call_pattern = re.compile(r'\bbazel_dep\s*\((.*?)\)', re.DOTALL)
+        name_pattern = re.compile(r'\bname\s*=\s*(["\'])([^"\']+)\1')
+        version_pattern = re.compile(r'\bversion\s*=\s*(["\'])([^"\']+)\1')
+
         def replace_version(match):
-            dep_name = match.group(1)
-            old_version = match.group(2)
-            
-            if dep_name in dep_map:
-                new_version = dep_map[dep_name]
-                if new_version != old_version:
-                    return f'bazel_dep(name = "{dep_name}", version = "{new_version}")'
-            
-            return match.group(0)
-        
-        updated_content = re.sub(pattern, replace_version, content)
+            body = match.group(1)
+            name_match = name_pattern.search(body)
+            version_match = version_pattern.search(body)
+            if not name_match or not version_match:
+                return match.group(0)
+
+            dep_name = name_match.group(2)
+            new_version = dep_map.get(dep_name)
+            if not new_version or new_version == version_match.group(2):
+                return match.group(0)
+
+            value_start = (
+                match.start(1) - match.start(0) + version_match.start(2)
+            )
+            value_end = (
+                match.start(1) - match.start(0) + version_match.end(2)
+            )
+            call = match.group(0)
+            return call[:value_start] + new_version + call[value_end:]
+
+        updated_content = call_pattern.sub(replace_version, content)
         
         # Write back if changed
         if updated_content != content:
@@ -263,7 +335,14 @@ def update_library_properties(library_properties_path: Path, module_version: str
         return False
 
 
-def update_library_files(module_name: str, force: bool = False) -> bool:
+def update_library_files(
+    module_name: str,
+    force: bool = False,
+    latest_deps: bool = True,
+    *,
+    registry_dir: Optional[Path] = None,
+    base_dir: Optional[Path] = None,
+) -> bool:
     """
     Update library.json and library.properties for the given module.
     
@@ -272,8 +351,10 @@ def update_library_files(module_name: str, force: bool = False) -> bool:
     # Determine the base directory from the script's location
     # Script is in roo-registry/bin/, so we need to go up two levels to get the parent of roo-registry
     script_path = Path(__file__).resolve()
-    registry_dir = script_path.parent.parent  # bin -> roo-registry
-    base_dir = registry_dir.parent  # roo-registry -> parent
+    if registry_dir is None:
+        registry_dir = script_path.parent.parent  # bin -> roo-registry
+    if base_dir is None:
+        base_dir = registry_dir.parent  # roo-registry -> parent
     module_dir = base_dir / module_name
     
     print(f"Script location: {script_path}")
@@ -301,13 +382,14 @@ def update_library_files(module_name: str, force: bool = False) -> bool:
     print(f"Module directory: {module_dir}")
     print(f"MODULE.bazel path: {module_bazel_path}")
     
-    # Get latest versions from registry
-    print("\nScanning registry for latest dependency versions...")
-    latest_versions = get_latest_versions_from_registry(registry_dir)
-    print(f"Found {len(latest_versions)} modules in registry")
-    
     # Parse MODULE.bazel
-    parsed_name, parsed_version, dependencies = parse_module_bazel(module_bazel_path)
+    try:
+        parsed_name, parsed_version, dependencies = parse_module_bazel(
+            module_bazel_path
+        )
+    except ValueError as error:
+        print(f"Error: {error}")
+        return False
     
     if not parsed_name or not parsed_version:
         print(f"Error: Could not parse module name and version from MODULE.bazel")
@@ -325,24 +407,32 @@ def update_library_files(module_name: str, force: bool = False) -> bool:
             print("Use --force to proceed anyway.")
             return False
     
-    # Update dependencies to latest versions
-    print("\nChecking for dependency updates...")
-    updated_dependencies, update_messages = update_dependencies_to_latest(
-        dependencies, latest_versions
-    )
-    
-    if update_messages:
-        print("Dependency updates found:")
-        for msg in update_messages:
-            print(msg)
+    if latest_deps:
+        print("\nScanning registry for latest dependency versions...")
+        latest_versions = get_latest_versions_from_registry(registry_dir)
+        print(f"Found {len(latest_versions)} modules in registry")
+
+        print("\nChecking for dependency updates...")
+        updated_dependencies, update_messages = update_dependencies_to_latest(
+            dependencies, latest_versions
+        )
+
+        if update_messages:
+            print("Dependency updates found:")
+            for msg in update_messages:
+                print(msg)
+        else:
+            print("All dependencies are already at the latest registered version")
+
+        if update_messages:
+            print("\nUpdating MODULE.bazel...")
+            if not update_module_bazel(module_bazel_path, updated_dependencies):
+                return False
     else:
-        print("All dependencies are already at the latest version")
-    
-    # Update MODULE.bazel with new dependency versions
-    if update_messages:
-        print("\nUpdating MODULE.bazel...")
-        if not update_module_bazel(module_bazel_path, updated_dependencies):
+        print("\nPreserving dependency versions from MODULE.bazel...")
+        if not validate_registry_dependencies(dependencies, registry_dir):
             return False
+        updated_dependencies = dependencies
     
     # Update library files
     library_json_path = module_dir / "library.json"
@@ -363,11 +453,14 @@ def update_library_files(module_name: str, force: bool = False) -> bool:
     return success
 
 
-def main():
-    """Main function."""
+def create_argument_parser() -> argparse.ArgumentParser:
+    """Create the command-line parser for update_library.py."""
     parser = argparse.ArgumentParser(
         description="Update library.json and library.properties for a roo module",
-        epilog="Example: python3 roo-registry/bin/update_library.py roo_display"
+        epilog=(
+            "Example: python3 roo-registry/bin/update_library.py roo_display "
+            "--nolatest_deps"
+        ),
     )
     parser.add_argument(
         "module_name",
@@ -378,10 +471,27 @@ def main():
         action="store_true",
         help="Force update even if module name in MODULE.bazel differs"
     )
+    parser.add_argument(
+        "--nolatest_deps",
+        "--no-latest-deps",
+        action="store_true",
+        help=(
+            "Preserve exact MODULE.bazel dependency versions, verify their "
+            "Roo registry entries, and only synchronize library metadata"
+        ),
+    )
+    return parser
+
+
+def main():
+    """Main function."""
+    args = create_argument_parser().parse_args()
     
-    args = parser.parse_args()
-    
-    success = update_library_files(args.module_name, args.force)
+    success = update_library_files(
+        args.module_name,
+        args.force,
+        latest_deps=not args.nolatest_deps,
+    )
     
     if success:
         print(f"\n✓ Successfully updated library files for {args.module_name}")

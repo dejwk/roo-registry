@@ -250,6 +250,45 @@ class Dependency:
         return f"Dependency('{self.name}', '{self.version}')"
 
 
+def _find_call_bodies(content: str, function_name: str):
+    """Yield regex matches for simple Starlark calls, including multiline calls."""
+    pattern = re.compile(
+        rf'\b{re.escape(function_name)}\s*\((.*?)\)',
+        re.DOTALL,
+    )
+    yield from pattern.finditer(content)
+
+
+def _get_string_argument(call_body: str, argument_name: str) -> Optional[str]:
+    """Return a quoted string argument from a Starlark call body."""
+    pattern = re.compile(
+        rf'\b{re.escape(argument_name)}\s*=\s*(["\'])([^"\']+)\1'
+    )
+    match = pattern.search(call_body)
+    return match.group(2) if match else None
+
+
+def replace_module_version(content: str, new_version: str) -> Tuple[str, bool]:
+    """Replace the version argument in the first module() call."""
+    module_calls = list(_find_call_bodies(content, "module"))
+    if not module_calls:
+        return content, False
+
+    module_call = module_calls[0]
+    body = module_call.group(1)
+    version_pattern = re.compile(r'\bversion\s*=\s*(["\'])([^"\']+)\1')
+    version_match = version_pattern.search(body)
+    if not version_match:
+        return content, False
+
+    value_start = module_call.start(1) + version_match.start(2)
+    value_end = module_call.start(1) + version_match.end(2)
+    if content[value_start:value_end] == new_version:
+        return content, False
+
+    return content[:value_start] + new_version + content[value_end:], True
+
+
 def parse_module_bazel(module_bazel_path: Path) -> Tuple[str, str, List[Dependency]]:
     """
     Parse a MODULE.bazel file and extract module info and dependencies.
@@ -271,21 +310,19 @@ def parse_module_bazel(module_bazel_path: Path) -> Tuple[str, str, List[Dependen
         with open(module_bazel_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Extract module declaration
-        # Pattern: module(name = "module_name", version = "x.y.z")
-        module_pattern = r'module\s*\(\s*name\s*=\s*["\']([^"\']+)["\']\s*,\s*version\s*=\s*["\']([^"\']+)["\']\s*\)'
-        module_match = re.search(module_pattern, content)
-        if module_match:
-            module_name = module_match.group(1)
-            module_version = module_match.group(2)
-        
-        # Find all bazel_dep declarations
-        # Pattern: bazel_dep(name = "dependency_name", version = "x.y.z")
-        dep_pattern = r'bazel_dep\s*\(\s*name\s*=\s*["\']([^"\']+)["\']\s*,\s*version\s*=\s*["\']([^"\']+)["\']\s*\)'
-        
-        for match in re.finditer(dep_pattern, content):
-            dep_name = match.group(1)
-            dep_version = match.group(2)
+        # Parse arguments independently so formatting, argument order, and a
+        # trailing comma do not affect release tooling.
+        module_calls = list(_find_call_bodies(content, "module"))
+        if module_calls:
+            module_body = module_calls[0].group(1)
+            module_name = _get_string_argument(module_body, "name")
+            module_version = _get_string_argument(module_body, "version")
+
+        for match in _find_call_bodies(content, "bazel_dep"):
+            dep_name = _get_string_argument(match.group(1), "name")
+            dep_version = _get_string_argument(match.group(1), "version")
+            if not dep_name or not dep_version:
+                continue
             
             # Skip ignored dependencies
             if dep_name in ignored_deps:
@@ -295,8 +332,16 @@ def parse_module_bazel(module_bazel_path: Path) -> Tuple[str, str, List[Dependen
                 dependency = Dependency(dep_name, dep_version)
                 dependencies.append(dependency)
             except ValueError as e:
-                print(f"Warning: Invalid dependency version '{dep_version}' for '{dep_name}' in {module_bazel_path}: {e}")
+                message = (
+                    f"Invalid dependency version '{dep_version}' for "
+                    f"'{dep_name}' in {module_bazel_path}: {e}"
+                )
+                if dep_name.startswith("roo_"):
+                    raise ValueError(message) from e
+                print(f"Warning: {message}")
         
+    except ValueError:
+        raise
     except Exception as e:
         print(f"Error reading {module_bazel_path}: {e}")
     

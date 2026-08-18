@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Script to prepare a module for release by incrementing version and updating files.
+Script to prepare a module release using a selected version policy.
 
-Usage: python3 roo-registry/bin/pre_release.py <module_name> --major|--minor|--patch
+Usage: python3 roo-registry/bin/pre_release.py <module_name> --major|--minor|--patch|--current
 
 This script will:
 1. Verify git status is clean and up-to-date with upstream
-2. Increment the version number in MODULE.bazel
-3. Update library.json and library.properties
+2. Select or increment the version number in MODULE.bazel
+3. Synchronize Roo dependencies and update library metadata
 4. Commit and push the changes
 5. Run bazel tests in a subprocess
 
@@ -18,7 +18,6 @@ import sys
 import os
 import subprocess
 import argparse
-import re
 from pathlib import Path
 from typing import Tuple, Optional
 
@@ -36,8 +35,9 @@ sys.path.insert(0, str(Path(__file__).parent))
 from module_utils import (
     Version, parse_module_bazel, get_git_status,
     has_remote_changes, count_commits_between, get_current_branch, 
-    get_upstream_branch, git_push
+    get_upstream_branch, git_push, replace_module_version,
 )
+from update_library import validate_registry_dependencies
 
 
 def run_command(cmd: list, cwd: Optional[Path] = None, check: bool = True) -> subprocess.CompletedProcess:
@@ -56,7 +56,19 @@ def run_command(cmd: list, cwd: Optional[Path] = None, check: bool = True) -> su
     return result
 
 
-def check_git_status(module_dir: Path) -> bool:
+def build_update_library_command(
+    update_script: Path,
+    module_name: str,
+    latest_deps: bool,
+) -> list:
+    """Build the metadata synchronization command for a release."""
+    command = [sys.executable, str(update_script), module_name]
+    if not latest_deps:
+        command.append("--nolatest_deps")
+    return command
+
+
+def check_git_status(module_dir: Path, allow_ahead: bool = False) -> bool:
     """
     Check if git status is clean and up-to-date with upstream.
     Returns True if clean and up-to-date, False otherwise.
@@ -114,10 +126,15 @@ def check_git_status(module_dir: Path) -> bool:
         print(f"Error: Could not check if ahead of remote: {error}")
         return False
     
-    if ahead_count > 0:
+    if ahead_count > 0 and not allow_ahead:
         print(f"Error: Local branch is {ahead_count} commits ahead of {upstream_branch}")
         print("Please push or reset your local changes first")
         return False
+    if ahead_count > 0:
+        print(
+            f"  Local branch is {ahead_count} commits ahead of "
+            f"{upstream_branch}; these commits will be pushed after verification"
+        )
     
     print("✓ Git status is clean and up-to-date")
     return True
@@ -126,28 +143,20 @@ def check_git_status(module_dir: Path) -> bool:
 def read_module_bazel_version(module_bazel_path: Path) -> Optional[str]:
     """Read the version from MODULE.bazel file."""
     try:
-        with open(module_bazel_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-        
-        # Match: module(name = "...", version = "x.y.z")
-        pattern = r'module\s*\(\s*name\s*=\s*"[^"]+"\s*,\s*version\s*=\s*"([^"]+)"\s*\)'
-        match = re.search(pattern, content)
-        
-        if match:
-            return match.group(1)
-        else:
-            print(f"Error: Could not find version in {module_bazel_path}")
-            return None
-            
-    except Exception as e:
-        print(f"Error reading MODULE.bazel: {e}")
+        _, version, _ = parse_module_bazel(module_bazel_path)
+    except ValueError as error:
+        print(f"Error: {error}")
         return None
+    if not version:
+        print(f"Error: Could not find version in {module_bazel_path}")
+        return None
+    return version
 
 
 def increment_version(version_str: str, bump_type: str) -> str:
     """
     Increment the version number according to bump_type.
-    bump_type can be 'major', 'minor', or 'patch'.
+    bump_type can be 'major', 'minor', 'patch', or 'current'.
     """
     version = Version(version_str)
     
@@ -157,6 +166,8 @@ def increment_version(version_str: str, bump_type: str) -> str:
         new_version = Version(f"{version.major}.{version.minor + 1}.0")
     elif bump_type == 'patch':
         new_version = Version(f"{version.major}.{version.minor}.{version.patch + 1}")
+    elif bump_type == 'current':
+        new_version = version
     else:
         raise ValueError(f"Invalid bump_type: {bump_type}")
     
@@ -169,12 +180,10 @@ def update_module_bazel_version(module_bazel_path: Path, new_version: str) -> bo
         with open(module_bazel_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Replace version in module() declaration
-        pattern = r'(module\s*\(\s*name\s*=\s*"[^"]+"\s*,\s*version\s*=\s*")[^"]+(")'
-        updated_content = re.sub(pattern, rf'\g<1>{new_version}\g<2>', content)
-        
-        if updated_content == content:
-            print(f"Warning: No changes made to MODULE.bazel")
+        updated_content, changed = replace_module_version(content, new_version)
+
+        if not changed:
+            print("Warning: No changes made to MODULE.bazel")
             return False
         
         with open(module_bazel_path, 'w', encoding='utf-8') as f:
@@ -234,7 +243,12 @@ def run_bazel_tests(module_dir: Path) -> bool:
         return False
 
 
-def pre_release(module_name: str, bump_type: str, skip_tests: bool = False) -> bool:
+def pre_release(
+    module_name: str,
+    bump_type: str,
+    skip_tests: bool = False,
+    latest_deps: bool = True,
+) -> bool:
     """
     Prepare a module for release.
     
@@ -260,7 +274,7 @@ def pre_release(module_name: str, bump_type: str, skip_tests: bool = False) -> b
         return False
     
     # Step 1: Check git status
-    if not check_git_status(module_dir):
+    if not check_git_status(module_dir, allow_ahead=bump_type == "current"):
         return False
     
     # Step 2: Read current version
@@ -269,6 +283,18 @@ def pre_release(module_name: str, bump_type: str, skip_tests: bool = False) -> b
         return False
     
     print(f"Current version: {current_version}")
+
+    if not latest_deps:
+        parsed_name, _, dependencies = parse_module_bazel(module_bazel_path)
+        if parsed_name != module_name:
+            print(
+                f"Error: MODULE.bazel declares '{parsed_name}', "
+                f"expected '{module_name}'"
+            )
+            return False
+        print("\nValidating exact MODULE.bazel dependency versions...")
+        if not validate_registry_dependencies(dependencies, registry_dir):
+            return False
     
     # Step 3: Calculate new version
     try:
@@ -277,23 +303,43 @@ def pre_release(module_name: str, bump_type: str, skip_tests: bool = False) -> b
         print(f"Error calculating new version: {e}")
         return False
     
-    print(f"New version: {new_version}")
+    if bump_type == "current":
+        print(f"Release version: {new_version} (unchanged)")
+    else:
+        print(f"New version: {new_version}")
+
+    dependency_policy = (
+        "latest versions in the local Roo registry"
+        if latest_deps
+        else "exact versions from MODULE.bazel"
+    )
+    print(f"Dependency policy: {dependency_policy}")
     
     # Confirm with user
-    response = input(f"\nProceed with version bump {current_version} -> {new_version}? [y/N] ")
+    if bump_type == "current":
+        prompt = f"\nPrepare current version {new_version} for release? [y/N] "
+    else:
+        prompt = f"\nProceed with version bump {current_version} -> {new_version}? [y/N] "
+    response = input(prompt)
     if response.lower() != 'y':
         print("Aborted by user")
         return False
     
-    # Step 4: Update MODULE.bazel
-    if not update_module_bazel_version(module_bazel_path, new_version):
-        return False
+    # Step 4: Update MODULE.bazel unless the current version was requested.
+    if bump_type != "current":
+        if not update_module_bazel_version(module_bazel_path, new_version):
+            return False
     
     # Step 5: Run update_library.py
     print(f"\nRunning update_library.py...")
     update_script = registry_dir / "bin" / "update_library.py"
+    update_command = build_update_library_command(
+        update_script,
+        module_name,
+        latest_deps,
+    )
     result = subprocess.run(
-        [sys.executable, str(update_script), module_name],
+        update_command,
         cwd=registry_dir,
         capture_output=False,
         text=True,
@@ -309,7 +355,7 @@ def pre_release(module_name: str, bump_type: str, skip_tests: bool = False) -> b
             print("\nWarning: Tests failed. Do you want to continue anyway?")
             response = input("Continue with commit and push? [y/N] ")
             if response.lower() != 'y':
-                print("Aborted. Changes are staged but not committed.")
+                print("Aborted. Changes remain uncommitted.")
                 return False
     else:
         print("\nSkipping tests (--skip-tests flag)")
@@ -331,17 +377,24 @@ def pre_release(module_name: str, bump_type: str, skip_tests: bool = False) -> b
         print(f"Error staging files: {str(e)}")
         return False
     
-    # Step 8: Git commit
-    commit_message = f"Bump version to {new_version}"
-    print(f"\nCommitting changes with message: '{commit_message}'")
-    try:
-        repo = git.Repo(module_dir)
-        repo.index.commit(commit_message)
-        print("  Committed successfully")
-    except Exception as e:
-        print(f"Error: Failed to commit changes: {str(e)}")
-        return False
-    print("✓ Changes committed")
+    # Step 8: Git commit, unless --current found metadata already synchronized.
+    staged_changes = list(repo.index.diff("HEAD"))
+    if staged_changes:
+        commit_message = (
+            f"Prepare version {new_version} for release"
+            if bump_type == "current"
+            else f"Bump version to {new_version}"
+        )
+        print(f"\nCommitting changes with message: '{commit_message}'")
+        try:
+            repo.index.commit(commit_message)
+            print("  Committed successfully")
+        except Exception as e:
+            print(f"Error: Failed to commit changes: {str(e)}")
+            return False
+        print("✓ Changes committed")
+    else:
+        print("\nNo release metadata changes to commit")
     
     # Step 9: Git push using module_utils
     print(f"\nPushing to remote...")
@@ -355,16 +408,16 @@ def pre_release(module_name: str, bump_type: str, skip_tests: bool = False) -> b
     return True
 
 
-def main():
-    """Main function."""
+def create_argument_parser() -> argparse.ArgumentParser:
+    """Create the command-line parser for pre_release.py."""
     parser = argparse.ArgumentParser(
         description="Prepare a roo module for release",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 This script automates the release preparation process:
 1. Verifies git status is clean and up-to-date
-2. Increments the version number in MODULE.bazel
-3. Updates library.json and library.properties
+2. Selects or increments the version number in MODULE.bazel
+3. Synchronizes dependencies and updates library metadata
 4. Runs bazel tests
 5. Commits and pushes the changes
 
@@ -399,16 +452,41 @@ Example: python3 roo-registry/bin/pre_release.py roo_display --patch
         dest="bump_type",
         help="Increment patch version (0.0.x)"
     )
+    version_group.add_argument(
+        "--current",
+        action="store_const",
+        const="current",
+        dest="bump_type",
+        help="Prepare the version currently declared in MODULE.bazel",
+    )
     
     parser.add_argument(
         "--skip-tests",
         action="store_true",
         help="Skip running bazel tests"
     )
-    
-    args = parser.parse_args()
-    
-    success = pre_release(args.module_name, args.bump_type, args.skip_tests)
+    parser.add_argument(
+        "--nolatest_deps",
+        "--no-latest-deps",
+        action="store_true",
+        help=(
+            "Preserve exact MODULE.bazel dependency versions, verify their "
+            "Roo registry entries, and only synchronize library metadata"
+        ),
+    )
+    return parser
+
+
+def main():
+    """Main function."""
+    args = create_argument_parser().parse_args()
+
+    success = pre_release(
+        args.module_name,
+        args.bump_type,
+        args.skip_tests,
+        latest_deps=not args.nolatest_deps,
+    )
     
     sys.exit(0 if success else 1)
 

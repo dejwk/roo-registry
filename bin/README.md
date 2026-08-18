@@ -64,27 +64,45 @@ python3 post_release.py roo_display
 - Publishes to PlatformIO registry
 
 ### `pre_release.py`
-Prepares a module for release by incrementing version and updating files.
+Prepares a module release, synchronizes dependency metadata, tests it, and
+pushes the resulting commits.
 
 **Usage:**
 ```bash
-python3 pre_release.py <module_name> --major|--minor|--patch [--skip-tests]
+python3 pre_release.py <module_name> --major|--minor|--patch|--current \
+    [--nolatest_deps] [--skip-tests]
 ```
 
 **Example:**
 ```bash
 python3 pre_release.py roo_display --patch
+python3 pre_release.py roo_display --current
+python3 pre_release.py roo_display --current --nolatest_deps
 ```
 
 **Options:**
 - `--major`: Increment major version (x.0.0)
 - `--minor`: Increment minor version (0.x.0) 
 - `--patch`: Increment patch version (0.0.x)
+- `--current`: Prepare the version already declared in `MODULE.bazel` without
+  incrementing it. A clean branch may be ahead of its upstream in this mode;
+  those existing commits are tested and pushed with any metadata commit.
+- `--nolatest_deps` (alias `--no-latest-deps`): Preserve exact
+  `MODULE.bazel` dependency versions, require every exact `roo_*` dependency
+  version to have a complete registry entry, and synchronize `library.json`
+  and `library.properties` from those pins.
 - `--skip-tests`: Skip running bazel tests
+
+Without `--nolatest_deps`, all four version modes select the maximum registered
+version of each Roo dependency before synchronizing the manifests. Keep the
+local registry current and publish dependencies first when releasing related
+libraries.
 
 **Purpose:**
 - Verifies git status is clean and up-to-date
-- Increments the version number in MODULE.bazel
+- Selects the current version or increments it in `MODULE.bazel`
+- Selects the latest registered Roo dependencies by default, or validates and
+  preserves exact pins with `--nolatest_deps`
 - Updates library.json and library.properties
 - Runs bazel tests
 - Commits and pushes the changes
@@ -108,19 +126,23 @@ Updates library.json and library.properties files for a specific module based on
 
 **Usage:**
 ```bash
-python3 update_library.py <module_name>
+python3 update_library.py <module_name> [--nolatest_deps]
 ```
 
 **Example:**
 ```bash
 python3 update_library.py roo_display
+python3 update_library.py roo_display --nolatest_deps
 ```
 
 **Purpose:**
 - Updates library metadata files
 - Preserves existing content while updating version information
-- Synchronizes dependency information from MODULE.bazel files
-- Updates dependencies to the latest available version from the registry
+- Synchronizes dependency information from `MODULE.bazel`
+- Updates dependencies to the latest available version from the local registry
+  by default
+- With `--nolatest_deps`, preserves exact dependency pins and fails before
+  writing if an exact Roo dependency version is absent from the registry
 
 ### `update_module_versions.py`
 Updates all roo module version references across all modules in the registry.
@@ -170,3 +192,5 @@ Shared utility library for working with roo modules and their dependencies.
 - Most scripts automatically detect the roo directory structure
 - The `--dry-run` option is available in `update_module_versions.py` for safe testing
 - Scripts work with the standard roo module structure using MODULE.bazel files
+- Release-script unit tests run with
+  `python3 -m unittest discover -s tests -v`
