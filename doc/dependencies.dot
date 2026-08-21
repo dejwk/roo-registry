@@ -12,7 +12,7 @@ digraph dependencies {
     "roo_dashboard" [label="roo_dashboard\n1.0.1", fillcolor="khaki", color="red"];
     "roo_display" [label="roo_display\n3.2.0", fillcolor="khaki", color="red"];
     "roo_display_lvgl" [label="roo_display_lvgl\n1.0.0", fillcolor="khaki", color="red"];
-    "roo_flags" [label="roo_flags\n1.2.3", fillcolor="khaki", color="black"];
+    "roo_flags" [label="roo_flags\n1.2.4", fillcolor="#b1dbab", color="black"];
     "roo_fonts_basic" [label="roo_fonts_basic\n1.0.3", fillcolor="khaki", color="black"];
     "roo_fonts_material" [label="roo_fonts_material\n1.1.0", fillcolor="khaki", color="black"];
     "roo_icons" [label="roo_icons\n1.2.3", fillcolor="khaki", color="red"];
@@ -56,7 +56,7 @@ digraph dependencies {
     "roo_icons" -> "roo_display" [color=red, fontcolor=red, label="3.1.2\n(latest: 3.2.0)"];
     "roo_io" -> "roo_logging";
     "roo_logging" -> "roo_backport";
-    "roo_logging" -> "roo_flags";
+    "roo_logging" -> "roo_flags" [color=red, fontcolor=red, label="1.2.3\n(latest: 1.2.4)"];
     "roo_logging" -> "roo_threads";
     "roo_monitoring" -> "roo_collections" [color=red, fontcolor=red, label="1.4.4\n(latest: 1.4.5)"];
     "roo_monitoring" -> "roo_io" [color=red, fontcolor=red, label="2.2.3\n(latest: 2.2.5)"];
