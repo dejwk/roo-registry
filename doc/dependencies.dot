@@ -6,7 +6,7 @@ digraph dependencies {
     // Modules
     "roo_backport" [label="roo_backport\n1.2.3", fillcolor="#b1dbab", color="black"];
     "roo_blink" [label="roo_blink\n1.0.6", fillcolor="plum", color="red"];
-    "roo_collections" [label="roo_collections\n1.4.5", fillcolor="khaki", color="red"];
+    "roo_collections" [label="roo_collections\n1.4.5", fillcolor="lightblue", color="red"];
     "roo_comms" [label="roo_comms\n1.1.4", fillcolor="plum", color="red"];
     "roo_control" [label="roo_control\n1.2.5", fillcolor="khaki", color="red"];
     "roo_dashboard" [label="roo_dashboard\n1.0.1", fillcolor="khaki", color="red"];
@@ -19,7 +19,7 @@ digraph dependencies {
     "roo_io" [label="roo_io\n2.2.5", fillcolor="plum", color="red"];
     "roo_io_sdfat" [label="roo_io_sdfat\n1.0.0", fillcolor="plum", color="black"];
     "roo_locale" [label="roo_locale\n1.1.2", fillcolor="khaki", color="black"];
-    "roo_logging" [label="roo_logging\n1.5.7", fillcolor="plum", color="red"];
+    "roo_logging" [label="roo_logging\n1.5.7", fillcolor="khaki", color="red"];
     "roo_monitoring" [label="roo_monitoring\n1.1.2", fillcolor="khaki", color="red"];
     "roo_onewire" [label="roo_onewire\n2.0.9", fillcolor="khaki", color="red"];
     "roo_powersafefs" [label="roo_powersafefs\n1.0.1", fillcolor="#b1dbab", color="red"];

@@ -26,7 +26,7 @@
 <!-- roo_logging -->
 <g id="node16" class="node">
 <title>roo_logging</title>
-<polygon fill="plum" stroke="red" points="446.12,-296.5 364.12,-296.5 364.12,-255.5 446.12,-255.5 446.12,-296.5"/>
+<polygon fill="khaki" stroke="red" points="446.12,-296.5 364.12,-296.5 364.12,-255.5 446.12,-255.5 446.12,-296.5"/>
 <text xml:space="preserve" text-anchor="middle" x="405.12" y="-279.2" font-family="Times,serif" font-size="14.00">roo_logging</text>
 <text xml:space="preserve" text-anchor="middle" x="405.12" y="-262.7" font-family="Times,serif" font-size="14.00">1.5.7</text>
 </g>
@@ -54,7 +54,7 @@
 <!-- roo_collections -->
 <g id="node3" class="node">
 <title>roo_collections</title>
-<polygon fill="khaki" stroke="red" points="814.75,-396 715.5,-396 715.5,-355 814.75,-355 814.75,-396"/>
+<polygon fill="lightblue" stroke="red" points="814.75,-396 715.5,-396 715.5,-355 814.75,-355 814.75,-396"/>
 <text xml:space="preserve" text-anchor="middle" x="765.12" y="-378.7" font-family="Times,serif" font-size="14.00">roo_collections</text>
 <text xml:space="preserve" text-anchor="middle" x="765.12" y="-362.2" font-family="Times,serif" font-size="14.00">1.4.5</text>
 </g>
