@@ -8,7 +8,7 @@ digraph dependencies {
     "roo_blink" [label="roo_blink\n1.0.7", fillcolor="#b1dbab", color="black"];
     "roo_collections" [label="roo_collections\n1.4.6", fillcolor="#b1dbab", color="black"];
     "roo_comms" [label="roo_comms\n1.1.4", fillcolor="khaki", color="red"];
-    "roo_control" [label="roo_control\n1.2.5", fillcolor="khaki", color="red"];
+    "roo_control" [label="roo_control\n1.2.6", fillcolor="#b1dbab", color="black"];
     "roo_dashboard" [label="roo_dashboard\n1.0.1", fillcolor="khaki", color="red"];
     "roo_display" [label="roo_display\n3.2.0", fillcolor="khaki", color="red"];
     "roo_display_lvgl" [label="roo_display_lvgl\n1.0.0", fillcolor="khaki", color="red"];
@@ -43,11 +43,11 @@ digraph dependencies {
     "roo_collections" -> "roo_testing";
     "roo_collections" -> "roo_backport";
     "roo_comms" -> "roo_blink" [color=red, fontcolor=red, label="1.0.6\n(latest: 1.0.7)"];
-    "roo_comms" -> "roo_control";
+    "roo_comms" -> "roo_control" [color=red, fontcolor=red, label="1.2.5\n(latest: 1.2.6)"];
     "roo_comms" -> "roo_io" [color=red, fontcolor=red, label="2.1.5\n(latest: 2.2.7)"];
     "roo_comms" -> "roo_transceivers" [color=red, fontcolor=red, label="1.1.5\n(latest: 1.1.6)"];
-    "roo_control" -> "roo_quantity" [color=red, fontcolor=red, label="1.1.8\n(latest: 1.1.9)"];
-    "roo_control" -> "roo_scheduler" [color=red, fontcolor=red, label="2.1.9\n(latest: 2.1.10)"];
+    "roo_control" -> "roo_quantity";
+    "roo_control" -> "roo_scheduler";
     "roo_dashboard" -> "roo_windows" [color=red, fontcolor=red, label="1.4.1\n(latest: 1.6.0)"];
     "roo_display" -> "roo_collections" [color=red, fontcolor=red, label="1.4.5\n(latest: 1.4.6)"];
     "roo_display" -> "roo_io" [color=red, fontcolor=red, label="2.2.4\n(latest: 2.2.7)"];
