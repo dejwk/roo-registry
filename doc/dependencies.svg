@@ -78,7 +78,7 @@
 <!-- roo_comms -->
 <g id="node4" class="node">
 <title>roo_comms</title>
-<polygon fill="plum" stroke="red" points="784.75,-691.5 703.5,-691.5 703.5,-650.5 784.75,-650.5 784.75,-691.5"/>
+<polygon fill="khaki" stroke="red" points="784.75,-691.5 703.5,-691.5 703.5,-650.5 784.75,-650.5 784.75,-691.5"/>
 <text xml:space="preserve" text-anchor="middle" x="744.12" y="-674.2" font-family="Times,serif" font-size="14.00">roo_comms</text>
 <text xml:space="preserve" text-anchor="middle" x="744.12" y="-657.7" font-family="Times,serif" font-size="14.00">1.1.4</text>
 </g>
@@ -166,7 +166,7 @@
 <!-- roo_windows -->
 <g id="node30" class="node">
 <title>roo_windows</title>
-<polygon fill="plum" stroke="red" points="425.88,-691.5 336.38,-691.5 336.38,-650.5 425.88,-650.5 425.88,-691.5"/>
+<polygon fill="khaki" stroke="red" points="425.88,-691.5 336.38,-691.5 336.38,-650.5 425.88,-650.5 425.88,-691.5"/>
 <text xml:space="preserve" text-anchor="middle" x="381.12" y="-674.2" font-family="Times,serif" font-size="14.00">roo_windows</text>
 <text xml:space="preserve" text-anchor="middle" x="381.12" y="-657.7" font-family="Times,serif" font-size="14.00">1.6.0</text>
 </g>
@@ -181,7 +181,7 @@
 <!-- roo_display -->
 <g id="node7" class="node">
 <title>roo_display</title>
-<polygon fill="plum" stroke="red" points="343,-474 263.25,-474 263.25,-433 343,-433 343,-474"/>
+<polygon fill="khaki" stroke="red" points="343,-474 263.25,-474 263.25,-433 343,-433 343,-474"/>
 <text xml:space="preserve" text-anchor="middle" x="303.12" y="-456.7" font-family="Times,serif" font-size="14.00">roo_display</text>
 <text xml:space="preserve" text-anchor="middle" x="303.12" y="-440.2" font-family="Times,serif" font-size="14.00">3.2.0</text>
 </g>
@@ -551,7 +551,7 @@
 <!-- roo_windows_wifi -->
 <g id="node32" class="node">
 <title>roo_windows_wifi</title>
-<polygon fill="plum" stroke="red" points="914.12,-791 796.12,-791 796.12,-750 914.12,-750 914.12,-791"/>
+<polygon fill="khaki" stroke="red" points="914.12,-791 796.12,-791 796.12,-750 914.12,-750 914.12,-791"/>
 <text xml:space="preserve" text-anchor="middle" x="855.12" y="-773.7" font-family="Times,serif" font-size="14.00">roo_windows_wifi</text>
 <text xml:space="preserve" text-anchor="middle" x="855.12" y="-757.2" font-family="Times,serif" font-size="14.00">1.1.3</text>
 </g>
