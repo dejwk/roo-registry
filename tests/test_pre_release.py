@@ -19,6 +19,7 @@ from pre_release import (
     build_update_library_command,
     create_argument_parser,
     increment_version,
+    run_bazel_tests,
     update_roo_testing_examples,
     update_module_bazel_version,
 )
@@ -106,6 +107,24 @@ class PreReleaseTest(unittest.TestCase):
                 'bazel_dep(name = "roo_testing", version = "2.0.2")\n',
                 example_module.read_text(encoding="utf-8"),
             )
+
+    def test_roo_testing_uses_the_root_all_test_target(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            module_dir = Path(temp_dir) / "roo_testing"
+            module_dir.mkdir()
+
+            with (
+                mock.patch.object(pre_release_module.os.path, "exists", return_value=False),
+                mock.patch.object(
+                    pre_release_module.subprocess,
+                    "run",
+                    return_value=subprocess.CompletedProcess([], 0),
+                ) as run,
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
+                self.assertTrue(run_bazel_tests(module_dir))
+
+            self.assertEqual(["bazel", "test", ":all"], run.call_args_list[0].args[0])
 
     def make_release_fixture(self):
         temp_dir = tempfile.TemporaryDirectory()

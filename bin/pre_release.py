@@ -248,9 +248,16 @@ def run_bazel_tests(module_dir: Path) -> bool:
     print(f"\nRunning bazel tests in {module_dir}...")
     
     try:
-        # Run bazel test with explicit bazelrc to use user's cache settings
+        # roo_testing's root :all suite is its release test entry point.
+        # Recursive expansion also includes profile-specific support targets
+        # that cannot be analyzed under the default Arduino frontend.
+        if module_dir.name == ROO_TESTING_MODULE:
+            bazel_cmd = ["bazel", "test", ":all"]
+        else:
+            bazel_cmd = ["bazel", "test", "..."]
+
+        # Use the explicit user rc path so local Bazel cache settings are kept.
         home_bazelrc = os.path.expanduser("~/.bazelrc")
-        bazel_cmd = ["bazel", "test", "..."]
         if os.path.exists(home_bazelrc):
             bazel_cmd.insert(1, f"--bazelrc={home_bazelrc}")
         
