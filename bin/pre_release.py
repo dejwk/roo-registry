@@ -18,8 +18,9 @@ import sys
 import os
 import subprocess
 import argparse
+import re
 from pathlib import Path
-from typing import Tuple, Optional
+from typing import List, Tuple, Optional
 
 # Check for GitPython availability
 try:
@@ -38,6 +39,9 @@ from module_utils import (
     get_upstream_branch, git_push, replace_module_version,
 )
 from update_library import validate_registry_dependencies
+
+
+ROO_TESTING_MODULE = "roo_testing"
 
 
 def run_command(cmd: list, cwd: Optional[Path] = None, check: bool = True) -> subprocess.CompletedProcess:
@@ -66,6 +70,45 @@ def build_update_library_command(
     if not latest_deps:
         command.append("--nolatest_deps")
     return command
+
+
+def update_roo_testing_examples(module_dir: Path, version: str) -> Optional[List[Path]]:
+    """Update roo_testing version pins in its example MODULE.bazel files.
+
+    roo_testing is a Bazel testing framework rather than an Arduino library, so
+    its release metadata consists of the module version and the examples that
+    consume it.  The examples deliberately retain their other dependencies.
+    """
+    examples_dir = module_dir / "examples"
+    if not examples_dir.is_dir():
+        print("No examples directory found; no example version references to update")
+        return []
+
+    dependency_pattern = re.compile(
+        r'(\bbazel_dep\s*\(\s*name\s*=\s*["\']roo_testing["\']\s*,\s*'
+        r'version\s*=\s*["\'])[^"\']+(["\'])',
+        re.DOTALL,
+    )
+    updated_files = []
+    for module_bazel_path in sorted(examples_dir.rglob("MODULE.bazel")):
+        try:
+            content = module_bazel_path.read_text(encoding="utf-8")
+            updated_content, substitutions = dependency_pattern.subn(
+                rf'\g<1>{version}\g<2>', content
+            )
+            if substitutions:
+                module_bazel_path.write_text(updated_content, encoding="utf-8")
+                updated_files.append(module_bazel_path)
+                print(f"  Updated {module_bazel_path.relative_to(module_dir)}")
+        except OSError as error:
+            print(f"Error updating {module_bazel_path}: {error}")
+            return None
+
+    if updated_files:
+        print(f"✓ Updated {len(updated_files)} example version reference(s)")
+    else:
+        print("No roo_testing version references found in examples")
+    return updated_files
 
 
 def check_git_status(module_dir: Path, allow_ahead: bool = False) -> bool:
@@ -284,7 +327,7 @@ def pre_release(
     
     print(f"Current version: {current_version}")
 
-    if not latest_deps:
+    if not latest_deps and module_name != ROO_TESTING_MODULE:
         parsed_name, _, dependencies = parse_module_bazel(module_bazel_path)
         if parsed_name != module_name:
             print(
@@ -308,11 +351,14 @@ def pre_release(
     else:
         print(f"New version: {new_version}")
 
-    dependency_policy = (
-        "latest versions in the local Roo registry"
-        if latest_deps
-        else "exact versions from MODULE.bazel"
-    )
+    if module_name == ROO_TESTING_MODULE:
+        dependency_policy = "not applicable (roo_testing has no Arduino metadata)"
+    else:
+        dependency_policy = (
+            "latest versions in the local Roo registry"
+            if latest_deps
+            else "exact versions from MODULE.bazel"
+        )
     print(f"Dependency policy: {dependency_policy}")
     
     # Confirm with user
@@ -330,24 +376,32 @@ def pre_release(
         if not update_module_bazel_version(module_bazel_path, new_version):
             return False
     
-    # Step 5: Run update_library.py
-    print(f"\nRunning update_library.py...")
-    update_script = registry_dir / "bin" / "update_library.py"
-    update_command = build_update_library_command(
-        update_script,
-        module_name,
-        latest_deps,
-    )
-    result = subprocess.run(
-        update_command,
-        cwd=registry_dir,
-        capture_output=False,
-        text=True,
-    )
-    
-    if result.returncode != 0:
-        print(f"✗ Failed to update library files")
-        return False
+    # Step 5: Synchronize release metadata.
+    example_files = []
+    if module_name == ROO_TESTING_MODULE:
+        print("\nUpdating roo_testing example version references...")
+        updated_examples = update_roo_testing_examples(module_dir, new_version)
+        if updated_examples is None:
+            return False
+        example_files = updated_examples
+    else:
+        print(f"\nRunning update_library.py...")
+        update_script = registry_dir / "bin" / "update_library.py"
+        update_command = build_update_library_command(
+            update_script,
+            module_name,
+            latest_deps,
+        )
+        result = subprocess.run(
+            update_command,
+            cwd=registry_dir,
+            capture_output=False,
+            text=True,
+        )
+
+        if result.returncode != 0:
+            print(f"✗ Failed to update library files")
+            return False
     
     # Step 6: Run bazel tests (unless skipped)
     if not skip_tests:
@@ -362,7 +416,11 @@ def pre_release(
     
     # Step 7: Git add
     print(f"\nStaging changes...")
-    files_to_add = ["MODULE.bazel", "library.json", "library.properties"]
+    files_to_add = [Path("MODULE.bazel")]
+    if module_name == ROO_TESTING_MODULE:
+        files_to_add.extend(path.relative_to(module_dir) for path in example_files)
+    else:
+        files_to_add.extend([Path("library.json"), Path("library.properties")])
     
     try:
         repo = git.Repo(module_dir)

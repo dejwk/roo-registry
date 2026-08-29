@@ -36,6 +36,9 @@ sys.path.insert(0, str(Path(__file__).parent))
 from module_utils import parse_module_bazel, git_push
 
 
+ROO_TESTING_MODULE = "roo_testing"
+
+
 def run_command(cmd: list, cwd: Optional[Path] = None, check: bool = True, show_output: bool = False) -> subprocess.CompletedProcess:
     """Run a command and return the result."""
     result = subprocess.run(
@@ -303,6 +306,10 @@ def post_release(module_name: str, skip_publish: bool = False) -> bool:
     print(f"Finalizing release for {module_name}")
     print(f"Module directory: {module_dir}")
     print(f"Registry directory: {registry_dir}")
+
+    if module_name == ROO_TESTING_MODULE and not skip_publish:
+        print("roo_testing is not an Arduino library; skipping PlatformIO publish")
+        skip_publish = True
     
     # Validate module directory
     if not module_dir.exists() or not module_dir.is_dir():

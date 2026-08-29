@@ -19,6 +19,7 @@ from pre_release import (
     build_update_library_command,
     create_argument_parser,
     increment_version,
+    update_roo_testing_examples,
     update_module_bazel_version,
 )
 from update_library import update_library_files
@@ -84,6 +85,26 @@ class PreReleaseTest(unittest.TestCase):
             self.assertIn(
                 'version = "5.0.0",',
                 module_path.read_text(encoding="utf-8"),
+            )
+
+    def test_roo_testing_example_versions_are_updated_without_other_changes(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            module_dir = Path(temp_dir)
+            example_module = module_dir / "examples" / "simple" / "MODULE.bazel"
+            example_module.parent.mkdir(parents=True)
+            example_module.write_text(
+                'bazel_dep(name = "rules_cc", version = "0.2.17")\n'
+                'bazel_dep(name = "roo_testing", version = "2.0.1")\n',
+                encoding="utf-8",
+            )
+
+            updated = update_roo_testing_examples(module_dir, "2.0.2")
+
+            self.assertEqual([example_module], updated)
+            self.assertEqual(
+                'bazel_dep(name = "rules_cc", version = "0.2.17")\n'
+                'bazel_dep(name = "roo_testing", version = "2.0.2")\n',
+                example_module.read_text(encoding="utf-8"),
             )
 
     def make_release_fixture(self):
