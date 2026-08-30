@@ -55,6 +55,21 @@ def should_ignore_module(module_name: str) -> bool:
     return clean_name in IGNORED_MODULES
 
 
+def filter_graph_dependencies(
+    dependencies: List[Dependency], module_name: str
+) -> List[Dependency]:
+    """Exclude development and explicitly ignored dependencies from the graph."""
+    filtered_dependencies = []
+    for dep in dependencies:
+        if dep.dev_dependency:
+            continue
+        if should_ignore_module(dep.name):
+            print(f"Filtering out ignored dependency: {dep.name} from {module_name}")
+            continue
+        filtered_dependencies.append(dep)
+    return filtered_dependencies
+
+
 def get_modules_and_versions(modules_dir: Path) -> Dict[str, List[Version]]:
     """
     Get all modules and their versions from the modules directory.
@@ -243,17 +258,7 @@ def get_untracked_dependencies(
                     f"Warning: Failed to parse dependencies from {library_json_path}: {e}"
                 )
 
-        # Filter out ignored modules from the final dependencies list
-        filtered_dependencies = []
-        for dep in dependencies:
-            if not should_ignore_module(dep.name):
-                filtered_dependencies.append(dep)
-            else:
-                print(
-                    f"Filtering out ignored dependency: {dep.name} from {module_name}"
-                )
-
-        all_deps[module_name] = filtered_dependencies
+        all_deps[module_name] = filter_graph_dependencies(dependencies, module_name)
 
     return all_deps
 
@@ -282,15 +287,7 @@ def get_module_dependencies(
     module_bazel_path = modules_dir / module_name / str(version) / "MODULE.bazel"
     _, _, dependencies = parse_module_bazel(module_bazel_path)
 
-    # Filter out ignored modules from dependencies
-    filtered_dependencies = []
-    for dep in dependencies:
-        if not should_ignore_module(dep.name):
-            filtered_dependencies.append(dep)
-        else:
-            print(f"Filtering out ignored dependency: {dep.name} from {module_name}")
-
-    return filtered_dependencies
+    return filter_graph_dependencies(dependencies, module_name)
 
 
 def get_all_dependencies(

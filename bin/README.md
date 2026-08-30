@@ -33,6 +33,7 @@ python3 generate_dependency_graph.py [--show_outdated]
 - Creates a `dependencies.dot` file in `roo-registry/doc/`
 - Shows modules as nodes with their newest versions
 - Shows dependencies as directed edges
+- Ignores Bazel development dependencies
 - Highlights outdated dependencies in red
 - By default, removes redundant transitive dependencies
 - Modules with outdated dependencies have red outlines
