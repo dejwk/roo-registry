@@ -46,6 +46,15 @@ bazel_dep(
         self.assertEqual("4.5.6", version)
         self.assertEqual(["roo_dep@1.2.3"], [str(dep) for dep in dependencies])
 
+    def test_parse_module_bazel_marks_development_dependencies(self):
+        _, _, dependencies = self.parse(
+            'bazel_dep(name = "roo_runtime", version = "1.2.3")\n'
+            'bazel_dep(name = "roo_dev", version = "4.5.6", dev_dependency = True)\n'
+        )
+
+        self.assertFalse(dependencies[0].dev_dependency)
+        self.assertTrue(dependencies[1].dev_dependency)
+
     def test_replace_module_version_preserves_multiline_formatting(self):
         original = """module(
     name = "roo_consumer",

@@ -67,6 +67,7 @@ def build_update_library_command(
 ) -> list:
     """Build the metadata synchronization command for a release."""
     command = [sys.executable, str(update_script), module_name]
+    command.append("--skip-dev-dependencies")
     if not latest_deps:
         command.append("--nolatest_deps")
     return command

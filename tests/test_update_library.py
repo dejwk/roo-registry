@@ -175,6 +175,34 @@ bazel_dep(
             get_missing_registry_dependencies(dependencies, self.registry_dir),
         )
 
+    def test_skip_dev_dependencies_excludes_them_from_registry_metadata(self):
+        self.add_registry_version("roo_dep", "1.2.3")
+        self.add_registry_version("roo_dev", "4.5.6")
+        module_dir = self.add_module(
+            extra_dependencies=(
+                'bazel_dep(name = "roo_dev", version = "4.5.6", '
+                'dev_dependency = True)\n'
+            )
+        )
+
+        with redirect_stdout(StringIO()):
+            self.assertTrue(
+                update_library_files(
+                    "roo_consumer",
+                    latest_deps=False,
+                    skip_dev_dependencies=True,
+                    registry_dir=self.registry_dir,
+                    base_dir=self.base_dir,
+                )
+            )
+
+        metadata = json.loads((module_dir / "library.json").read_text())
+        self.assertEqual({"dejwk/roo_dep": ">=1.2.3"}, metadata["dependencies"])
+        self.assertIn(
+            "depends=roo_dep\n",
+            (module_dir / "library.properties").read_text(),
+        )
+
     def test_dependency_update_preserves_multiline_formatting(self):
         module_dir = self.add_module()
         module_path = module_dir / "MODULE.bazel"

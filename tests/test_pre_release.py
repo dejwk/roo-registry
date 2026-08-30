@@ -68,6 +68,8 @@ class PreReleaseTest(unittest.TestCase):
         pinned_command = build_update_library_command(script, "roo_consumer", False)
 
         self.assertNotIn("--nolatest_deps", default_command)
+        self.assertIn("--skip-dev-dependencies", default_command)
+        self.assertIn("--skip-dev-dependencies", pinned_command)
         self.assertEqual("--nolatest_deps", pinned_command[-1])
 
     def test_version_update_accepts_multiline_module_declaration(self):

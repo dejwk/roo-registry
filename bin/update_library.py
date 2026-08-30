@@ -209,7 +209,12 @@ def update_module_bazel(
         return False
 
 
-def update_library_json(library_json_path: Path, module_version: str, dependencies: List[Dependency]) -> bool:
+def update_library_json(
+    library_json_path: Path,
+    module_version: str,
+    dependencies: List[Dependency],
+    skip_dev_dependencies: bool = False,
+) -> bool:
     """
     Update library.json file with new version and dependency information.
     Preserves all existing content except version and dependencies.
@@ -229,7 +234,12 @@ def update_library_json(library_json_path: Path, module_version: str, dependenci
         library_data['version'] = module_version
         
         # Filter to only roo dependencies (exclude external ones like nanopb and roo_testing)
-        roo_dependencies = [dep for dep in dependencies if dep.name.startswith('roo_') and dep.name != 'roo_testing']
+        roo_dependencies = [
+            dep for dep in dependencies
+            if dep.name.startswith('roo_')
+            and dep.name != 'roo_testing'
+            and (not skip_dev_dependencies or not dep.dev_dependency)
+        ]
         
         # Update dependencies in the existing format: "dejwk/<library_name>": ">=x.y.z"
         if roo_dependencies:
@@ -258,7 +268,12 @@ def update_library_json(library_json_path: Path, module_version: str, dependenci
         return False
 
 
-def update_library_properties(library_properties_path: Path, module_version: str, dependencies: List[Dependency]) -> bool:
+def update_library_properties(
+    library_properties_path: Path,
+    module_version: str,
+    dependencies: List[Dependency],
+    skip_dev_dependencies: bool = False,
+) -> bool:
     """
     Update library.properties file with new version and dependency information.
     Preserves all existing content except version and depends fields.
@@ -293,7 +308,12 @@ def update_library_properties(library_properties_path: Path, module_version: str
                 updated_lines.append(line)
         
         # Filter to only roo dependencies
-        roo_dependencies = [dep for dep in dependencies if dep.name.startswith('roo_') and dep.name != 'roo_testing']
+        roo_dependencies = [
+            dep for dep in dependencies
+            if dep.name.startswith('roo_')
+            and dep.name != 'roo_testing'
+            and (not skip_dev_dependencies or not dep.dev_dependency)
+        ]
         
         # Add new depends line if we have dependencies
         if roo_dependencies:
@@ -339,6 +359,7 @@ def update_library_files(
     module_name: str,
     force: bool = False,
     latest_deps: bool = True,
+    skip_dev_dependencies: bool = False,
     *,
     registry_dir: Optional[Path] = None,
     base_dir: Optional[Path] = None,
@@ -442,12 +463,22 @@ def update_library_files(
     
     # Update library.json
     print("\nUpdating library.json...")
-    if not update_library_json(library_json_path, parsed_version, updated_dependencies):
+    if not update_library_json(
+        library_json_path,
+        parsed_version,
+        updated_dependencies,
+        skip_dev_dependencies,
+    ):
         success = False
     
     # Update library.properties
     print("\nUpdating library.properties...")
-    if not update_library_properties(library_properties_path, parsed_version, updated_dependencies):
+    if not update_library_properties(
+        library_properties_path,
+        parsed_version,
+        updated_dependencies,
+        skip_dev_dependencies,
+    ):
         success = False
     
     return success
@@ -465,6 +496,11 @@ def create_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "module_name",
         help="Name of the module to update (e.g., roo_display)"
+    )
+    parser.add_argument(
+        "--skip-dev-dependencies",
+        action="store_true",
+        help="Exclude Bazel development dependencies from Arduino and PlatformIO metadata",
     )
     parser.add_argument(
         "--force",
@@ -491,6 +527,7 @@ def main():
         args.module_name,
         args.force,
         latest_deps=not args.nolatest_deps,
+        skip_dev_dependencies=args.skip_dev_dependencies,
     )
     
     if success:

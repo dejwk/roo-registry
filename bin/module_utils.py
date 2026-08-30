@@ -239,9 +239,10 @@ class Version:
 class Dependency:
     """Class to represent a module dependency."""
     
-    def __init__(self, name: str, version: str):
+    def __init__(self, name: str, version: str, dev_dependency: bool = False):
         self.name = name
         self.version = Version(version)
+        self.dev_dependency = dev_dependency
     
     def __str__(self):
         return f"{self.name}@{self.version}"
@@ -329,7 +330,13 @@ def parse_module_bazel(module_bazel_path: Path) -> Tuple[str, str, List[Dependen
                 continue
             
             try:
-                dependency = Dependency(dep_name, dep_version)
+                dependency = Dependency(
+                    dep_name,
+                    dep_version,
+                    dev_dependency=bool(
+                        re.search(r'\bdev_dependency\s*=\s*True\b', match.group(1))
+                    ),
+                )
                 dependencies.append(dependency)
             except ValueError as e:
                 message = (
