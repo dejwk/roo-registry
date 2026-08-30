@@ -15,7 +15,7 @@ digraph dependencies {
     "roo_flags" [label="roo_flags\n1.2.4", fillcolor="#b1dbab", color="black"];
     "roo_fonts_basic" [label="roo_fonts_basic\n1.0.4", fillcolor="#b1dbab", color="black"];
     "roo_fonts_material" [label="roo_fonts_material\n1.1.1", fillcolor="#b1dbab", color="black"];
-    "roo_icons" [label="roo_icons\n1.2.3", fillcolor="khaki", color="red"];
+    "roo_icons" [label="roo_icons\n1.2.4", fillcolor="#b1dbab", color="black"];
     "roo_io" [label="roo_io\n2.2.7", fillcolor="#b1dbab", color="red"];
     "roo_io_sdfat" [label="roo_io_sdfat\n1.0.0", fillcolor="plum", color="black"];
     "roo_locale" [label="roo_locale\n1.1.3", fillcolor="#b1dbab", color="black"];
@@ -54,7 +54,7 @@ digraph dependencies {
     "roo_display_lvgl" -> "roo_display" [color=red, fontcolor=red, label="3.0.3\n(latest: 3.2.2)"];
     "roo_fonts_basic" -> "roo_display";
     "roo_fonts_material" -> "roo_display";
-    "roo_icons" -> "roo_display" [color=red, fontcolor=red, label="3.1.2\n(latest: 3.2.2)"];
+    "roo_icons" -> "roo_display";
     "roo_io" -> "roo_logging";
     "roo_logging" -> "roo_backport";
     "roo_logging" -> "roo_flags";
@@ -79,7 +79,7 @@ digraph dependencies {
     "roo_windows" -> "roo_fonts_basic" [color=red, fontcolor=red, label="1.0.2\n(latest: 1.0.4)"];
     "roo_windows" -> "roo_fonts_material" [color=red, fontcolor=red, label="1.0.0\n(latest: 1.1.1)"];
     "roo_windows" -> "roo_locale" [color=red, fontcolor=red, label="1.1.2\n(latest: 1.1.3)"];
-    "roo_windows" -> "roo_icons";
+    "roo_windows" -> "roo_icons" [color=red, fontcolor=red, label="1.2.3\n(latest: 1.2.4)"];
     "roo_windows" -> "roo_scheduler" [color=red, fontcolor=red, label="2.1.9\n(latest: 2.1.10)"];
     "roo_windows_transceivers" -> "roo_transceivers" [color=red, fontcolor=red, label="1.1.3\n(latest: 1.1.7)"];
     "roo_windows_transceivers" -> "roo_windows" [color=red, fontcolor=red, label="1.4.1\n(latest: 1.6.0)"];
