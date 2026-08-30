@@ -123,9 +123,9 @@
 <!-- roo_transceivers -->
 <g id="node27" class="node">
 <title>roo_transceivers</title>
-<polygon fill="khaki" stroke="red" points="202.88,-573.5 97.62,-573.5 97.62,-532.5 202.88,-532.5 202.88,-573.5"/>
+<polygon fill="#b1dbab" stroke="black" points="202.88,-573.5 97.62,-573.5 97.62,-532.5 202.88,-532.5 202.88,-573.5"/>
 <text xml:space="preserve" text-anchor="middle" x="150.25" y="-556.2" font-family="Times,serif" font-size="14.00">roo_transceivers</text>
-<text xml:space="preserve" text-anchor="middle" x="150.25" y="-539.7" font-family="Times,serif" font-size="14.00">1.1.6</text>
+<text xml:space="preserve" text-anchor="middle" x="150.25" y="-539.7" font-family="Times,serif" font-size="14.00">1.1.7</text>
 </g>
 <!-- roo_comms&#45;&gt;roo_transceivers -->
 <g id="edge8" class="edge">
@@ -133,7 +133,7 @@
 <path fill="none" stroke="red" d="M837.22,-668.88C763.49,-666.29 603.96,-657.97 472,-632.5 409.28,-620.39 396.62,-605.27 334.25,-591.5 283.67,-580.33 267.13,-585.23 214.39,-574.01"/>
 <polygon fill="red" stroke="red" points="215.34,-570.63 204.81,-571.87 213.81,-577.46 215.34,-570.63"/>
 <text xml:space="preserve" text-anchor="middle" x="498.62" y="-613.75" font-family="Times,serif" font-size="10.00" fill="red">1.1.5</text>
-<text xml:space="preserve" text-anchor="middle" x="498.62" y="-602.5" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.1.6)</text>
+<text xml:space="preserve" text-anchor="middle" x="498.62" y="-602.5" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.1.7)</text>
 </g>
 <!-- roo_quantity -->
 <g id="node21" class="node">
@@ -436,10 +436,8 @@
 <!-- roo_transceivers&#45;&gt;roo_prefs -->
 <g id="edge35" class="edge">
 <title>roo_transceivers&#45;&gt;roo_prefs</title>
-<path fill="none" stroke="red" d="M203.35,-532.04C234.87,-520.25 275.66,-505.12 312,-492 331.87,-484.83 339.05,-483.31 361.48,-474.55"/>
-<polygon fill="red" stroke="red" points="362.7,-477.83 370.69,-470.87 360.11,-471.33 362.7,-477.83"/>
-<text xml:space="preserve" text-anchor="middle" x="338.62" y="-505" font-family="Times,serif" font-size="10.00" fill="red">1.2.10</text>
-<text xml:space="preserve" text-anchor="middle" x="338.62" y="-493.75" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.3.1)</text>
+<path fill="none" stroke="black" d="M203.19,-533.85C244.17,-519.52 302.5,-498.52 361.79,-474.48"/>
+<polygon fill="black" stroke="black" points="362.75,-477.86 370.68,-470.84 360.1,-471.38 362.75,-477.86"/>
 </g>
 <!-- roo_transport -->
 <g id="node28" class="node">
@@ -470,8 +468,8 @@
 <!-- roo_wifi&#45;&gt;roo_prefs -->
 <g id="edge38" class="edge">
 <title>roo_wifi&#45;&gt;roo_prefs</title>
-<path fill="none" stroke="red" d="M25.99,-591.09C22.65,-573.54 21.2,-548.35 35,-532.5 129.92,-423.46 216.98,-512.08 361.35,-473.99"/>
-<polygon fill="red" stroke="red" points="362.18,-477.4 370.84,-471.3 360.27,-470.66 362.18,-477.4"/>
+<path fill="none" stroke="red" d="M25.98,-591.08C22.62,-573.51 21.17,-548.32 35,-532.5 130.15,-423.65 217.13,-512.57 361.36,-474.01"/>
+<polygon fill="red" stroke="red" points="362.19,-477.41 370.84,-471.28 360.26,-470.68 362.19,-477.41"/>
 <text xml:space="preserve" text-anchor="middle" x="61.62" y="-554.75" font-family="Times,serif" font-size="10.00" fill="red">1.2.9</text>
 <text xml:space="preserve" text-anchor="middle" x="61.62" y="-543.5" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.3.1)</text>
 </g>
@@ -514,48 +512,48 @@
 <!-- roo_windows_transceivers -->
 <g id="node31" class="node">
 <title>roo_windows_transceivers</title>
-<polygon fill="khaki" stroke="red" points="344.62,-791 183.88,-791 183.88,-750 344.62,-750 344.62,-791"/>
-<text xml:space="preserve" text-anchor="middle" x="264.25" y="-773.7" font-family="Times,serif" font-size="14.00">roo_windows_transceivers</text>
-<text xml:space="preserve" text-anchor="middle" x="264.25" y="-757.2" font-family="Times,serif" font-size="14.00">1.0.0</text>
+<polygon fill="khaki" stroke="red" points="336.62,-791 175.88,-791 175.88,-750 336.62,-750 336.62,-791"/>
+<text xml:space="preserve" text-anchor="middle" x="256.25" y="-773.7" font-family="Times,serif" font-size="14.00">roo_windows_transceivers</text>
+<text xml:space="preserve" text-anchor="middle" x="256.25" y="-757.2" font-family="Times,serif" font-size="14.00">1.0.0</text>
 </g>
 <!-- roo_windows_transceivers&#45;&gt;roo_transceivers -->
 <g id="edge44" class="edge">
 <title>roo_windows_transceivers&#45;&gt;roo_transceivers</title>
-<path fill="none" stroke="red" d="M253.73,-749.61C233.62,-711.61 189.65,-628.47 166.01,-583.8"/>
-<polygon fill="red" stroke="red" points="169.22,-582.38 161.45,-575.18 163.04,-585.65 169.22,-582.38"/>
-<text xml:space="preserve" text-anchor="middle" x="248.91" y="-672.75" font-family="Times,serif" font-size="10.00" fill="red">1.1.3</text>
-<text xml:space="preserve" text-anchor="middle" x="248.91" y="-661.5" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.1.6)</text>
+<path fill="none" stroke="red" d="M246.47,-749.61C227.81,-711.69 187.05,-628.82 165.05,-584.08"/>
+<polygon fill="red" stroke="red" points="168.23,-582.63 160.68,-575.2 161.95,-585.72 168.23,-582.63"/>
+<text xml:space="preserve" text-anchor="middle" x="243.86" y="-672.75" font-family="Times,serif" font-size="10.00" fill="red">1.1.3</text>
+<text xml:space="preserve" text-anchor="middle" x="243.86" y="-661.5" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.1.7)</text>
 </g>
 <!-- roo_windows_transceivers&#45;&gt;roo_windows -->
 <g id="edge45" class="edge">
 <title>roo_windows_transceivers&#45;&gt;roo_windows</title>
-<path fill="none" stroke="red" d="M297.01,-749.53C321.5,-734.61 355.18,-714.09 381.73,-697.91"/>
-<polygon fill="red" stroke="red" points="383.52,-700.92 390.24,-692.73 379.88,-694.94 383.52,-700.92"/>
-<text xml:space="preserve" text-anchor="middle" x="385.21" y="-722.5" font-family="Times,serif" font-size="10.00" fill="red">1.4.1</text>
-<text xml:space="preserve" text-anchor="middle" x="385.21" y="-711.25" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.6.0)</text>
+<path fill="none" stroke="red" d="M290.65,-749.53C316.47,-734.55 352.03,-713.91 379.98,-697.69"/>
+<polygon fill="red" stroke="red" points="381.69,-700.75 388.58,-692.7 378.18,-694.69 381.69,-700.75"/>
+<text xml:space="preserve" text-anchor="middle" x="381.92" y="-722.5" font-family="Times,serif" font-size="10.00" fill="red">1.4.1</text>
+<text xml:space="preserve" text-anchor="middle" x="381.92" y="-711.25" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.6.0)</text>
 </g>
 <!-- roo_windows_wifi -->
 <g id="node32" class="node">
 <title>roo_windows_wifi</title>
-<polygon fill="khaki" stroke="red" points="141.25,-791 23.25,-791 23.25,-750 141.25,-750 141.25,-791"/>
-<text xml:space="preserve" text-anchor="middle" x="82.25" y="-773.7" font-family="Times,serif" font-size="14.00">roo_windows_wifi</text>
-<text xml:space="preserve" text-anchor="middle" x="82.25" y="-757.2" font-family="Times,serif" font-size="14.00">1.1.3</text>
+<polygon fill="khaki" stroke="red" points="136.25,-791 18.25,-791 18.25,-750 136.25,-750 136.25,-791"/>
+<text xml:space="preserve" text-anchor="middle" x="77.25" y="-773.7" font-family="Times,serif" font-size="14.00">roo_windows_wifi</text>
+<text xml:space="preserve" text-anchor="middle" x="77.25" y="-757.2" font-family="Times,serif" font-size="14.00">1.1.3</text>
 </g>
 <!-- roo_windows_wifi&#45;&gt;roo_wifi -->
 <g id="edge46" class="edge">
 <title>roo_windows_wifi&#45;&gt;roo_wifi</title>
-<path fill="none" stroke="red" d="M75.79,-749.68C67.05,-722.87 51.39,-674.8 41.16,-643.4"/>
-<polygon fill="red" stroke="red" points="44.55,-642.52 38.13,-634.1 37.9,-644.69 44.55,-642.52"/>
-<text xml:space="preserve" text-anchor="middle" x="95.98" y="-722.5" font-family="Times,serif" font-size="10.00" fill="red">1.1.3</text>
-<text xml:space="preserve" text-anchor="middle" x="95.98" y="-711.25" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.1.4)</text>
+<path fill="none" stroke="red" d="M71.42,-749.68C63.54,-722.87 49.41,-674.8 40.19,-643.4"/>
+<polygon fill="red" stroke="red" points="43.63,-642.72 37.46,-634.11 36.92,-644.69 43.63,-642.72"/>
+<text xml:space="preserve" text-anchor="middle" x="92.24" y="-722.5" font-family="Times,serif" font-size="10.00" fill="red">1.1.3</text>
+<text xml:space="preserve" text-anchor="middle" x="92.24" y="-711.25" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.1.4)</text>
 </g>
 <!-- roo_windows_wifi&#45;&gt;roo_windows -->
 <g id="edge47" class="edge">
 <title>roo_windows_wifi&#45;&gt;roo_windows</title>
-<path fill="none" stroke="red" d="M141.68,-749.77C179.17,-737.58 228.72,-721.94 273,-709.5 304.27,-700.71 339.48,-691.92 368.05,-685.06"/>
-<polygon fill="red" stroke="red" points="368.67,-688.51 377.58,-682.79 367.04,-681.7 368.67,-688.51"/>
-<text xml:space="preserve" text-anchor="middle" x="299.62" y="-722.5" font-family="Times,serif" font-size="10.00" fill="red">1.4.2</text>
-<text xml:space="preserve" text-anchor="middle" x="299.62" y="-711.25" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.6.0)</text>
+<path fill="none" stroke="red" d="M136.65,-749.65C174.13,-737.42 223.67,-721.78 268,-709.5 301.02,-700.36 338.32,-691.36 368.19,-684.46"/>
+<polygon fill="red" stroke="red" points="368.81,-687.91 377.77,-682.27 367.25,-681.09 368.81,-687.91"/>
+<text xml:space="preserve" text-anchor="middle" x="294.62" y="-722.5" font-family="Times,serif" font-size="10.00" fill="red">1.4.2</text>
+<text xml:space="preserve" text-anchor="middle" x="294.62" y="-711.25" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.6.0)</text>
 </g>
 </g>
 </svg>
