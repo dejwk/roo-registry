@@ -31,7 +31,7 @@ digraph dependencies {
     "roo_time_ds3231" [label="roo_time_ds3231\n2.0.0", fillcolor="#b1dbab", color="black"];
     "roo_transceivers" [label="roo_transceivers\n1.1.7", fillcolor="khaki", color="red"];
     "roo_transport" [label="roo_transport\n1.2.0", fillcolor="#b1dbab", color="black"];
-    "roo_wifi" [label="roo_wifi\n1.1.5", fillcolor="khaki", color="red"];
+    "roo_wifi" [label="roo_wifi\n1.1.6", fillcolor="#b1dbab", color="black"];
     "roo_windows" [label="roo_windows\n1.6.1", fillcolor="khaki", color="red"];
     "roo_windows_transceivers" [label="roo_windows_transceivers\n1.0.0", fillcolor="khaki", color="red"];
     "roo_windows_wifi" [label="roo_windows_wifi\n1.1.3", fillcolor="khaki", color="red"];
@@ -74,7 +74,7 @@ digraph dependencies {
     "roo_transceivers" -> "roo_prefs" [color=red, fontcolor=red, label="1.3.1\n(latest: 1.3.2)"];
     "roo_transport" -> "roo_collections";
     "roo_transport" -> "roo_io";
-    "roo_wifi" -> "roo_prefs" [color=red, fontcolor=red, label="1.3.1\n(latest: 1.3.2)"];
+    "roo_wifi" -> "roo_prefs";
     "roo_windows" -> "roo_fonts_basic";
     "roo_windows" -> "roo_fonts_material";
     "roo_windows" -> "roo_locale" [color=red, fontcolor=red, label="1.1.3\n(latest: 1.1.4)"];
@@ -83,6 +83,6 @@ digraph dependencies {
     "roo_windows_transceivers" -> "roo_onewire" [color=red, fontcolor=red, label="2.0.10\n(latest: 2.0.11)"];
     "roo_windows_transceivers" -> "roo_transceivers";
     "roo_windows_transceivers" -> "roo_windows";
-    "roo_windows_wifi" -> "roo_wifi" [color=red, fontcolor=red, label="1.1.3\n(latest: 1.1.5)"];
+    "roo_windows_wifi" -> "roo_wifi" [color=red, fontcolor=red, label="1.1.3\n(latest: 1.1.6)"];
     "roo_windows_wifi" -> "roo_windows" [color=red, fontcolor=red, label="1.4.2\n(latest: 1.6.1)"];
 }
