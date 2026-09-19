@@ -19,6 +19,7 @@ from pre_release import (
     build_update_library_command,
     create_argument_parser,
     increment_version,
+    propose_release_notes_with_codex,
     run_bazel_tests,
     update_roo_testing_examples,
     update_module_bazel_version,
@@ -48,6 +49,42 @@ class PreReleaseTest(unittest.TestCase):
             with self.subTest(flag=flag):
                 args = self.parse(flag, "--nolatest_deps")
                 self.assertTrue(args.nolatest_deps)
+
+    def test_notes_are_accepted_on_the_command_line(self):
+        args = self.parse("--patch", "--notes", "Fix the display driver.")
+        self.assertEqual("Fix the display driver.", args.notes)
+
+    def test_codex_proposal_is_printed_without_prompting(self):
+        result = subprocess.CompletedProcess([], 0, "- Fixed a bug.\n", "")
+        with (
+            mock.patch.object(
+                pre_release_module, "find_codex_executable", return_value="codex"
+            ),
+            mock.patch.object(pre_release_module, "run_command", return_value=result) as run,
+            contextlib.redirect_stdout(io.StringIO()) as output,
+        ):
+            self.assertEqual(
+                "- Fixed a bug.",
+                propose_release_notes_with_codex(Path("/module"), "1.2.3"),
+            )
+        self.assertIn("Proposed release notes", output.getvalue())
+        self.assertIn("Generating release notes with Codex", output.getvalue())
+        command = run.call_args.args[0]
+        self.assertEqual(["codex", "exec", "--ephemeral", "--sandbox", "read-only"], command[:5])
+
+    def test_missing_codex_returns_a_clear_error_without_running_a_command(self):
+        with (
+            mock.patch.object(
+                pre_release_module, "find_codex_executable", return_value=None
+            ),
+            mock.patch.object(pre_release_module, "run_command") as run,
+            contextlib.redirect_stdout(io.StringIO()) as output,
+        ):
+            self.assertIsNone(
+                propose_release_notes_with_codex(Path("/module"), "1.2.3")
+            )
+        self.assertIn("Codex CLI was not found", output.getvalue())
+        run.assert_not_called()
 
     def test_version_mode_is_required_and_mutually_exclusive(self):
         with contextlib.redirect_stderr(io.StringIO()):
@@ -157,12 +194,27 @@ class PreReleaseTest(unittest.TestCase):
             encoding="utf-8",
         )
 
-        repo = git.Repo.init(module_dir)
-        with repo.config_writer() as config:
-            config.set_value("user", "name", "Release Test")
-            config.set_value("user", "email", "release-test@example.invalid")
-        repo.index.add(["MODULE.bazel", "library.json", "library.properties"])
-        repo.index.commit("Initial")
+        # Use the files ref format because the installed GitPython cannot read
+        # this environment's default reftable format.
+        subprocess.run(
+            ["git", "init", "--initial-branch=main", "--ref-format=files", str(module_dir)],
+            check=True,
+        )
+        repo = git.Repo(module_dir)
+        subprocess.run(
+            [
+                "git", "-C", str(module_dir), "-c", "user.name=Release Test",
+                "-c", "user.email=release-test@example.invalid", "add", ".",
+            ],
+            check=True,
+        )
+        subprocess.run(
+            [
+                "git", "-C", str(module_dir), "-c", "user.name=Release Test",
+                "-c", "user.email=release-test@example.invalid", "commit", "-m", "Initial",
+            ],
+            check=True,
+        )
         return temp_dir, base_dir, registry_dir, module_dir
 
     def test_no_latest_composes_with_current_and_major_release_modes(self):
@@ -215,6 +267,7 @@ class PreReleaseTest(unittest.TestCase):
                         mode,
                         skip_tests=True,
                         latest_deps=False,
+                        notes="- Prepared release notes.",
                     )
 
                 self.assertTrue(success)
@@ -233,6 +286,11 @@ class PreReleaseTest(unittest.TestCase):
                 self.assertIn(
                     f"version={expected_version}\n",
                     (module_dir / "library.properties").read_text(),
+                )
+                self.assertTrue(
+                    (module_dir / "RELEASE_NOTES.md").read_text().startswith(
+                        f"# roo_consumer {expected_version}\n\n- Prepared release notes."
+                    )
                 )
 
 

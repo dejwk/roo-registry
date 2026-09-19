@@ -64,6 +64,26 @@ python3 post_release.py roo_display
 - Pushes to remote
 - Publishes to PlatformIO registry
 
+### `github_release.py`
+Creates the GitHub release for a prepared module and waits for its continuous
+test workflow to finish successfully.
+
+**Usage:**
+```bash
+python3 github_release.py <module_name>
+```
+
+**Purpose:**
+- Reads the release version from the module's `MODULE.bazel`
+- Reads the matching top entry of `RELEASE_NOTES.md` and displays the planned actions
+- Adds a GitHub compare link for the full changelog when a previous tag exists
+- Creates the GitHub release and its version tag at the module's current `HEAD`
+- Waits for the tag-triggered `CI` GitHub Actions workflow to become green
+- Offers to run `post_release.py` after CI succeeds
+
+Requires an authenticated [GitHub CLI](https://cli.github.com/).
+
+
 ### `pre_release.py`
 Prepares a module release, synchronizes dependency metadata, tests it, and
 pushes the resulting commits.
@@ -71,7 +91,7 @@ pushes the resulting commits.
 **Usage:**
 ```bash
 python3 pre_release.py <module_name> --major|--minor|--patch|--current \
-    [--nolatest_deps] [--skip-tests]
+    [--nolatest_deps] [--skip-tests] [--notes "Markdown release notes"]
 ```
 
 **Example:**
@@ -93,6 +113,11 @@ python3 pre_release.py roo_display --current --nolatest_deps
   version to have a complete registry entry, and synchronize `library.json`
   and `library.properties` from those pins.
 - `--skip-tests`: Skip running bazel tests
+- `--notes`: Markdown body for the release-note entry. If omitted, a read-only
+  Codex invocation proposes notes, prints them, and updates the document without
+  a separate notes-confirmation prompt.
+  Set `CODEX_BIN` to an executable Codex CLI path when it is not on `PATH`; the
+  script also detects Codex installed by the VS Code extension.
 
 Without `--nolatest_deps`, all four version modes select the maximum registered
 version of each Roo dependency before synchronizing the manifests. Keep the
@@ -105,6 +130,7 @@ libraries.
 - Selects the latest registered Roo dependencies by default, or validates and
   preserves exact pins with `--nolatest_deps`
 - Updates library.json and library.properties
+- Creates or updates the matching top `RELEASE_NOTES.md` entry
 - Runs bazel tests
 - Commits and pushes the changes
 

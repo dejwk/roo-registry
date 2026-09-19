@@ -2,20 +2,22 @@
 """
 Script to prepare a module release using a selected version policy.
 
-Usage: python3 roo-registry/bin/pre_release.py <module_name> --major|--minor|--patch|--current
+Usage: python3 roo-registry/bin/pre_release.py <module_name> --major|--minor|--patch|--current [--notes NOTES]
 
 This script will:
 1. Verify git status is clean and up-to-date with upstream
 2. Select or increment the version number in MODULE.bazel
 3. Synchronize Roo dependencies and update library metadata
 4. Commit and push the changes
-5. Run bazel tests in a subprocess
+5. Create or update the top RELEASE_NOTES.md entry
+6. Run bazel tests in a subprocess
 
 Example: python3 roo-registry/bin/pre_release.py roo_display --patch
 """
 
 import sys
 import os
+import shutil
 import subprocess
 import argparse
 import re
@@ -39,6 +41,7 @@ from module_utils import (
     get_upstream_branch, git_push, replace_module_version,
 )
 from update_library import validate_registry_dependencies
+from release_notes import upsert_draft_entry
 
 
 ROO_TESTING_MODULE = "roo_testing"
@@ -71,6 +74,74 @@ def build_update_library_command(
     if not latest_deps:
         command.append("--nolatest_deps")
     return command
+
+
+def find_codex_executable() -> Optional[str]:
+    """Find Codex on PATH, through CODEX_BIN, or in a VS Code extension."""
+    configured = os.environ.get("CODEX_BIN")
+    if configured:
+        configured_path = Path(configured).expanduser()
+        if configured_path.is_file() and os.access(configured_path, os.X_OK):
+            return str(configured_path)
+        print(f"Warning: CODEX_BIN is not executable: {configured_path}")
+
+    from_path = shutil.which("codex")
+    if from_path:
+        return from_path
+
+    candidates = []
+    for extensions_dir in (
+        Path.home() / ".vscode" / "extensions",
+        Path.home() / ".vscode-server" / "extensions",
+    ):
+        if extensions_dir.is_dir():
+            candidates.extend(
+                path for path in extensions_dir.glob("openai.chatgpt-*/bin/*/codex")
+                if path.is_file() and os.access(path, os.X_OK)
+            )
+    return str(max(candidates, key=lambda path: path.stat().st_mtime)) if candidates else None
+
+
+def propose_release_notes_with_codex(module_dir: Path, version: str) -> Optional[str]:
+    """Ask Codex for a read-only proposed Markdown release-note body."""
+    codex = find_codex_executable()
+    if codex is None:
+        print(
+            "Error: Codex CLI was not found. Install Codex, set CODEX_BIN to its "
+            "executable path, or provide release notes with --notes."
+        )
+        return None
+    print("Generating release notes with Codex; this can take a while...")
+    prompt = (
+        f"Generate concise Markdown release notes for {module_dir.name} version "
+        f"{version}. Review the changes since the most recent release tag in "
+        "this repository. Return only the release-note body: no title, date, "
+        "preamble, full-changelog link, or horizontal rule."
+    )
+    try:
+        result = run_command(
+            [
+                codex, "exec", "--ephemeral", "--sandbox", "read-only",
+                "--cd", str(module_dir), prompt,
+            ],
+            cwd=module_dir,
+            check=False,
+        )
+    except OSError as error:
+        print(f"Error: could not start Codex ({error}). Use --notes to continue.")
+        return None
+    if result.returncode != 0:
+        print("Error: Codex could not generate release notes.")
+        if result.stderr:
+            print(result.stderr, end="", file=sys.stderr)
+        return None
+    notes = result.stdout.strip()
+    if not notes:
+        print("Error: Codex returned empty release notes.")
+        return None
+    print("\nProposed release notes:\n")
+    print(notes)
+    return notes
 
 
 def update_roo_testing_examples(module_dir: Path, version: str) -> Optional[List[Path]]:
@@ -299,6 +370,7 @@ def pre_release(
     bump_type: str,
     skip_tests: bool = False,
     latest_deps: bool = True,
+    notes: Optional[str] = None,
 ) -> bool:
     """
     Prepare a module for release.
@@ -383,8 +455,17 @@ def pre_release(
     if bump_type != "current":
         if not update_module_bazel_version(module_bazel_path, new_version):
             return False
-    
-    # Step 5: Synchronize release metadata.
+
+    # Step 5: Create or update the release-note draft without a second prompt.
+    if notes is None:
+        notes = propose_release_notes_with_codex(module_dir, new_version)
+        if notes is None:
+            return False
+    notes_path = module_dir / "RELEASE_NOTES.md"
+    upsert_draft_entry(notes_path, module_name, new_version, notes)
+    print(f"✓ Updated {notes_path.name} for {new_version}")
+
+    # Step 6: Synchronize release metadata.
     example_files = []
     if module_name == ROO_TESTING_MODULE:
         print("\nUpdating roo_testing example version references...")
@@ -411,9 +492,11 @@ def pre_release(
             print(f"✗ Failed to update library files")
             return False
     
-    # Step 6: Run bazel tests (unless skipped)
+    # Step 7: Run bazel tests (unless skipped)
     if not skip_tests:
         if not run_bazel_tests(module_dir):
+            print("\nRelease notes to commit and publish:\n")
+            print(notes)
             print("\nWarning: Tests failed. Do you want to continue anyway?")
             response = input("Continue with commit and push? [y/N] ")
             if response.lower() != 'y':
@@ -422,13 +505,14 @@ def pre_release(
     else:
         print("\nSkipping tests (--skip-tests flag)")
     
-    # Step 7: Git add
+    # Step 8: Git add
     print(f"\nStaging changes...")
     files_to_add = [Path("MODULE.bazel")]
     if module_name == ROO_TESTING_MODULE:
         files_to_add.extend(path.relative_to(module_dir) for path in example_files)
     else:
         files_to_add.extend([Path("library.json"), Path("library.properties")])
+    files_to_add.append(Path("RELEASE_NOTES.md"))
     
     try:
         repo = git.Repo(module_dir)
@@ -443,7 +527,7 @@ def pre_release(
         print(f"Error staging files: {str(e)}")
         return False
     
-    # Step 8: Git commit, unless --current found metadata already synchronized.
+    # Step 9: Git commit, unless --current found metadata already synchronized.
     staged_changes = list(repo.index.diff("HEAD"))
     if staged_changes:
         commit_message = (
@@ -462,7 +546,7 @@ def pre_release(
     else:
         print("\nNo release metadata changes to commit")
     
-    # Step 9: Git push using module_utils
+    # Step 10: Git push using module_utils
     print(f"\nPushing to remote...")
     success, message = git_push(module_dir)
     if not success:
@@ -485,7 +569,8 @@ This script automates the release preparation process:
 2. Selects or increments the version number in MODULE.bazel
 3. Synchronizes dependencies and updates library metadata
 4. Runs bazel tests
-5. Commits and pushes the changes
+5. Creates or updates the top RELEASE_NOTES.md entry
+6. Commits and pushes the changes
 
 Example: python3 roo-registry/bin/pre_release.py roo_display --patch
         """
@@ -532,6 +617,13 @@ Example: python3 roo-registry/bin/pre_release.py roo_display --patch
         help="Skip running bazel tests"
     )
     parser.add_argument(
+        "--notes",
+        help=(
+            "Markdown body for the release notes. When omitted, Codex generates "
+            "and prints a proposal without requesting notes confirmation."
+        ),
+    )
+    parser.add_argument(
         "--nolatest_deps",
         "--no-latest-deps",
         action="store_true",
@@ -552,6 +644,7 @@ def main():
         args.bump_type,
         args.skip_tests,
         latest_deps=not args.nolatest_deps,
+        notes=args.notes,
     )
     
     sys.exit(0 if success else 1)
