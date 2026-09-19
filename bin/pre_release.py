@@ -238,6 +238,9 @@ def resolve_release_notes(
     notes_path = module_dir / "RELEASE_NOTES.md"
     existing = read_top_entry(notes_path, module_name, version)
     if existing is not None:
+        print(f"\nExisting release notes for {module_name} {version}:\n")
+        print(existing)
+        print()
         response = input(
             f"Release notes for {version} already exist. "
             "Regenerate them with Codex? [y/N] "
