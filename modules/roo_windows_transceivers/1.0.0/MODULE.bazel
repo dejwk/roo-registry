@@ -1,0 +1,20 @@
+module(name = "roo_windows_transceivers", version = "1.0.0")
+
+bazel_dep(name = "rules_cc", version = "0.2.25")
+bazel_dep(name = "roo_testing", version = "2.1.2", dev_dependency = True)
+
+bazel_dep(name = "roo_display", version = "3.3.0")
+bazel_dep(name = "roo_onewire", version = "2.0.12", dev_dependency = True)
+bazel_dep(name = "roo_scheduler", version = "2.2.0")
+bazel_dep(name = "roo_time", version = "2.0.0")
+bazel_dep(name = "roo_transceivers", version = "1.2.0")
+bazel_dep(name = "roo_windows", version = "1.7.0")
+
+archive_override(
+    module_name = "nanopb",
+    urls = ["https://github.com/nanopb/nanopb/releases/download/nanopb-0.4.9.1/nanopb-0.4.9.1.tar.gz"],
+    integrity = "sha256-iCzYRzrZMrJHh+Z2qAjk+ynBLghtILy/usxmwYMJS1w=",
+    strip_prefix = "nanopb",
+    patches = ["//.roo_testing/patches:nanopb_bazel9.patch"],
+    patch_strip = 1,
+)
