@@ -90,30 +90,35 @@ class GithubReleaseTest(unittest.TestCase):
                     )
                 )
 
-    def test_github_repository_accepts_ssh_and_https_remotes(self):
-        def ssh_command(command, *_args, **_kwargs):
-            return subprocess.CompletedProcess(
-                command, 0, "git@github.com:dejwk/roo_logging.git\n", ""
-            )
-
-        with mock.patch.object(github_release, "run_command", side_effect=ssh_command):
-            self.assertEqual(
-                "dejwk/roo_logging",
-                github_release.github_repository(Path("unused")),
-            )
-
-        def https_command(command, *_args, **_kwargs):
-            return subprocess.CompletedProcess(
-                command, 0, "https://github.com/dejwk/roo_logging.git\n", ""
-            )
-
-        with mock.patch.object(
-            github_release, "run_command", side_effect=https_command
+    def test_github_repository_accepts_ssh_https_and_http_remotes(self):
+        for remote in (
+            "git@github.com:dejwk/roo_transport.git",
+            "https://github.com/dejwk/roo_transport.git",
+            "http://github.com/dejwk/roo_transport.git",
+            "http://github.com/dejwk/roo_transport",
         ):
-            self.assertEqual(
-                "dejwk/roo_logging",
-                github_release.github_repository(Path("unused")),
-            )
+            with (
+                self.subTest(remote=remote),
+                mock.patch.object(github_release, "run_command", return_value=
+                                  subprocess.CompletedProcess([], 0, remote + "\n", "")),
+            ):
+                self.assertEqual(
+                    "dejwk/roo_transport",
+                    github_release.github_repository(Path("unused")),
+                )
+
+    def test_github_repository_rejects_other_hosts(self):
+        for remote in (
+            "http://gitlab.com/dejwk/roo_transport.git",
+            "http://github.com.example/dejwk/roo_transport.git",
+        ):
+            with (
+                self.subTest(remote=remote),
+                mock.patch.object(github_release, "run_command", return_value=
+                                  subprocess.CompletedProcess([], 0, remote, "")),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
+                self.assertIsNone(github_release.github_repository(Path("unused")))
 
     def test_wait_for_ci_retries_until_a_successful_completed_run(self):
         responses = iter(

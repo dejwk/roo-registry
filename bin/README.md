@@ -40,6 +40,30 @@ python3 generate_dependency_graph.py [--show_outdated]
 
 **Note:** Should be run from the parent directory of roo-registry.
 
+### `release.py`
+Runs the complete interactive release workflow in order: preparation, GitHub
+release and CI, then registry/PlatformIO publication.
+
+```bash
+python3 roo-registry/bin/release.py roo_display --patch
+python3 roo-registry/bin/release.py roo_display --current --nolatest_deps
+```
+
+Accepts all `pre_release.py` options plus `--skip-publish` for PlatformIO.
+Before committing and pushing, it shows the staged summary and release notes,
+offers either the staged diff against HEAD or the complete diff since the last
+release (including staged changes) in tig, then asks for approval. The last
+release is the highest version tag reachable from HEAD; unrelated branch tags
+and non-version tags are ignored. If no release tag exists, that review stops
+before approval. Both views use tig's pager mode.
+Install `tig` to use that optional review; a failed review stops publication.
+GitHub publication has its own confirmation, and the new release URL is printed
+before waiting for CI. Only green CI reaches the final confirmation to update
+and push the registry, regenerate its graph, and publish to PlatformIO.
+Each stage reports its outcome. Failure, declined approval, or interruption
+stops the workflow without rolling back completed steps. If post-release is
+declined, the script prints the standalone command to finish it later.
+
 ### `post_release.py`
 Finalizes a module release by updating the registry and publishing.
 

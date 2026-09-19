@@ -68,8 +68,8 @@ def github_repository(module_dir: Path) -> Optional[str]:
     remote = result.stdout.strip()
     if remote.startswith("git@github.com:"):
         remote = remote.removeprefix("git@github.com:")
-    elif remote.startswith("https://github.com/"):
-        remote = remote.removeprefix("https://github.com/")
+    elif remote.startswith(("https://github.com/", "http://github.com/")):
+        remote = remote.split("github.com/", 1)[1]
     else:
         print(f"Error: origin is not a GitHub repository: {remote}")
         return None
@@ -217,7 +217,7 @@ def run_post_release(registry_dir: Path, module_name: str) -> bool:
     return result.returncode == 0
 
 
-def create_github_release(module_name: str) -> bool:
+def create_github_release(module_name: str, *, offer_post_release: bool = True) -> bool:
     """Interactively create a module release, then wait for its CI result."""
     registry_dir = Path(__file__).resolve().parent.parent
     module_dir = registry_dir.parent / module_name
@@ -250,8 +250,12 @@ def create_github_release(module_name: str) -> bool:
     if not create_release(module_dir, repository, module_name, tag, sha, notes):
         return False
     print(f"✓ Created GitHub release {repository}@{tag}")
+    print(f"Release: https://github.com/{repository}/releases/tag/{tag}", flush=True)
     if not wait_for_ci(module_dir, repository, tag):
         return False
+
+    if not offer_post_release:
+        return True
 
     if input("Run post-release actions now? [y/N] ").strip().lower() != "y":
         print("GitHub release complete; post-release actions were skipped.")

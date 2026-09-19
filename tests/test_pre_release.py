@@ -155,6 +155,44 @@ class PreReleaseTest(unittest.TestCase):
             )
         self.assertEqual("minor", recommendation)
 
+    def test_release_type_confirmation_accepts_or_overrides_suggestion(self):
+        for response, expected in (
+            ("", "minor"), ("A", "major"), ("i", "minor"),
+            ("P", "patch"), ("c", "current"), (" MAJOR ", "major"),
+            ("minor", "minor"), ("patch", "patch"), ("current", "current"),
+        ):
+            with self.subTest(response=response), mock.patch("builtins.input", return_value=response):
+                self.assertEqual(expected, pre_release_module.confirm_bump_type("minor"))
+
+    def test_release_type_confirmation_reprompts_for_invalid_input(self):
+        with (
+            mock.patch("builtins.input", side_effect=["m", "y", "P"]) as ask,
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            self.assertEqual("patch", pre_release_module.confirm_bump_type("minor"))
+        self.assertEqual(3, ask.call_count)
+
+    def test_automatic_release_uses_confirmed_type_before_resolving_notes(self):
+        temp_dir, _base_dir, registry_dir, module_dir = self.make_release_fixture()
+        self.addCleanup(temp_dir.cleanup)
+        with (
+            mock.patch.object(pre_release_module, "__file__", str(registry_dir / "bin" / "pre_release.py")),
+            mock.patch.object(pre_release_module, "check_git_status", return_value=True),
+            mock.patch.object(pre_release_module, "is_version_published", return_value=True),
+            mock.patch.object(pre_release_module, "suggest_bump_type_with_codex", return_value="minor") as suggest,
+            mock.patch("builtins.input", return_value="C") as ask,
+            mock.patch.object(pre_release_module, "resolve_release_notes", return_value=None) as resolve,
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            self.assertFalse(pre_release_module.pre_release(
+                "roo_consumer", None, skip_tests=True, latest_deps=False,
+                notes="- Dependency upgrades.",
+            ))
+        suggest.assert_called_once_with(module_dir, "4.5.6", "- Dependency upgrades.")
+        ask.assert_called_once()
+        self.assertIn("m[A]jor, m[I]nor, [P]atch, [C]urrent", ask.call_args.args[0])
+        resolve.assert_called_once_with(module_dir, "roo_consumer", "4.5.6", "- Dependency upgrades.")
+
     def test_version_tag_marks_the_current_version_as_published(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             module_dir = Path(temp_dir)
@@ -362,6 +400,62 @@ class PreReleaseTest(unittest.TestCase):
             check=True,
         )
         return temp_dir, base_dir, registry_dir, module_dir
+
+    def test_dependency_upgrades_precede_release_note_generation(self):
+        for mode in (None, "current", "patch"):
+            with self.subTest(mode=mode):
+                temp_dir, base_dir, registry_dir, module_dir = self.make_release_fixture()
+                self.addCleanup(temp_dir.cleanup)
+                latest_dir = registry_dir / "modules" / "roo_dep" / "2.0.0"
+                latest_dir.mkdir()
+                (latest_dir / "MODULE.bazel").write_text(
+                    'module(name = "roo_dep", version = "2.0.0")\n'
+                )
+                (latest_dir / "source.json").write_text("{}\n")
+
+                def run_metadata(command, **kwargs):
+                    self.assertEqual("update_library.py", Path(command[1]).name)
+                    self.assertNotIn("--nolatest_deps", command)
+                    success = update_library_files(
+                        "roo_consumer", registry_dir=registry_dir, base_dir=base_dir
+                    )
+                    return subprocess.CompletedProcess(command, 0 if success else 1)
+
+                def propose(module, version):
+                    self.assertIn(
+                        'bazel_dep(name = "roo_dep", version = "2.0.0")',
+                        (module / "MODULE.bazel").read_text(),
+                    )
+                    # Stop before staging or publishing the fixture release.
+                    return None
+
+                with (
+                    mock.patch.object(pre_release_module, "__file__", str(registry_dir / "bin" / "pre_release.py")),
+                    mock.patch.object(pre_release_module, "check_git_status", return_value=True),
+                    mock.patch.object(pre_release_module, "is_version_published", return_value=True),
+                    mock.patch.object(pre_release_module.subprocess, "run", side_effect=run_metadata) as run,
+                    mock.patch.object(pre_release_module, "propose_release_notes_with_codex", side_effect=propose) as notes,
+                    contextlib.redirect_stdout(io.StringIO()),
+                ):
+                    self.assertFalse(pre_release_module.pre_release("roo_consumer", mode, skip_tests=True))
+                run.assert_called_once()
+                notes.assert_called_once()
+
+    def test_failed_dependency_upgrade_stops_before_release_notes(self):
+        temp_dir, _base_dir, registry_dir, module_dir = self.make_release_fixture()
+        self.addCleanup(temp_dir.cleanup)
+        original_module = (module_dir / "MODULE.bazel").read_bytes()
+        with (
+            mock.patch.object(pre_release_module, "__file__", str(registry_dir / "bin" / "pre_release.py")),
+            mock.patch.object(pre_release_module, "check_git_status", return_value=True),
+            mock.patch.object(pre_release_module.subprocess, "run", return_value=subprocess.CompletedProcess([], 1)),
+            mock.patch.object(pre_release_module, "propose_release_notes_with_codex") as notes,
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            self.assertFalse(pre_release_module.pre_release("roo_consumer", "patch", skip_tests=True))
+        notes.assert_not_called()
+        self.assertEqual(original_module, (module_dir / "MODULE.bazel").read_bytes())
+        self.assertFalse((module_dir / "RELEASE_NOTES.md").exists())
 
     def test_no_latest_composes_with_current_and_major_release_modes(self):
         for mode, expected_version in (("current", "4.5.6"), ("major", "5.0.0")):

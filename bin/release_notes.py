@@ -35,8 +35,8 @@ def upsert_draft_entry(
 ) -> None:
     """Create or replace the top draft entry for a release version.
 
-    A matching top entry is replaced so repeated preparation of the same version
-    updates its notes. A different (or missing) top entry leaves the history
+    A matching top entry is left untouched when its notes are unchanged;
+    otherwise it is replaced so repeated preparation updates its notes. A different (or missing) top entry leaves the history
     intact and gets a new draft prepended to it.
     """
     content = notes_path.read_text(encoding="utf-8") if notes_path.exists() else ""
@@ -45,6 +45,10 @@ def upsert_draft_entry(
 
     if heading and _heading_title(heading) == _expected_title(module_name, version):
         separator = _SEPARATOR_PATTERN.search(content, heading.end())
+        body_end = separator.start() if separator else len(content)
+        if content[heading.end():body_end].strip() == notes.strip():
+            # Keeping existing notes must not normalize whitespace or headings.
+            return
         end = separator.end() if separator else len(content)
         updated = draft + content[end:].lstrip("\n")
     else:

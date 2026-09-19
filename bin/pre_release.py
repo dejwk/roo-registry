@@ -6,10 +6,10 @@ Usage: python3 roo-registry/bin/pre_release.py <module_name> [--major|--minor|--
 
 This script will:
 1. Verify git status is clean and up-to-date with upstream
-2. Select or increment the version number in MODULE.bazel
-3. Create or update the top RELEASE_NOTES.md entry
-4. Synchronize Roo dependencies and update library metadata
-5. Run bazel tests in a subprocess
+2. Upgrade Roo dependencies to the latest registered versions
+3. Select or increment the version number in MODULE.bazel
+4. Create or update the top RELEASE_NOTES.md entry
+5. Update library metadata and run bazel tests in a subprocess
 6. Show and confirm the staged release, then commit and push it
 
 Example: python3 roo-registry/bin/pre_release.py roo_display
@@ -115,7 +115,8 @@ def propose_release_notes_with_codex(module_dir: Path, version: str) -> Optional
     prompt = (
         f"Generate concise Markdown release notes for {module_dir.name} version "
         f"{version}. Review the changes since the most recent release tag in "
-        "this repository. Return only the release-note body: no title, date, "
+        "this repository, including uncommitted dependency upgrades in the working "
+        "tree. Return only the release-note body: no title, date, "
         "preamble, full-changelog link, or horizontal rule."
     )
     try:
@@ -154,26 +155,29 @@ def is_version_published(module_dir: Path, version: str) -> bool:
     return result.returncode == 0
 
 
+def latest_published_tag(repo: git.Repo) -> Optional[git.TagReference]:
+    """Return the highest release-version tag reachable from HEAD."""
+    version_tags = []
+    for tag in repo.tags:
+        try:
+            version = Version(tag.name)
+        except ValueError:
+            continue
+        if repo.is_ancestor(tag.commit, repo.head.commit):
+            version_tags.append((version, tag))
+    return max(version_tags, key=lambda item: item[0])[1] if version_tags else None
+
+
 def unchanged_since_latest_published_version(module_dir: Path) -> Optional[str]:
     """Return the newest reachable version tag when its tree matches HEAD."""
     try:
         repo = git.Repo(module_dir)
-        head = repo.head.commit
-        version_tags = []
-        for tag in repo.tags:
-            try:
-                version = Version(tag.name)
-            except ValueError:
-                continue
-            if repo.is_ancestor(tag.commit, head):
-                version_tags.append((version, tag))
+        latest_tag = latest_published_tag(repo)
+        if latest_tag is not None and latest_tag.commit.tree == repo.head.commit.tree:
+            return latest_tag.name
     except (git.GitError, ValueError):
-        return None
-
-    if not version_tags:
-        return None
-    _, latest_tag = max(version_tags, key=lambda item: item[0])
-    return latest_tag.name if latest_tag.commit.tree == head.tree else None
+        pass
+    return None
 
 
 def suggest_bump_type_with_codex(
@@ -191,7 +195,8 @@ def suggest_bump_type_with_codex(
     prompt = (
         f"Recommend the semantic-version action for {module_dir.name}, whose "
         f"current version is {current_version}. Review the repository changes "
-        "since the most recent release tag and use these proposed release notes "
+        "since the most recent release tag, including uncommitted dependency "
+        "upgrades in the working tree, and use these proposed release notes "
         f"as additional context:\n\n{notes}\n\n"
         "Choose major for breaking changes or major new functionality; minor "
         "for significant new functionality; patch only for bug fixes and minor "
@@ -223,6 +228,27 @@ def suggest_bump_type_with_codex(
         return None
     print(f"Codex recommends a {recommendation} release.")
     return recommendation
+
+
+
+def confirm_bump_type(suggestion: str) -> str:
+    """Let the user accept or override Codex's release-type recommendation."""
+    choices = {
+        "a": "major", "major": "major",
+        "i": "minor", "minor": "minor",
+        "p": "patch", "patch": "patch",
+        "c": "current", "current": "current",
+    }
+    while True:
+        response = input(
+            "Release type: m[A]jor, m[I]nor, [P]atch, [C]urrent "
+            f"[Enter to accept {suggestion}]: "
+        ).strip().lower()
+        if not response:
+            return suggestion
+        if response in choices:
+            return choices[response]
+        print("Please choose A, I, P, or C, or press Enter to accept the suggestion.")
 
 
 def resolve_release_notes(
@@ -273,6 +299,51 @@ def print_release_summary(repo: git.Repo, notes: str) -> None:
 
     print("\nRelease notes to commit and publish:\n")
     print(notes)
+
+
+
+def review_staged_diff(module_dir: Path) -> bool:
+    """Offer terminal review before the separate commit-and-push approval."""
+    while True:
+        choice = input(
+            "Review in tig: [S]taged changes against HEAD, "
+            "changes since [L]ast release (including staged), or [N]o review? [s/l/N] "
+        ).strip().lower()
+        if choice in {"", "n", "no"}:
+            return True
+        if choice in {"s", "staged", "y", "yes", "l", "last"}:
+            break
+        print("Please choose S, L, or N.")
+    try:
+        command = ["git", "diff", "--cached", "--no-color", "--no-ext-diff"]
+        if choice in {"l", "last"}:
+            tag = latest_published_tag(git.Repo(module_dir))
+            if tag is None:
+                print("No reachable release-version tag found; stopping before approval.")
+                return False
+            print(f"Reviewing all changes since release {tag.name}, including staged changes.")
+            command.extend([f"refs/tags/{tag.name}", "--"])
+        diff = subprocess.run(
+            command, cwd=module_dir, capture_output=True, text=True,
+        )
+        if diff.returncode != 0:
+            print(f"Could not read the requested diff: {diff.stderr.strip()}")
+            return False
+        if not diff.stdout:
+            print("No changes to review in the selected range.")
+            return True
+        # Tig has no diff subcommand; feed Git's patch to its pager view.
+        result = subprocess.run(
+            ["tig"], input=diff.stdout, cwd=module_dir, text=True,
+        )
+    except (OSError, git.GitError, ValueError) as error:
+        print(f"Could not review the requested diff: {error}")
+        print("Changes remain staged. Install tig or review with git diff --cached.")
+        return False
+    if result.returncode != 0:
+        print("tig failed; stopping before commit and push. Changes remain staged.")
+        return False
+    return True
 
 
 def update_roo_testing_examples(module_dir: Path, version: str) -> Optional[List[Path]]:
@@ -502,6 +573,7 @@ def pre_release(
     skip_tests: bool = False,
     latest_deps: bool = True,
     notes: Optional[str] = None,
+    review_diff: bool = False,
 ) -> bool:
     """
     Prepare a module for release.
@@ -562,6 +634,24 @@ def pre_release(
         if not validate_registry_dependencies(dependencies, registry_dir):
             return False
     
+    # Upgrade dependencies before either Codex call so notes and version
+    # recommendations include the dependency changes in the working tree.
+    if latest_deps and module_name != ROO_TESTING_MODULE:
+        print("\nUpgrading dependencies with update_library.py...")
+        result = subprocess.run(
+            build_update_library_command(
+                registry_dir / "bin" / "update_library.py",
+                module_name,
+                latest_deps=True,
+            ),
+            cwd=registry_dir,
+            capture_output=False,
+            text=True,
+        )
+        if result.returncode != 0:
+            print("✗ Failed to upgrade dependencies")
+            return False
+
     # Step 3: Resolve notes and select the release version. An untagged current
     # version is already prepared but unpublished, so it must not be incremented.
     if bump_type is None and not is_version_published(module_dir, current_version):
@@ -583,6 +673,7 @@ def pre_release(
         )
         if bump_type is None:
             return False
+        bump_type = confirm_bump_type(bump_type)
 
     try:
         new_version = increment_version(current_version, bump_type)
@@ -621,7 +712,8 @@ def pre_release(
     upsert_draft_entry(notes_path, module_name, new_version, notes)
     print(f"✓ Updated {notes_path.name} for {new_version}")
 
-    # Step 6: Synchronize release metadata.
+    # Step 6: Synchronize release metadata, preserving the dependency versions
+    # already reviewed when generating notes and selecting the release version.
     example_files = []
     if module_name == ROO_TESTING_MODULE:
         print("\nUpdating roo_testing example version references...")
@@ -635,7 +727,7 @@ def pre_release(
         update_command = build_update_library_command(
             update_script,
             module_name,
-            latest_deps,
+            latest_deps=False,
         )
         result = subprocess.run(
             update_command,
@@ -684,6 +776,8 @@ def pre_release(
     # Step 9: Show the final staged scope and notes, then ask once before the
     # irreversible commit-and-push portion of the workflow.
     print_release_summary(repo, notes)
+    if review_diff and not review_staged_diff(module_dir):
+        return False
     response = input("\nContinue with commit and push? [y/N] ")
     if response.strip().lower() != "y":
         print("Aborted. Changes remain staged and uncommitted.")
@@ -728,10 +822,10 @@ def create_argument_parser() -> argparse.ArgumentParser:
         epilog="""
 This script automates the release preparation process:
 1. Verifies git status is clean and up-to-date
-2. Selects or increments the version number in MODULE.bazel
-3. Creates or updates the top RELEASE_NOTES.md entry
-4. Synchronizes dependencies and updates library metadata
-5. Runs bazel tests
+2. Upgrades Roo dependencies to the latest registered versions
+3. Selects or increments the version number in MODULE.bazel
+4. Creates or updates the top RELEASE_NOTES.md entry
+5. Updates library metadata and runs bazel tests
 6. Shows and confirms the staged release, then commits and pushes it
 
 Example: python3 roo-registry/bin/pre_release.py roo_display
