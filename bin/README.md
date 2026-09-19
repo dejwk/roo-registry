@@ -90,13 +90,14 @@ pushes the resulting commits.
 
 **Usage:**
 ```bash
-python3 pre_release.py <module_name> --major|--minor|--patch|--current \
+python3 pre_release.py <module_name> [--major|--minor|--patch|--current] \
     [--nolatest_deps] [--skip-tests] [--notes "Markdown release notes"]
 ```
 
 **Example:**
 ```bash
 python3 pre_release.py roo_display --patch
+python3 pre_release.py roo_display
 python3 pre_release.py roo_display --current
 python3 pre_release.py roo_display --current --nolatest_deps
 ```
@@ -108,16 +109,29 @@ python3 pre_release.py roo_display --current --nolatest_deps
 - `--current`: Prepare the version already declared in `MODULE.bazel` without
   incrementing it. A clean branch may be ahead of its upstream in this mode;
   those existing commits are tested and pushed with any metadata commit.
+- With no version flag, an unpublished current version is reused. Otherwise,
+  Codex recommends `major`, `minor`, or `patch` from the repository changes and
+  proposed release notes. Breaking changes or major new functionality select
+  `major`; significant new functionality selects `minor`; bug fixes and minor
+  tweaks select `patch`.
 - `--nolatest_deps` (alias `--no-latest-deps`): Preserve exact
   `MODULE.bazel` dependency versions, require every exact `roo_*` dependency
   version to have a complete registry entry, and synchronize `library.json`
   and `library.properties` from those pins.
 - `--skip-tests`: Skip running bazel tests
-- `--notes`: Markdown body for the release-note entry. If omitted, a read-only
-  Codex invocation proposes notes, prints them, and updates the document without
-  a separate notes-confirmation prompt.
+- `--notes`: Markdown body for the release-note entry. If omitted and matching
+  notes already exist, the script asks before replacing them. Otherwise, a
+  read-only Codex invocation proposes the notes.
   Set `CODEX_BIN` to an executable Codex CLI path when it is not on `PATH`; the
   script also detects Codex installed by the VS Code extension.
+
+After metadata synchronization and tests, the script prints the staged git
+changes and release notes, then asks for confirmation before committing and
+pushing.
+
+If `HEAD` has the same tree as the newest reachable published version tag, the
+script asks whether to proceed before generating notes or modifying any files.
+Declining leaves the working tree, index, and commits unchanged.
 
 Without `--nolatest_deps`, all four version modes select the maximum registered
 version of each Roo dependency before synchronizing the manifests. Keep the

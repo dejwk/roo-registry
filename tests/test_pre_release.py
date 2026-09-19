@@ -19,8 +19,12 @@ from pre_release import (
     build_update_library_command,
     create_argument_parser,
     increment_version,
+    is_version_published,
     propose_release_notes_with_codex,
+    resolve_release_notes,
     run_bazel_tests,
+    suggest_bump_type_with_codex,
+    unchanged_since_latest_published_version,
     update_roo_testing_examples,
     update_module_bazel_version,
 )
@@ -86,15 +90,157 @@ class PreReleaseTest(unittest.TestCase):
         self.assertIn("Codex CLI was not found", output.getvalue())
         run.assert_not_called()
 
-    def test_version_mode_is_required_and_mutually_exclusive(self):
+    def test_version_mode_is_optional_and_mutually_exclusive(self):
+        self.assertIsNone(self.parse().bump_type)
         with contextlib.redirect_stderr(io.StringIO()):
-            with self.assertRaises(SystemExit) as missing:
-                self.parse()
             with self.assertRaises(SystemExit) as conflicting:
                 self.parse("--current", "--patch")
 
-        self.assertEqual(2, missing.exception.code)
         self.assertEqual(2, conflicting.exception.code)
+
+    def test_existing_notes_are_kept_unless_regeneration_is_confirmed(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            module_dir = Path(temp_dir)
+            (module_dir / "RELEASE_NOTES.md").write_text(
+                "# roo_consumer 1.2.3\n\n- Existing notes.\n\n---\n",
+                encoding="utf-8",
+            )
+            with (
+                mock.patch("builtins.input", return_value="n") as ask,
+                mock.patch.object(
+                    pre_release_module, "propose_release_notes_with_codex"
+                ) as propose,
+            ):
+                notes = resolve_release_notes(
+                    module_dir, "roo_consumer", "1.2.3", None
+                )
+
+        self.assertEqual("- Existing notes.", notes)
+        ask.assert_called_once()
+        propose.assert_not_called()
+
+    def test_existing_notes_are_regenerated_after_confirmation(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            module_dir = Path(temp_dir)
+            (module_dir / "RELEASE_NOTES.md").write_text(
+                "# roo_consumer 1.2.3\n\n- Existing notes.\n\n---\n",
+                encoding="utf-8",
+            )
+            with (
+                mock.patch("builtins.input", return_value="y"),
+                mock.patch.object(
+                    pre_release_module,
+                    "propose_release_notes_with_codex",
+                    return_value="- New notes.",
+                ) as propose,
+            ):
+                notes = resolve_release_notes(
+                    module_dir, "roo_consumer", "1.2.3", None
+                )
+
+        self.assertEqual("- New notes.", notes)
+        propose.assert_called_once_with(module_dir, "1.2.3")
+
+    def test_codex_recommends_a_semantic_version_action(self):
+        result = subprocess.CompletedProcess([], 0, "minor\n", "")
+        with (
+            mock.patch.object(
+                pre_release_module, "find_codex_executable", return_value="codex"
+            ),
+            mock.patch.object(pre_release_module, "run_command", return_value=result),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            recommendation = suggest_bump_type_with_codex(
+                Path("/module"), "1.2.3", "- Added a substantial feature."
+            )
+        self.assertEqual("minor", recommendation)
+
+    def test_version_tag_marks_the_current_version_as_published(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            module_dir = Path(temp_dir)
+            subprocess.run(
+                ["git", "init", "--initial-branch=main", str(module_dir)],
+                check=True,
+                capture_output=True,
+            )
+            (module_dir / "README.md").write_text("fixture\n", encoding="utf-8")
+            subprocess.run(
+                [
+                    "git", "-C", str(module_dir), "-c", "user.name=Release Test",
+                    "-c", "user.email=release-test@example.invalid", "add", ".",
+                ],
+                check=True,
+                capture_output=True,
+            )
+            subprocess.run(
+                [
+                    "git", "-C", str(module_dir), "-c", "user.name=Release Test",
+                    "-c", "user.email=release-test@example.invalid", "commit",
+                    "-m", "Initial",
+                ],
+                check=True,
+                capture_output=True,
+            )
+            subprocess.run(
+                ["git", "-C", str(module_dir), "tag", "1.2.3"],
+                check=True,
+                capture_output=True,
+            )
+            self.assertTrue(is_version_published(module_dir, "1.2.3"))
+            self.assertFalse(is_version_published(module_dir, "1.2.4"))
+
+    def test_unchanged_tree_is_detected_from_the_latest_version_tag(self):
+        temp_dir, _base_dir, _registry_dir, module_dir = self.make_release_fixture()
+        self.addCleanup(temp_dir.cleanup)
+        repo = git.Repo(module_dir)
+        repo.create_tag("4.5.6")
+        repo.create_tag("not-a-version")
+
+        self.assertEqual(
+            "4.5.6", unchanged_since_latest_published_version(module_dir)
+        )
+
+        (module_dir / "README.md").write_text("new behavior\n", encoding="utf-8")
+        repo.index.add(["README.md"])
+        repo.index.commit("Add behavior")
+        self.assertIsNone(unchanged_since_latest_published_version(module_dir))
+
+    def test_declining_unchanged_release_makes_no_git_changes(self):
+        temp_dir, _base_dir, registry_dir, module_dir = self.make_release_fixture()
+        self.addCleanup(temp_dir.cleanup)
+        repo = git.Repo(module_dir)
+        repo.create_tag("4.5.6")
+        original_head = repo.head.commit.hexsha
+        original_module = (module_dir / "MODULE.bazel").read_bytes()
+        fake_script = registry_dir / "bin" / "pre_release.py"
+
+        with (
+            mock.patch.object(pre_release_module, "__file__", str(fake_script)),
+            mock.patch.object(
+                pre_release_module, "check_git_status", return_value=True
+            ),
+            mock.patch.object(
+                pre_release_module, "propose_release_notes_with_codex"
+            ) as propose,
+            mock.patch("builtins.input", return_value="n") as confirm,
+            contextlib.redirect_stdout(io.StringIO()) as output,
+        ):
+            success = pre_release_module.pre_release(
+                "roo_consumer", "patch", skip_tests=True
+            )
+
+        self.assertFalse(success)
+        confirm.assert_called_once_with(
+            "No changes were detected since published version 4.5.6. "
+            "Proceed with release preparation anyway? [y/N] "
+        )
+        propose.assert_not_called()
+        self.assertEqual(original_head, repo.head.commit.hexsha)
+        self.assertEqual(
+            original_module, (module_dir / "MODULE.bazel").read_bytes()
+        )
+        self.assertFalse(repo.is_dirty(untracked_files=True))
+        self.assertIn("Aborted without changing", output.getvalue())
 
     def test_current_preserves_version(self):
         self.assertEqual("4.5.6", increment_version("4.5.6", "current"))
@@ -259,8 +405,8 @@ class PreReleaseTest(unittest.TestCase):
                         "git_push",
                         return_value=(True, "pushed"),
                     ),
-                    mock.patch("builtins.input", return_value="y"),
-                    contextlib.redirect_stdout(io.StringIO()),
+                    mock.patch("builtins.input", return_value="y") as confirm,
+                    contextlib.redirect_stdout(io.StringIO()) as output,
                 ):
                     success = pre_release_module.pre_release(
                         "roo_consumer",
@@ -271,6 +417,12 @@ class PreReleaseTest(unittest.TestCase):
                     )
 
                 self.assertTrue(success)
+                confirm.assert_called_once_with("\nContinue with commit and push? [y/N] ")
+                self.assertIn("Git changes ready for release", output.getvalue())
+                self.assertLess(
+                    output.getvalue().index("Git changes ready for release"),
+                    output.getvalue().index("Release notes to commit and publish"),
+                )
                 module_content = (module_dir / "MODULE.bazel").read_text()
                 self.assertIn(f'version = "{expected_version}"', module_content)
                 self.assertIn(
