@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a GitHub release for a prepared Roo library and wait for CI.
+"""Create a GitHub release for a CI-validated Roo library.
 
 Usage: python3 roo-registry/bin/github_release.py <module_name>
 """
@@ -150,20 +150,30 @@ def create_release(
     return result.returncode == 0
 
 
-def find_ci_run(module_dir: Path, repository: str, tag: str) -> Optional[dict]:
-    """Find the CI workflow run caused by pushing this release tag."""
-    result = run_command(
-        [
-            "gh", "run", "list",
-            "--repo", repository,
-            "--workflow", CI_WORKFLOW,
-            "--branch", tag,
-            "--event", "push",
-            "--limit", "1",
-            "--json", "databaseId,status,conclusion,url",
-        ],
-        module_dir,
-    )
+def find_ci_run(
+    module_dir: Path,
+    repository: str,
+    *,
+    commit_sha: Optional[str] = None,
+    tag: Optional[str] = None,
+) -> Optional[dict]:
+    """Find the CI workflow run for exactly one commit or tag push."""
+    if (commit_sha is None) == (tag is None):
+        raise ValueError("Specify exactly one of commit_sha or tag")
+
+    command = [
+        "gh", "run", "list",
+        "--repo", repository,
+        "--workflow", CI_WORKFLOW,
+        "--event", "push",
+        "--limit", "1",
+        "--json", "databaseId,status,conclusion,url",
+    ]
+    if commit_sha is not None:
+        command.extend(["--commit", commit_sha])
+    else:
+        command.extend(["--branch", tag])
+    result = run_command(command, module_dir)
     if result.returncode:
         print("Error: could not query GitHub Actions runs")
         return None
@@ -175,11 +185,22 @@ def find_ci_run(module_dir: Path, repository: str, tag: str) -> Optional[dict]:
     return runs[0] if runs else {}
 
 
-def wait_for_ci(module_dir: Path, repository: str, tag: str) -> bool:
-    """Wait until the tag's CI run succeeds, or report its failure."""
-    print(f"Waiting for the {CI_WORKFLOW} workflow for tag {tag} to start...")
+def wait_for_ci(
+    module_dir: Path,
+    repository: str,
+    *,
+    commit_sha: Optional[str] = None,
+    tag: Optional[str] = None,
+) -> bool:
+    """Wait until the selected commit or tag CI run succeeds."""
+    if (commit_sha is None) == (tag is None):
+        raise ValueError("Specify exactly one of commit_sha or tag")
+    subject = f"commit {commit_sha}" if commit_sha is not None else f"tag {tag}"
+    print(f"Waiting for the {CI_WORKFLOW} workflow for {subject} to start...")
     while True:
-        run = find_ci_run(module_dir, repository, tag)
+        run = find_ci_run(
+            module_dir, repository, commit_sha=commit_sha, tag=tag
+        )
         if run is None:
             return False
         if not run:
@@ -218,7 +239,7 @@ def run_post_release(registry_dir: Path, module_name: str) -> bool:
 
 
 def create_github_release(module_name: str, *, offer_post_release: bool = True) -> bool:
-    """Interactively create a module release, then wait for its CI result."""
+    """Create a release only after commit CI passes, then validate tag CI."""
     registry_dir = Path(__file__).resolve().parent.parent
     module_dir = registry_dir.parent / module_name
     if not module_dir.is_dir():
@@ -240,18 +261,23 @@ def create_github_release(module_name: str, *, offer_post_release: bool = True) 
         return False
 
     print("\nThe following actions will be performed:")
-    print(f"  1. Create GitHub release {repository}@{tag} for commit {sha}.")
-    print(f"  2. Publish release notes from RELEASE_NOTES.md:\n\n{notes}")
-    print(f"  3. Wait for the {CI_WORKFLOW} workflow triggered by tag {tag} to succeed.")
+    print(f"  1. Wait for the {CI_WORKFLOW} workflow for commit {sha} to succeed.")
+    print(f"  2. Create GitHub release {repository}@{tag} for that commit.")
+    print(f"  3. Publish release notes from RELEASE_NOTES.md:\n\n{notes}")
+    print(f"  4. Wait for the {CI_WORKFLOW} workflow triggered by tag {tag} to succeed.")
     if input("Proceed? [y/N] ").strip().lower() != "y":
         print("Aborted by user.")
+        return False
+
+    if not wait_for_ci(module_dir, repository, commit_sha=sha):
+        print("Commit CI did not pass; GitHub release was not created.")
         return False
 
     if not create_release(module_dir, repository, module_name, tag, sha, notes):
         return False
     print(f"✓ Created GitHub release {repository}@{tag}")
     print(f"Release: https://github.com/{repository}/releases/tag/{tag}", flush=True)
-    if not wait_for_ci(module_dir, repository, tag):
+    if not wait_for_ci(module_dir, repository, tag=tag):
         return False
 
     if not offer_post_release:

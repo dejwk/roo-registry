@@ -57,9 +57,11 @@ release is the highest version tag reachable from HEAD; unrelated branch tags
 and non-version tags are ignored. If no release tag exists, that review stops
 before approval. Both views use tig's pager mode.
 Install `tig` to use that optional review; a failed review stops publication.
-GitHub publication has its own confirmation, and the new release URL is printed
-before waiting for CI. Only green CI reaches the final confirmation to update
-and push the registry, regenerate its graph, and publish to PlatformIO.
+GitHub publication has its own confirmation. The script first waits for CI on
+the prepared commit; only green commit CI permits creating the release. It then
+prints the new release URL and waits again for tag-triggered CI. Only green CI
+reaches the final confirmation to update and push the registry, regenerate its
+graph, and publish to PlatformIO.
 Each stage reports its outcome. Failure, declined approval, or interruption
 stops the workflow without rolling back completed steps. If post-release is
 declined, the script prints the standalone command to finish it later.
@@ -89,8 +91,8 @@ python3 post_release.py roo_display
 - Publishes to PlatformIO registry
 
 ### `github_release.py`
-Creates the GitHub release for a prepared module and waits for its continuous
-test workflow to finish successfully.
+Creates the GitHub release for a prepared module only after its continuous test
+workflow passes, then validates the tag-triggered workflow.
 
 **Usage:**
 ```bash
@@ -101,8 +103,10 @@ python3 github_release.py <module_name>
 - Reads the release version from the module's `MODULE.bazel`
 - Reads the matching top entry of `RELEASE_NOTES.md` and displays the planned actions
 - Adds a GitHub compare link for the full changelog when a previous tag exists
+- Waits for the pushed current-`HEAD` commit's `CI` GitHub Actions workflow to
+  become green before creating a release
 - Creates the GitHub release and its version tag at the module's current `HEAD`
-- Waits for the tag-triggered `CI` GitHub Actions workflow to become green
+- Waits again for the tag-triggered `CI` GitHub Actions workflow to become green
 - Offers to run `post_release.py` after CI succeeds
 
 Requires an authenticated [GitHub CLI](https://cli.github.com/).

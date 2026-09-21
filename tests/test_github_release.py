@@ -138,7 +138,9 @@ class GithubReleaseTest(unittest.TestCase):
             contextlib.redirect_stdout(io.StringIO()),
         ):
             self.assertTrue(
-                github_release.wait_for_ci(Path("unused"), "owner/repo", "1.2.3")
+                github_release.wait_for_ci(
+                    Path("unused"), "owner/repo", commit_sha="abc123"
+                )
             )
         self.assertEqual(2, sleep.call_count)
 
@@ -156,8 +158,24 @@ class GithubReleaseTest(unittest.TestCase):
             contextlib.redirect_stdout(io.StringIO()),
         ):
             self.assertFalse(
-                github_release.wait_for_ci(Path("unused"), "owner/repo", "1.2.3")
+                github_release.wait_for_ci(
+                    Path("unused"), "owner/repo", tag="1.2.3"
+                )
             )
+
+    def test_find_ci_run_filters_by_commit_or_tag(self):
+        result = subprocess.CompletedProcess([], 0, "[]", "")
+        with mock.patch.object(github_release, "run_command", return_value=result) as run:
+            github_release.find_ci_run(
+                Path("module"), "owner/repo", commit_sha="abc123"
+            )
+            commit_command = run.call_args.args[0]
+            github_release.find_ci_run(Path("module"), "owner/repo", tag="1.2.3")
+            tag_command = run.call_args.args[0]
+        self.assertEqual("abc123", commit_command[commit_command.index("--commit") + 1])
+        self.assertNotIn("--branch", commit_command)
+        self.assertEqual("1.2.3", tag_command[tag_command.index("--branch") + 1])
+        self.assertNotIn("--commit", tag_command)
 
     def test_release_declined_after_ci_does_not_run_post_release(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -194,6 +212,34 @@ class GithubReleaseTest(unittest.TestCase):
             ):
                 self.assertTrue(github_release.create_github_release("roo_library"))
             post_release.assert_not_called()
+
+    def test_failed_commit_ci_does_not_create_a_release(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            base = Path(temp_dir)
+            registry = base / "roo-registry"
+            module = base / "roo_library"
+            (registry / "bin").mkdir(parents=True)
+            module.mkdir()
+            (module / "MODULE.bazel").write_text(
+                'module(name = "roo_library", version = "1.2.3")\n', encoding="utf-8"
+            )
+            upsert_draft_entry(
+                module / "RELEASE_NOTES.md", "roo_library", "1.2.3", "- Prepared notes."
+            )
+            fake_script = registry / "bin" / "github_release.py"
+            with (
+                mock.patch.object(github_release, "__file__", str(fake_script)),
+                mock.patch.object(github_release, "github_repository", return_value="owner/repo"),
+                mock.patch.object(github_release, "head_sha", return_value="abc123"),
+                mock.patch.object(github_release, "verify_prerequisites", return_value=True),
+                mock.patch.object(github_release, "wait_for_ci", return_value=False) as wait,
+                mock.patch.object(github_release, "create_release") as create,
+                mock.patch("builtins.input", return_value="y"),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
+                self.assertFalse(github_release.create_github_release("roo_library"))
+            wait.assert_called_once_with(module, "owner/repo", commit_sha="abc123")
+            create.assert_not_called()
 
     def test_post_release_is_run_after_confirmation(self):
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -15,7 +15,8 @@ def create_argument_parser():
     parser.epilog = (
         "Runs pre_release.py, github_release.py, and post_release.py in order. "
         "Offers tig review before commit/push, confirms GitHub publication, "
-        "waits for CI, and asks before registry/PlatformIO publication.\n\n"
+        "waits for commit CI before GitHub publication and tag CI afterward, "
+        "then asks before registry/PlatformIO publication.\n\n"
         "Example: python3 roo-registry/bin/release.py roo_display --patch"
     )
     parser.add_argument(
@@ -40,11 +41,11 @@ def release(args) -> bool:
         return False
     print("\n✓ Pre-release complete: release preparation committed and pushed.", flush=True)
 
-    print("\n[2/3] Creating the GitHub release and waiting for CI", flush=True)
+    print("\n[2/3] Waiting for CI, creating the GitHub release, and validating tag CI", flush=True)
     if not github_release.create_github_release(module_name, offer_post_release=False):
         print(
-            "GitHub release or CI stopped; post-release actions were not run. "
-            "If the release was already created, it remains on GitHub."
+            "Commit CI, GitHub release, or tag CI stopped; post-release actions "
+            "were not run. If the release was already created, it remains on GitHub."
         )
         return False
     print("\n✓ GitHub release published and CI passed.", flush=True)
