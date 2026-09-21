@@ -175,7 +175,7 @@ bazel_dep(
             get_missing_registry_dependencies(dependencies, self.registry_dir),
         )
 
-    def test_skip_dev_dependencies_excludes_them_from_registry_metadata(self):
+    def test_dev_dependencies_are_excluded_from_registry_metadata(self):
         self.add_registry_version("roo_dep", "1.2.3")
         self.add_registry_version("roo_dev", "4.5.6")
         module_dir = self.add_module(
@@ -190,7 +190,6 @@ bazel_dep(
                 update_library_files(
                     "roo_consumer",
                     latest_deps=False,
-                    skip_dev_dependencies=True,
                     registry_dir=self.registry_dir,
                     base_dir=self.base_dir,
                 )

@@ -213,7 +213,7 @@ def update_library_json(
     library_json_path: Path,
     module_version: str,
     dependencies: List[Dependency],
-    skip_dev_dependencies: bool = False,
+    skip_dev_dependencies: bool = True,
 ) -> bool:
     """
     Update library.json file with new version and dependency information.
@@ -272,7 +272,7 @@ def update_library_properties(
     library_properties_path: Path,
     module_version: str,
     dependencies: List[Dependency],
-    skip_dev_dependencies: bool = False,
+    skip_dev_dependencies: bool = True,
 ) -> bool:
     """
     Update library.properties file with new version and dependency information.
@@ -359,7 +359,7 @@ def update_library_files(
     module_name: str,
     force: bool = False,
     latest_deps: bool = True,
-    skip_dev_dependencies: bool = False,
+    skip_dev_dependencies: bool = True,
     *,
     registry_dir: Optional[Path] = None,
     base_dir: Optional[Path] = None,
