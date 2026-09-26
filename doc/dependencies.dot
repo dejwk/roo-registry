@@ -10,7 +10,7 @@ digraph dependencies {
     "roo_comms" [label="roo_comms\n1.1.6", fillcolor="#b1dbab", color="red"];
     "roo_control" [label="roo_control\n1.2.8", fillcolor="#b1dbab", color="black"];
     "roo_dashboard" [label="roo_dashboard\n1.0.2", fillcolor="#b1dbab", color="red"];
-    "roo_display" [label="roo_display\n3.3.0", fillcolor="khaki", color="red"];
+    "roo_display" [label="roo_display\n3.3.1", fillcolor="#b1dbab", color="black"];
     "roo_display_lvgl" [label="roo_display_lvgl\n1.0.0", fillcolor="khaki", color="red"];
     "roo_flags" [label="roo_flags\n1.2.5", fillcolor="#b1dbab", color="black"];
     "roo_fonts_basic" [label="roo_fonts_basic\n1.0.5", fillcolor="#b1dbab", color="red"];
@@ -21,7 +21,7 @@ digraph dependencies {
     "roo_logging" [label="roo_logging\n1.5.11", fillcolor="#b1dbab", color="black"];
     "roo_monitoring" [label="roo_monitoring\n1.1.5", fillcolor="#b1dbab", color="black"];
     "roo_onewire" [label="roo_onewire\n2.0.13", fillcolor="#b1dbab", color="black"];
-    "roo_pb" [label="roo_pb\n0.1.0", fillcolor="khaki", color="red"];
+    "roo_pb" [label="roo_pb\n0.1.0", fillcolor="plum", color="black"];
     "roo_powersafefs" [label="roo_powersafefs\n1.0.3", fillcolor="#b1dbab", color="black"];
     "roo_prefs" [label="roo_prefs\n2.0.2", fillcolor="#b1dbab", color="black"];
     "roo_quantity" [label="roo_quantity\n1.1.11", fillcolor="#b1dbab", color="black"];
@@ -49,12 +49,12 @@ digraph dependencies {
     "roo_control" -> "roo_quantity";
     "roo_control" -> "roo_scheduler";
     "roo_dashboard" -> "roo_windows";
-    "roo_display" -> "roo_collections" [color=red, fontcolor=red, label="1.4.7\n(latest: 1.4.8)"];
-    "roo_display" -> "roo_io" [color=red, fontcolor=red, label="2.3.0\n(latest: 2.4.0)"];
-    "roo_display_lvgl" -> "roo_display" [color=red, fontcolor=red, label="3.0.3\n(latest: 3.3.0)"];
-    "roo_fonts_basic" -> "roo_display";
-    "roo_fonts_material" -> "roo_display";
-    "roo_icons" -> "roo_display";
+    "roo_display" -> "roo_collections";
+    "roo_display" -> "roo_io";
+    "roo_display_lvgl" -> "roo_display" [color=red, fontcolor=red, label="3.0.3\n(latest: 3.3.1)"];
+    "roo_fonts_basic" -> "roo_display" [color=red, fontcolor=red, label="3.3.0\n(latest: 3.3.1)"];
+    "roo_fonts_material" -> "roo_display" [color=red, fontcolor=red, label="3.3.0\n(latest: 3.3.1)"];
+    "roo_icons" -> "roo_display" [color=red, fontcolor=red, label="3.3.0\n(latest: 3.3.1)"];
     "roo_io" -> "roo_logging";
     "roo_logging" -> "roo_flags";
     "roo_logging" -> "roo_threads";
@@ -62,7 +62,7 @@ digraph dependencies {
     "roo_monitoring" -> "roo_io";
     "roo_onewire" -> "roo_scheduler";
     "roo_onewire" -> "roo_quantity";
-    "roo_pb" -> "roo_io" [color=red, fontcolor=red, label="2.3.1\n(latest: 2.4.0)"];
+    "roo_pb" -> "roo_io";
     "roo_powersafefs" -> "roo_threads";
     "roo_prefs" -> "roo_logging";
     "roo_quantity" -> "roo_logging";
