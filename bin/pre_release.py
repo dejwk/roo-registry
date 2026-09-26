@@ -6,11 +6,12 @@ Usage: python3 roo-registry/bin/pre_release.py <module_name> [--major|--minor|--
 
 This script will:
 1. Verify git status is clean and up-to-date with upstream
-2. Upgrade Roo dependencies to the latest registered versions
-3. Select or increment the version number in MODULE.bazel
-4. Create or update the top RELEASE_NOTES.md entry
-5. Update library metadata and run bazel tests in a subprocess
-6. Show and confirm the staged release, then commit and push it
+2. Copy template/push contents into the repository, overwriting matching files
+3. Upgrade Roo dependencies to the latest registered versions
+4. Select or increment the version number in MODULE.bazel
+5. Create or update the top RELEASE_NOTES.md entry
+6. Update library metadata and run bazel tests in a subprocess
+7. Show and confirm the staged release, then commit and push it
 
 Example: python3 roo-registry/bin/pre_release.py roo_display
 """
@@ -567,6 +568,20 @@ def run_bazel_tests(module_dir: Path) -> bool:
         return False
 
 
+def sync_roo_testing_files(module_dir: Path) -> bool:
+    """Refresh vendored testing support from the sibling roo_testing checkout."""
+    if not module_dir.name.startswith("roo_") or module_dir.name == ROO_TESTING_MODULE:
+        return True
+    source = module_dir.parent / ROO_TESTING_MODULE / ".roo_testing"
+    print(f"\nSynchronizing testing support from {source}...")
+    try:
+        shutil.copytree(source, module_dir / ".roo_testing", dirs_exist_ok=True)
+    except (OSError, shutil.Error) as error:
+        print(f"Error synchronizing roo_testing files: {error}")
+        return False
+    return True
+
+
 def pre_release(
     module_name: str,
     bump_type: Optional[str],
@@ -634,6 +649,18 @@ def pre_release(
         if not validate_registry_dependencies(dependencies, registry_dir):
             return False
     
+    print("\nCopying shared files from template/push...")
+    try:
+        shutil.copytree(
+            registry_dir / "template" / "push", module_dir, dirs_exist_ok=True
+        )
+    except (OSError, shutil.Error) as error:
+        print(f"Error copying release templates: {error}")
+        return False
+
+    if not sync_roo_testing_files(module_dir):
+        return False
+
     # Upgrade dependencies before either Codex call so notes and version
     # recommendations include the dependency changes in the working tree.
     if latest_deps and module_name != ROO_TESTING_MODULE:
@@ -714,13 +741,11 @@ def pre_release(
 
     # Step 6: Synchronize release metadata, preserving the dependency versions
     # already reviewed when generating notes and selecting the release version.
-    example_files = []
     if module_name == ROO_TESTING_MODULE:
         print("\nUpdating roo_testing example version references...")
         updated_examples = update_roo_testing_examples(module_dir, new_version)
         if updated_examples is None:
             return False
-        example_files = updated_examples
     else:
         print(f"\nRunning update_library.py...")
         update_script = registry_dir / "bin" / "update_library.py"
@@ -753,22 +778,9 @@ def pre_release(
     
     # Step 8: Git add
     print(f"\nStaging changes...")
-    files_to_add = [Path("MODULE.bazel")]
-    if module_name == ROO_TESTING_MODULE:
-        files_to_add.extend(path.relative_to(module_dir) for path in example_files)
-    else:
-        files_to_add.extend([Path("library.json"), Path("library.properties")])
-    files_to_add.append(Path("RELEASE_NOTES.md"))
-    
     try:
         repo = git.Repo(module_dir)
-        for file in files_to_add:
-            file_path = module_dir / file
-            if file_path.exists():
-                repo.index.add([str(file)])
-                print(f"  Staged: {file}")
-            else:
-                print(f"  Warning: {file} not found, skipping")
+        repo.git.add("--all")
     except Exception as e:
         print(f"Error staging files: {str(e)}")
         return False
@@ -822,11 +834,12 @@ def create_argument_parser() -> argparse.ArgumentParser:
         epilog="""
 This script automates the release preparation process:
 1. Verifies git status is clean and up-to-date
-2. Upgrades Roo dependencies to the latest registered versions
-3. Selects or increments the version number in MODULE.bazel
-4. Creates or updates the top RELEASE_NOTES.md entry
-5. Updates library metadata and runs bazel tests
-6. Shows and confirms the staged release, then commits and pushes it
+2. Copies template/push contents into the repository, overwriting matching files
+3. Upgrades Roo dependencies to the latest registered versions
+4. Selects or increments the version number in MODULE.bazel
+5. Creates or updates the top RELEASE_NOTES.md entry
+6. Updates library metadata and runs bazel tests
+7. Shows and confirms the staged release, then commits and pushes it
 
 Example: python3 roo-registry/bin/pre_release.py roo_display
         """

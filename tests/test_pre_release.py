@@ -280,6 +280,69 @@ class PreReleaseTest(unittest.TestCase):
         self.assertFalse(repo.is_dirty(untracked_files=True))
         self.assertIn("Aborted without changing", output.getvalue())
 
+    def test_missing_templates_stop_release_preparation(self):
+        temp_dir, _base_dir, registry_dir, _module_dir = self.make_release_fixture()
+        self.addCleanup(temp_dir.cleanup)
+        (registry_dir / "template" / "push").rename(registry_dir / "template" / "absent")
+        with (
+            mock.patch.object(pre_release_module, "__file__", str(registry_dir / "bin" / "pre_release.py")),
+            mock.patch.object(pre_release_module, "check_git_status", return_value=True),
+            mock.patch.object(pre_release_module, "resolve_release_notes") as notes,
+            mock.patch.object(pre_release_module, "git_push") as push,
+            contextlib.redirect_stdout(io.StringIO()) as output,
+        ):
+            self.assertFalse(pre_release_module.pre_release(
+                "roo_consumer", "current", skip_tests=True, latest_deps=False,
+            ))
+        notes.assert_not_called()
+        push.assert_not_called()
+        self.assertIn("Error copying release templates", output.getvalue())
+
+    def test_sync_testing_files_overwrites_recursively_and_preserves_modes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "roo_testing" / ".roo_testing"
+            (source / "bin").mkdir(parents=True)
+            wrapper = source / "bin" / "bazel"
+            wrapper.write_text("new wrapper\n")
+            wrapper.chmod(0o755)
+            (source / ".hidden").write_text("hidden support\n")
+            module = root / "roo_consumer"
+            destination = module / ".roo_testing"
+            (destination / "bin").mkdir(parents=True)
+            (destination / "bin" / "bazel").write_text("old wrapper\n")
+            (destination / "local").write_text("local support\n")
+            self.assertTrue(pre_release_module.sync_roo_testing_files(module))
+            self.assertEqual("new wrapper\n", (destination / "bin" / "bazel").read_text())
+            self.assertEqual(0o755, (destination / "bin" / "bazel").stat().st_mode & 0o777)
+            self.assertEqual("hidden support\n", (destination / ".hidden").read_text())
+            self.assertEqual("local support\n", (destination / "local").read_text())
+
+    def test_sync_testing_files_skips_testing_and_non_roo_repositories(self):
+        with tempfile.TemporaryDirectory() as temp:
+            for name in ("roo_testing", "other", "roo-registry"):
+                module = Path(temp) / name
+                self.assertTrue(pre_release_module.sync_roo_testing_files(module))
+                self.assertFalse(module.exists())
+
+    def test_missing_testing_source_stops_before_notes_or_push(self):
+        temp_dir, base_dir, registry_dir, _module_dir = self.make_release_fixture()
+        self.addCleanup(temp_dir.cleanup)
+        (base_dir / "roo_testing").rename(base_dir / "absent")
+        with (
+            mock.patch.object(pre_release_module, "__file__", str(registry_dir / "bin" / "pre_release.py")),
+            mock.patch.object(pre_release_module, "check_git_status", return_value=True),
+            mock.patch.object(pre_release_module, "resolve_release_notes") as notes,
+            mock.patch.object(pre_release_module, "git_push") as push,
+            contextlib.redirect_stdout(io.StringIO()) as output,
+        ):
+            self.assertFalse(pre_release_module.pre_release(
+                "roo_consumer", "current", skip_tests=True, latest_deps=False,
+            ))
+        notes.assert_not_called()
+        push.assert_not_called()
+        self.assertIn("Error synchronizing roo_testing files", output.getvalue())
+
     def test_current_preserves_version(self):
         self.assertEqual("4.5.6", increment_version("4.5.6", "current"))
 
@@ -354,6 +417,13 @@ class PreReleaseTest(unittest.TestCase):
         base_dir = Path(temp_dir.name)
         registry_dir = base_dir / "roo-registry"
         (registry_dir / "bin").mkdir(parents=True)
+        template_dir = registry_dir / "template" / "push"
+        instructions_dir = template_dir / ".github" / "instructions"
+        instructions_dir.mkdir(parents=True)
+        (template_dir / "AGENTS.md").write_text("Shared guidance\n")
+        (instructions_dir / "general-design-authoring-instructions.md").write_text(
+            "Shared design guidance\n"
+        )
         dependency_dir = registry_dir / "modules" / "roo_dep" / "1.2.3"
         dependency_dir.mkdir(parents=True)
         (dependency_dir / "MODULE.bazel").write_text(
@@ -361,6 +431,12 @@ class PreReleaseTest(unittest.TestCase):
             encoding="utf-8",
         )
         (dependency_dir / "source.json").write_text("{}\n", encoding="utf-8")
+
+        testing_support = base_dir / "roo_testing" / ".roo_testing" / "bin"
+        testing_support.mkdir(parents=True)
+        wrapper = testing_support / "bazel"
+        wrapper.write_text("#!/bin/sh\necho shared wrapper\n")
+        wrapper.chmod(0o755)
 
         module_dir = base_dir / "roo_consumer"
         module_dir.mkdir()
@@ -377,6 +453,13 @@ class PreReleaseTest(unittest.TestCase):
             "name=roo_consumer\nversion=0.0.1\n",
             encoding="utf-8",
         )
+
+        instructions_dir = module_dir / ".github" / "instructions"
+        instructions_dir.mkdir(parents=True)
+        (instructions_dir / "general-design-authoring-instructions.md").write_text(
+            "Old guidance\n"
+        )
+        (instructions_dir / "local.md").write_text("Local guidance\n")
 
         # Use the files ref format because the installed GitPython cannot read
         # this environment's default reftable format.
@@ -511,6 +594,25 @@ class PreReleaseTest(unittest.TestCase):
                     )
 
                 self.assertTrue(success)
+                committed = git.Repo(module_dir).head.commit.tree
+                self.assertEqual(
+                    b"#!/bin/sh\necho shared wrapper\n",
+                    committed[".roo_testing/bin/bazel"].data_stream.read(),
+                )
+                self.assertEqual(0o100755, committed[".roo_testing/bin/bazel"].mode)
+                self.assertEqual(
+                    b"Shared guidance\n", committed["AGENTS.md"].data_stream.read()
+                )
+                self.assertEqual(
+                    b"Shared design guidance\n",
+                    committed[
+                        ".github/instructions/general-design-authoring-instructions.md"
+                    ].data_stream.read(),
+                )
+                self.assertEqual(
+                    b"Local guidance\n",
+                    committed[".github/instructions/local.md"].data_stream.read(),
+                )
                 confirm.assert_called_once_with("\nContinue with commit and push? [y/N] ")
                 self.assertIn("Git changes ready for release", output.getvalue())
                 self.assertLess(

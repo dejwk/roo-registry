@@ -153,6 +153,20 @@ python3 pre_release.py roo_display --current --nolatest_deps
   Set `CODEX_BIN` to an executable Codex CLI path when it is not on `PATH`; the
   script also detects Codex installed by the VS Code extension.
 
+After the initial release checks, the script recursively copies
+`template/push/` from the registry into the module repository, including hidden
+files and directories. Matching files are overwritten, including `AGENTS.md`
+and the shared instructions in `.github/instructions/`. Other repository files
+are preserved. Copied files are staged with the release metadata and included
+in the release commit. A copy failure stops preparation.
+
+For `roo_*` repositories other than `roo_testing`, preparation also copies the
+sibling `roo_testing/.roo_testing/` tree into the module's `.roo_testing/`.
+This uses the canonical checkout corresponding to the workspace's
+`lib/roo_testing` dependency. Matching files are overwritten, executable
+permissions are preserved, and destination-only files remain. Missing source
+files or copy failures stop preparation. These changes join the release commit.
+
 After metadata synchronization and tests, the script prints the staged git
 changes and release notes, then asks for confirmation before committing and
 pushing.

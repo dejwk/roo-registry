@@ -17,7 +17,7 @@ applyTo:
 
 Use this instruction for shared code-authoring expectations across roo
 repositories. The authoritative source is
-`roo-registry/conventions/embedded-cpp-code-authoring.instructions.md`.
+`roo-registry/template/push/.github/instructions/general-cpp-code-authoring-instructions.md`.
 Make shared changes there and sync this file to consuming repositories.
 Repo-local guidance can add repository-specific validation and policy on top
 of this baseline.
