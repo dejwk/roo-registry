@@ -139,7 +139,7 @@ class GithubReleaseTest(unittest.TestCase):
         ):
             self.assertTrue(
                 github_release.wait_for_ci(
-                    Path("unused"), "owner/repo", commit_sha="abc123"
+                    Path("unused"), "owner/repo", "abc123"
                 )
             )
         self.assertEqual(2, sleep.call_count)
@@ -159,23 +159,29 @@ class GithubReleaseTest(unittest.TestCase):
         ):
             self.assertFalse(
                 github_release.wait_for_ci(
-                    Path("unused"), "owner/repo", tag="1.2.3"
+                    Path("unused"), "owner/repo", "abc123", tag="1.2.3"
                 )
             )
 
-    def test_find_ci_run_filters_by_commit_or_tag(self):
-        result = subprocess.CompletedProcess([], 0, "[]", "")
+    def test_find_ci_run_filters_tag_runs_by_head_branch_and_commit(self):
+        result = subprocess.CompletedProcess(
+            [],
+            0,
+            '[{"status":"completed","conclusion":"failure","headBranch":"main","headSha":"abc123"},'
+            '{"status":"in_progress","headBranch":"1.2.3","headSha":"abc123"}]',
+            "",
+        )
         with mock.patch.object(github_release, "run_command", return_value=result) as run:
             github_release.find_ci_run(
-                Path("module"), "owner/repo", commit_sha="abc123"
+                Path("module"), "owner/repo", "abc123"
             )
             commit_command = run.call_args.args[0]
-            github_release.find_ci_run(Path("module"), "owner/repo", tag="1.2.3")
-            tag_command = run.call_args.args[0]
+            tag_run = github_release.find_ci_run(
+                Path("module"), "owner/repo", "abc123", tag="1.2.3"
+            )
         self.assertEqual("abc123", commit_command[commit_command.index("--commit") + 1])
         self.assertNotIn("--branch", commit_command)
-        self.assertEqual("1.2.3", tag_command[tag_command.index("--branch") + 1])
-        self.assertNotIn("--commit", tag_command)
+        self.assertEqual("in_progress", tag_run["status"])
 
     def test_release_declined_after_ci_does_not_run_post_release(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -234,12 +240,13 @@ class GithubReleaseTest(unittest.TestCase):
                 mock.patch.object(github_release, "verify_prerequisites", return_value=True),
                 mock.patch.object(github_release, "wait_for_ci", return_value=False) as wait,
                 mock.patch.object(github_release, "create_release") as create,
-                mock.patch("builtins.input", return_value="y"),
+                mock.patch("builtins.input") as ask,
                 contextlib.redirect_stdout(io.StringIO()),
             ):
                 self.assertFalse(github_release.create_github_release("roo_library"))
-            wait.assert_called_once_with(module, "owner/repo", commit_sha="abc123")
+            wait.assert_called_once_with(module, "owner/repo", "abc123")
             create.assert_not_called()
+            ask.assert_not_called()
 
     def test_post_release_is_run_after_confirmation(self):
         with tempfile.TemporaryDirectory() as temp_dir:

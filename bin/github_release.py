@@ -153,26 +153,24 @@ def create_release(
 def find_ci_run(
     module_dir: Path,
     repository: str,
+    commit_sha: str,
     *,
-    commit_sha: Optional[str] = None,
     tag: Optional[str] = None,
 ) -> Optional[dict]:
-    """Find the CI workflow run for exactly one commit or tag push."""
-    if (commit_sha is None) == (tag is None):
-        raise ValueError("Specify exactly one of commit_sha or tag")
+    """Find CI for a commit, optionally selecting its exact tag-triggered run."""
 
     command = [
         "gh", "run", "list",
         "--repo", repository,
         "--workflow", CI_WORKFLOW,
         "--event", "push",
-        "--limit", "1",
-        "--json", "databaseId,status,conclusion,url",
+        "--commit", commit_sha,
+        # GitHub CLI's --branch filter can return a stale tag run. Fetching and
+        # matching headBranch ourselves keeps the post-release wait tied to the
+        # release tag just created for this commit.
+        "--limit", "100",
+        "--json", "databaseId,status,conclusion,url,headBranch,headSha",
     ]
-    if commit_sha is not None:
-        command.extend(["--commit", commit_sha])
-    else:
-        command.extend(["--branch", tag])
     result = run_command(command, module_dir)
     if result.returncode:
         print("Error: could not query GitHub Actions runs")
@@ -182,24 +180,27 @@ def find_ci_run(
     except json.JSONDecodeError:
         print("Error: GitHub CLI returned invalid workflow data")
         return None
+    if tag is not None:
+        runs = [
+            run for run in runs
+            if run.get("headBranch") == tag and run.get("headSha") == commit_sha
+        ]
     return runs[0] if runs else {}
 
 
 def wait_for_ci(
     module_dir: Path,
     repository: str,
+    commit_sha: str,
     *,
-    commit_sha: Optional[str] = None,
     tag: Optional[str] = None,
 ) -> bool:
     """Wait until the selected commit or tag CI run succeeds."""
-    if (commit_sha is None) == (tag is None):
-        raise ValueError("Specify exactly one of commit_sha or tag")
-    subject = f"commit {commit_sha}" if commit_sha is not None else f"tag {tag}"
+    subject = f"tag {tag}" if tag is not None else f"commit {commit_sha}"
     print(f"Waiting for the {CI_WORKFLOW} workflow for {subject} to start...")
     while True:
         run = find_ci_run(
-            module_dir, repository, commit_sha=commit_sha, tag=tag
+            module_dir, repository, commit_sha, tag=tag
         )
         if run is None:
             return False
@@ -260,24 +261,23 @@ def create_github_release(module_name: str, *, offer_post_release: bool = True) 
     if notes is None:
         return False
 
-    print("\nThe following actions will be performed:")
-    print(f"  1. Wait for the {CI_WORKFLOW} workflow for commit {sha} to succeed.")
-    print(f"  2. Create GitHub release {repository}@{tag} for that commit.")
-    print(f"  3. Publish release notes from RELEASE_NOTES.md:\n\n{notes}")
-    print(f"  4. Wait for the {CI_WORKFLOW} workflow triggered by tag {tag} to succeed.")
-    if input("Proceed? [y/N] ").strip().lower() != "y":
-        print("Aborted by user.")
+    if not wait_for_ci(module_dir, repository, sha):
+        print("Commit CI did not pass; GitHub release was not created.")
         return False
 
-    if not wait_for_ci(module_dir, repository, commit_sha=sha):
-        print("Commit CI did not pass; GitHub release was not created.")
+    print("\nThe following actions will be performed:")
+    print(f"  1. Create GitHub release {repository}@{tag} for commit {sha}.")
+    print(f"  2. Publish release notes from RELEASE_NOTES.md:\n\n{notes}")
+    print(f"  3. Wait for the {CI_WORKFLOW} workflow triggered by tag {tag} to succeed.")
+    if input("Create GitHub release now? [y/N] ").strip().lower() != "y":
+        print("Aborted by user.")
         return False
 
     if not create_release(module_dir, repository, module_name, tag, sha, notes):
         return False
     print(f"✓ Created GitHub release {repository}@{tag}")
     print(f"Release: https://github.com/{repository}/releases/tag/{tag}", flush=True)
-    if not wait_for_ci(module_dir, repository, tag=tag):
+    if not wait_for_ci(module_dir, repository, sha, tag=tag):
         return False
 
     if not offer_post_release:

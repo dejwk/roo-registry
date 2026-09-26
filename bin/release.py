@@ -14,8 +14,8 @@ def create_argument_parser():
     parser.description = "Prepare, review, and publish a Roo module interactively"
     parser.epilog = (
         "Runs pre_release.py, github_release.py, and post_release.py in order. "
-        "Offers tig review before commit/push, confirms GitHub publication, "
-        "waits for commit CI before GitHub publication and tag CI afterward, "
+        "Offers tig review before commit/push, waits for commit CI, confirms "
+        "GitHub publication, and validates tag CI afterward, "
         "then asks before registry/PlatformIO publication.\n\n"
         "Example: python3 roo-registry/bin/release.py roo_display --patch"
     )

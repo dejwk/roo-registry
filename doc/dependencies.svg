@@ -160,7 +160,7 @@
 <!-- roo_windows -->
 <g id="node29" class="node">
 <title>roo_windows</title>
-<polygon fill="plum" stroke="red" points="514.5,-668 405.5,-668 405.5,-630 514.5,-630 514.5,-668"/>
+<polygon fill="khaki" stroke="red" points="514.5,-668 405.5,-668 405.5,-630 514.5,-630 514.5,-668"/>
 <text text-anchor="middle" x="460" y="-652.8" font-family="Times,serif" font-size="14.00">roo_windows</text>
 <text text-anchor="middle" x="460" y="-637.8" font-family="Times,serif" font-size="14.00">1.7.0</text>
 </g>
@@ -516,7 +516,7 @@
 <!-- roo_windows_wifi -->
 <g id="node31" class="node">
 <title>roo_windows_wifi</title>
-<polygon fill="plum" stroke="red" points="396.5,-743 255.5,-743 255.5,-705 396.5,-705 396.5,-743"/>
+<polygon fill="khaki" stroke="red" points="396.5,-743 255.5,-743 255.5,-705 396.5,-705 396.5,-743"/>
 <text text-anchor="middle" x="326" y="-727.8" font-family="Times,serif" font-size="14.00">roo_windows_wifi</text>
 <text text-anchor="middle" x="326" y="-712.8" font-family="Times,serif" font-size="14.00">1.1.4</text>
 </g>

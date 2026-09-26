@@ -266,11 +266,13 @@ class GithubHandoffTest(unittest.TestCase):
                 contextlib.redirect_stdout(io.StringIO()) as output,
             ):
                 def wait(*_args, **kwargs):
-                    if "commit_sha" in kwargs:
+                    if not kwargs:
                         create.assert_not_called()
+                        ask.assert_not_called()
                         return True
                     create.assert_called_once()
                     self.assertEqual({"tag": "1.2.3"}, kwargs)
+                    ask.assert_called_once_with("Create GitHub release now? [y/N] ")
                     self.assertIn("https://github.com/owner/repo/releases/tag/1.2.3", output.getvalue())
                     return True
 
@@ -278,7 +280,7 @@ class GithubHandoffTest(unittest.TestCase):
                     github_release, "wait_for_ci", side_effect=wait
                 ) as wait_for_ci:
                     self.assertTrue(github_release.create_github_release("roo_library", offer_post_release=False))
-                ask.assert_called_once_with("Proceed? [y/N] ")
+                ask.assert_called_once_with("Create GitHub release now? [y/N] ")
                 post.assert_not_called()
                 self.assertEqual(2, wait_for_ci.call_count)
 

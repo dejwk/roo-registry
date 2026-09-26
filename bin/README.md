@@ -57,8 +57,8 @@ release is the highest version tag reachable from HEAD; unrelated branch tags
 and non-version tags are ignored. If no release tag exists, that review stops
 before approval. Both views use tig's pager mode.
 Install `tig` to use that optional review; a failed review stops publication.
-GitHub publication has its own confirmation. The script first waits for CI on
-the prepared commit; only green commit CI permits creating the release. It then
+The script waits for CI on the prepared commit immediately after it is pushed.
+Only green commit CI reaches the GitHub-publication confirmation. It then
 prints the new release URL and waits again for tag-triggered CI. Only green CI
 reaches the final confirmation to update and push the registry, regenerate its
 graph, and publish to PlatformIO.
