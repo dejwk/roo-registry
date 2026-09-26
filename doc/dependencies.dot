@@ -21,7 +21,7 @@ digraph dependencies {
     "roo_logging" [label="roo_logging\n1.5.11", fillcolor="#b1dbab", color="black"];
     "roo_monitoring" [label="roo_monitoring\n1.1.5", fillcolor="#b1dbab", color="black"];
     "roo_onewire" [label="roo_onewire\n2.0.13", fillcolor="#b1dbab", color="black"];
-    "roo_pb" [label="roo_pb\n0.1.0", fillcolor="plum", color="black"];
+    "roo_pb" [label="roo_pb\n0.1.0", fillcolor="#b1dbab", color="black"];
     "roo_powersafefs" [label="roo_powersafefs\n1.0.3", fillcolor="#b1dbab", color="black"];
     "roo_prefs" [label="roo_prefs\n2.0.2", fillcolor="#b1dbab", color="black"];
     "roo_quantity" [label="roo_quantity\n1.1.11", fillcolor="#b1dbab", color="black"];

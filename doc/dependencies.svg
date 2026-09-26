@@ -331,7 +331,7 @@
 <!-- roo_pb -->
 <g id="node18" class="node">
 <title>roo_pb</title>
-<polygon fill="plum" stroke="black" points="189.5,-434 124.5,-434 124.5,-396 189.5,-396 189.5,-434"/>
+<polygon fill="#b1dbab" stroke="black" points="189.5,-434 124.5,-434 124.5,-396 189.5,-396 189.5,-434"/>
 <text text-anchor="middle" x="157" y="-418.8" font-family="Times,serif" font-size="14.00">roo_pb</text>
 <text text-anchor="middle" x="157" y="-403.8" font-family="Times,serif" font-size="14.00">0.1.0</text>
 </g>
