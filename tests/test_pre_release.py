@@ -58,13 +58,14 @@ class PreReleaseTest(unittest.TestCase):
         args = self.parse("--patch", "--notes", "Fix the display driver.")
         self.assertEqual("Fix the display driver.", args.notes)
 
-    def test_codex_proposal_is_printed_without_prompting(self):
+    def test_codex_proposal_includes_unreleased_context_and_requires_acceptance(self):
         result = subprocess.CompletedProcess([], 0, "- Fixed a bug.\n", "")
         with (
             mock.patch.object(
                 pre_release_module, "find_codex_executable", return_value="codex"
             ),
             mock.patch.object(pre_release_module, "run_command", return_value=result) as run,
+            mock.patch("builtins.input", return_value="a") as ask,
             contextlib.redirect_stdout(io.StringIO()) as output,
         ):
             self.assertEqual(
@@ -75,6 +76,71 @@ class PreReleaseTest(unittest.TestCase):
         self.assertIn("Generating release notes with Codex", output.getvalue())
         command = run.call_args.args[0]
         self.assertEqual(["codex", "exec", "--ephemeral", "--sandbox", "read-only"], command[:5])
+        self.assertIn("Read RELEASE_NOTES.md", command[-1])
+        self.assertIn("Incorporate any existing Unreleased notes", command[-1])
+        ask.assert_called_once()
+
+    def test_review_edits_and_requires_acceptance_again(self):
+        paths = []
+
+        def edit(command, **kwargs):
+            self.assertEqual(["custom editor", "--wait"], command[:-1])
+            self.assertEqual(Path("/module"), kwargs["cwd"])
+            path = Path(command[-1])
+            self.assertEqual("- Original.\n", path.read_text())
+            path.write_text("- Edited.\n")
+            paths.append(path)
+            return subprocess.CompletedProcess(command, 0)
+
+        with (
+            mock.patch.dict(pre_release_module.os.environ, {"VISUAL": '"custom editor" --wait', "EDITOR": "unused"}),
+            mock.patch.object(pre_release_module.subprocess, "run", side_effect=edit),
+            mock.patch("builtins.input", side_effect=["e", "a"]) as ask,
+            contextlib.redirect_stdout(io.StringIO()) as output,
+        ):
+            notes = pre_release_module.review_release_notes(Path("/module"), "- Original.")
+        self.assertEqual("- Edited.", notes)
+        self.assertEqual(2, ask.call_count)
+        self.assertIn("- Edited.", output.getvalue())
+        self.assertFalse(paths[0].exists())
+
+    def test_review_does_not_accept_failed_or_empty_edits(self):
+        for failure in ("exit", "empty", "missing"):
+            with self.subTest(failure=failure):
+                def edit(command, **kwargs):
+                    if failure == "missing":
+                        raise FileNotFoundError("editor missing")
+                    Path(command[-1]).write_text("")
+                    return subprocess.CompletedProcess(command, 1 if failure == "exit" else 0)
+
+                with (
+                    mock.patch.dict(pre_release_module.os.environ, {"VISUAL": "", "EDITOR": "editor --wait"}),
+                    mock.patch.object(pre_release_module.subprocess, "run", side_effect=edit) as run,
+                    mock.patch("builtins.input", side_effect=["e", "a"]),
+                    contextlib.redirect_stdout(io.StringIO()),
+                ):
+                    self.assertEqual("- Original.", pre_release_module.review_release_notes(Path("/module"), "- Original."))
+                self.assertEqual(["editor", "--wait"], run.call_args.args[0][:-1])
+
+    def test_review_accepts_by_default(self):
+        with (
+            mock.patch("builtins.input", return_value="") as ask,
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            self.assertEqual(
+                "- Original.",
+                pre_release_module.review_release_notes(Path("/module"), "- Original."),
+            )
+        self.assertIn("[A/e/q]", ask.call_args.args[0])
+
+    def test_review_aborts_or_reprompts(self):
+        for responses in (["q"], [EOFError()], [KeyboardInterrupt()], ["invalid", "q"]):
+            with (
+                self.subTest(responses=responses),
+                mock.patch("builtins.input", side_effect=responses),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
+                self.assertIsNone(pre_release_module.review_release_notes(Path("/module"), "- Original."))
 
     def test_missing_codex_returns_a_clear_error_without_running_a_command(self):
         with (
@@ -523,6 +589,32 @@ class PreReleaseTest(unittest.TestCase):
                     self.assertFalse(pre_release_module.pre_release("roo_consumer", mode, skip_tests=True))
                 run.assert_called_once()
                 notes.assert_called_once()
+
+    def test_pre_release_replaces_drafts_above_published_history(self):
+        temp_dir, _base_dir, registry_dir, module_dir = self.make_release_fixture()
+        self.addCleanup(temp_dir.cleanup)
+        repo = git.Repo(module_dir)
+        repo.create_tag("4.5.5")
+        history = "# roo_consumer 4.5.5\n\nPublished notes.\n"
+        path = module_dir / "RELEASE_NOTES.md"
+        path.write_text("# Unreleased\n\nFeature.\n\n"
+                        "# roo_consumer 4.5.6\n\nDraft notes.\n\n" + history)
+        with (
+            mock.patch.object(pre_release_module, "__file__", str(registry_dir / "bin/pre_release.py")),
+            mock.patch.object(pre_release_module, "check_git_status", return_value=True),
+            mock.patch.object(pre_release_module, "unchanged_since_latest_published_version", return_value=None),
+            mock.patch.object(pre_release_module.subprocess, "run", return_value=subprocess.CompletedProcess([], 0)),
+            mock.patch.object(pre_release_module, "git_push") as push,
+            mock.patch("builtins.input", return_value="n"),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            self.assertFalse(pre_release_module.pre_release(
+                "roo_consumer", "patch", skip_tests=True, latest_deps=False,
+                notes="Final notes.",
+            ))
+        push.assert_not_called()
+        self.assertEqual("# roo_consumer 4.5.7\n\nFinal notes.\n\n---\n\n" + history,
+                         path.read_text())
 
     def test_failed_dependency_upgrade_stops_before_release_notes(self):
         temp_dir, _base_dir, registry_dir, module_dir = self.make_release_fixture()

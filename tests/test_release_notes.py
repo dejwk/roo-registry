@@ -7,6 +7,46 @@ from release_notes import read_top_entry, upsert_draft_entry
 
 class ReleaseNotesTest(unittest.TestCase):
 
+    def test_replaces_all_unpublished_content_and_preserves_history_bytes(self):
+        for heading in (
+            "# roo_library 1.2.2",
+            "# [roo_library 1.2.2](https://example/release)",
+        ):
+            with self.subTest(heading=heading), tempfile.TemporaryDirectory() as temp_dir:
+                path = Path(temp_dir) / "RELEASE_NOTES.md"
+                history = (heading + "\r\n\r\nPublished notes.\r\n\r\n---\r\n"
+                           "# roo_library 1.2.1\r\nOlder notes.\r\n").encode()
+                path.write_bytes(
+                    b"# Unreleased\n\nNew feature.\n\n"
+                    b"# roo_library 1.2.4\n\nOld draft.\n\n---\n\n"
+                    b"# roo_library 1.2.3\n\nAnother draft.\n\n" + history
+                )
+                upsert_draft_entry(path, "roo_library", "1.2.4", "Final notes.",
+                                   published_versions={"1.2.2", "1.2.1"})
+                expected = b"# roo_library 1.2.4\n\nFinal notes.\n\n---\n\n" + history
+                self.assertEqual(expected, path.read_bytes())
+                upsert_draft_entry(path, "roo_library", "1.2.4", "Final notes.",
+                                   published_versions={"1.2.2", "1.2.1"})
+                self.assertEqual(expected, path.read_bytes())
+
+    def test_first_release_replaces_all_drafts(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "RELEASE_NOTES.md"
+            path.write_text("# Unreleased\nDraft.\n# roo_library 0.1.0\nOld draft.\n")
+            upsert_draft_entry(path, "roo_library", "1.0.0", "First release.",
+                               published_versions=set())
+            self.assertEqual("# roo_library 1.0.0\n\nFirst release.\n\n---\n", path.read_text())
+
+    def test_repreparing_published_version_does_not_duplicate_it(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "RELEASE_NOTES.md"
+            history = "# roo_library 1.2.1\nOlder notes.\n"
+            path.write_text("# roo_library 1.2.2\nCurrent notes.\n" + history)
+            upsert_draft_entry(path, "roo_library", "1.2.2", "Updated notes.",
+                               published_versions={"1.2.2", "1.2.1"})
+            self.assertEqual("# roo_library 1.2.2\n\nUpdated notes.\n\n---\n\n" + history,
+                             path.read_text())
+
     def test_creates_a_draft_before_existing_history(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             notes_path = Path(temp_dir) / "RELEASE_NOTES.md"

@@ -22,6 +22,8 @@ import shutil
 import subprocess
 import argparse
 import re
+import shlex
+import tempfile
 from pathlib import Path
 from typing import List, Tuple, Optional
 
@@ -117,7 +119,12 @@ def propose_release_notes_with_codex(module_dir: Path, version: str) -> Optional
         f"Generate concise Markdown release notes for {module_dir.name} version "
         f"{version}. Review the changes since the most recent release tag in "
         "this repository, including uncommitted dependency upgrades in the working "
-        "tree. Return only the release-note body: no title, date, "
+        "tree. Read RELEASE_NOTES.md and any other changelog or release-note "
+        "files in this repository. Incorporate any existing Unreleased notes "
+        "into the proposal, preserving their relevant details and combining "
+        "them with changes found in Git without duplicating entries. Do not "
+        "include notes for already published releases. "
+        "Return only the release-note body: no title, date, "
         "preamble, full-changelog link, or horizontal rule."
     )
     try:
@@ -141,9 +148,51 @@ def propose_release_notes_with_codex(module_dir: Path, version: str) -> Optional
     if not notes:
         print("Error: Codex returned empty release notes.")
         return None
-    print("\nProposed release notes:\n")
-    print(notes)
-    return notes
+    return review_release_notes(module_dir, notes)
+
+
+def review_release_notes(module_dir: Path, notes: str) -> Optional[str]:
+    """Review a proposal, optionally editing it before explicit acceptance."""
+    while True:
+        print("\nProposed release notes:\n")
+        print(notes)
+        try:
+            choice = input("Release notes: [A]ccept, [E]dit, or [Q]uit? [A/e/q] ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            print("\nRelease-note review aborted.")
+            return None
+        if choice in {"", "a", "accept", "y", "yes"}:
+            return notes
+        if choice in {"q", "quit", "n", "no"}:
+            print("Release-note review aborted.")
+            return None
+        if choice not in {"e", "edit"}:
+            print("Please choose A, E, or Q.")
+            continue
+
+        editor = os.environ.get("VISUAL") or os.environ.get("EDITOR") or "vi"
+        try:
+            command = shlex.split(editor)
+            if not command:
+                raise ValueError("the editor command is empty")
+            with tempfile.TemporaryDirectory(prefix="roo-release-notes-") as temp_dir:
+                notes_path = Path(temp_dir) / "RELEASE_NOTES.md"
+                notes_path.write_text(notes + "\n", encoding="utf-8")
+                # Inherit the terminal so interactive editors can read input.
+                result = subprocess.run(command + [str(notes_path)], cwd=module_dir)
+                if result.returncode != 0:
+                    print("Editor failed; keeping the previous proposal.")
+                    continue
+                edited = notes_path.read_text(encoding="utf-8").strip()
+                if not edited:
+                    print("Release notes cannot be empty; keeping the previous proposal.")
+                    continue
+                notes = edited
+        except (OSError, ValueError) as error:
+            print(f"Could not edit release notes: {error}. Keeping the previous proposal.")
+        except KeyboardInterrupt:
+            print("\nRelease-note review aborted.")
+            return None
 
 
 def is_version_published(module_dir: Path, version: str) -> bool:
@@ -334,9 +383,13 @@ def review_staged_diff(module_dir: Path) -> bool:
             print("No changes to review in the selected range.")
             return True
         # Tig has no diff subcommand; feed Git's patch to its pager view.
-        result = subprocess.run(
-            ["tig"], input=diff.stdout, cwd=module_dir, text=True,
-        )
+        try:
+            result = subprocess.run(
+                ["tig"], input=diff.stdout, cwd=module_dir, text=True,
+            )
+        except FileNotFoundError:
+            print("tig is not installed; skipping diff review and continuing to release confirmation.")
+            return True
     except (OSError, git.GitError, ValueError) as error:
         print(f"Could not review the requested diff: {error}")
         print("Changes remain staged. Install tig or review with git diff --cached.")
@@ -736,7 +789,19 @@ def pre_release(
 
     # Step 5: Create or update the release-note draft.
     notes_path = module_dir / "RELEASE_NOTES.md"
-    upsert_draft_entry(notes_path, module_name, new_version, notes)
+    repo = git.Repo(module_dir)
+    published_versions = set()
+    for tag in repo.tags:
+        try:
+            Version(tag.name)
+        except ValueError:
+            continue
+        if repo.is_ancestor(tag.commit, repo.head.commit):
+            published_versions.add(tag.name)
+    upsert_draft_entry(
+        notes_path, module_name, new_version, notes,
+        published_versions=published_versions,
+    )
     print(f"✓ Updated {notes_path.name} for {new_version}")
 
     # Step 6: Synchronize release metadata, preserving the dependency versions

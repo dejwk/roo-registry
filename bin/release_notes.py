@@ -2,7 +2,7 @@
 
 import re
 from pathlib import Path
-from typing import Optional
+from typing import Collection, Optional
 
 
 _HEADING_PATTERN = re.compile(r"^# (?:\[(?P<linked>[^]]+)\]\([^)]*\)|(?P<plain>.+))$", re.MULTILINE)
@@ -31,14 +31,38 @@ def format_draft_entry(module_name: str, version: str, notes: str) -> str:
 
 
 def upsert_draft_entry(
-    notes_path: Path, module_name: str, version: str, notes: str
+    notes_path: Path, module_name: str, version: str, notes: str,
+    published_versions: Optional[Collection[str]] = None,
 ) -> None:
     """Create or replace the top draft entry for a release version.
 
     A matching top entry is left untouched when its notes are unchanged;
     otherwise it is replaced so repeated preparation updates its notes. A different (or missing) top entry leaves the history
     intact and gets a new draft prepended to it.
+    When published versions are supplied, replace everything before the first
+    published heading. A matching target version is also replaced, so preparing
+    an already published version does not duplicate its entry.
     """
+    if published_versions is not None:
+        content = notes_path.read_bytes().decode("utf-8") if notes_path.exists() else ""
+        published_titles = {
+            _expected_title(module_name, published)
+            for published in published_versions if published != version
+        }
+        history = ""
+        offset = 0
+        for line in content.splitlines(keepends=True):
+            heading = _HEADING_PATTERN.fullmatch(line.rstrip("\r\n"))
+            if heading and _heading_title(heading) in published_titles:
+                history = content[offset:]
+                break
+            offset += len(line)
+        updated = format_draft_entry(module_name, version, notes)
+        if history:
+            updated += "\n" + history
+        notes_path.write_bytes(updated.encode("utf-8"))
+        return
+
     content = notes_path.read_text(encoding="utf-8") if notes_path.exists() else ""
     draft = format_draft_entry(module_name, version, notes)
     heading = _top_heading(content)

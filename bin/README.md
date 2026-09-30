@@ -149,7 +149,12 @@ python3 pre_release.py roo_display --current --nolatest_deps
 - `--skip-tests`: Skip running bazel tests
 - `--notes`: Markdown body for the release-note entry. If omitted and matching
   notes already exist, the script asks before replacing them. Otherwise, a
-  read-only Codex invocation proposes the notes.
+  read-only Codex invocation proposes the notes, incorporating existing
+  Unreleased entries from release-note and changelog files alongside Git changes.
+  Each Codex proposal offers accept (the default on Enter), edit, or quit. Editing
+  uses `$VISUAL`, then `$EDITOR`, or `vi` if neither is set; editor arguments
+  are supported (for example, `EDITOR="code --wait"`). After saving and closing
+  the editor, review the updated proposal and accept it with Enter or A.
   Set `CODEX_BIN` to an executable Codex CLI path when it is not on `PATH`; the
   script also detects Codex installed by the VS Code extension.
 
@@ -169,7 +174,8 @@ files or copy failures stop preparation. These changes join the release commit.
 
 After metadata synchronization and tests, the script prints the staged git
 changes and release notes, then asks for confirmation before committing and
-pushing.
+pushing. If optional diff review is requested but `tig` is not installed, the
+script prints a notice and continues to the commit-and-push confirmation.
 
 If `HEAD` has the same tree as the newest reachable published version tag, the
 script asks whether to proceed before generating notes or modifying any files.
@@ -186,7 +192,9 @@ libraries.
 - Selects the latest registered Roo dependencies by default, or validates and
   preserves exact pins with `--nolatest_deps`
 - Updates library.json and library.properties
-- Creates or updates the matching top `RELEASE_NOTES.md` entry
+- Replaces unpublished `RELEASE_NOTES.md` content with the new notes, preserving
+  history from the first heading matching a reachable published version tag
+  (plain `# name version` and linked headings are supported)
 - Runs bazel tests
 - Commits and pushes the changes
 

@@ -180,17 +180,27 @@ class DiffReviewTest(unittest.TestCase):
             self.assertTrue(pre_release.review_staged_diff(Path("module")))
         run.assert_not_called()
 
-    def test_missing_or_failed_tig_stops_before_approval(self):
-        for result in (FileNotFoundError("tig"), subprocess.CompletedProcess([], 1)):
+    def test_missing_tig_allows_approval_but_failed_tig_stops(self):
+        for result, expected in ((FileNotFoundError("tig"), True), (subprocess.CompletedProcess([], 1), False)):
             with (
                 self.subTest(result=result),
                 mock.patch("builtins.input", return_value="y"),
                 mock.patch.object(pre_release.subprocess, "run", side_effect=[
                     subprocess.CompletedProcess([], 0, "staged patch", ""), result,
                 ]),
-                contextlib.redirect_stdout(io.StringIO()),
+                contextlib.redirect_stdout(io.StringIO()) as output,
             ):
-                self.assertFalse(pre_release.review_staged_diff(Path("module")))
+                self.assertEqual(expected, pre_release.review_staged_diff(Path("module")))
+            if expected:
+                self.assertIn("tig is not installed; skipping diff review", output.getvalue())
+
+    def test_missing_git_still_stops_before_approval(self):
+        with (
+            mock.patch("builtins.input", return_value="s"),
+            mock.patch.object(pre_release.subprocess, "run", side_effect=FileNotFoundError("git")),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            self.assertFalse(pre_release.review_staged_diff(Path("module")))
 
     def test_empty_or_failed_diff_does_not_open_tig(self):
         for code in (0, 1):
