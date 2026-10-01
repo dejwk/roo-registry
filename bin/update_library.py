@@ -141,7 +141,9 @@ def update_dependencies_to_latest(
                 update_messages.append(
                     f"  {dep.name}: {dep.version} -> {latest}"
                 )
-                updated_dependencies.append(Dependency(dep.name, str(latest)))
+                updated_dependencies.append(Dependency(
+                    dep.name, str(latest), dev_dependency=dep.dev_dependency
+                ))
             else:
                 updated_dependencies.append(dep)
         else:
@@ -500,7 +502,8 @@ def create_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--skip-dev-dependencies",
         action="store_true",
-        help="Exclude Bazel development dependencies from Arduino and PlatformIO metadata",
+        default=True,
+        help="Exclude Bazel development dependencies from Arduino and PlatformIO metadata (default)",
     )
     parser.add_argument(
         "--force",

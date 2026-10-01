@@ -229,7 +229,9 @@ python3 update_library.py roo_display --nolatest_deps
 **Purpose:**
 - Updates library metadata files
 - Preserves existing content while updating version information
-- Synchronizes dependency information from `MODULE.bazel`
+- Synchronizes dependency information from `MODULE.bazel`, excluding dependencies
+  marked `dev_dependency = True` from Arduino and PlatformIO metadata, including
+  when their Bazel versions are upgraded
 - Updates dependencies to the latest available version from the local registry
   by default
 - With `--nolatest_deps`, preserves exact dependency pins and fails before

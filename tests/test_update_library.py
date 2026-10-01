@@ -90,6 +90,39 @@ bazel_dep(
             ).nolatest_deps
         )
 
+    def test_cli_excludes_dev_dependencies_by_default(self):
+        parser = create_argument_parser()
+        for flags in ([], ["--nolatest_deps"], ["--skip-dev-dependencies"]):
+            with self.subTest(flags=flags):
+                args = parser.parse_args(["roo_consumer", *flags])
+                self.assertTrue(args.skip_dev_dependencies)
+
+    def test_upgraded_dev_dependencies_stay_out_of_metadata(self):
+        self.add_registry_version("roo_dep", "2.0.0")
+        self.add_registry_version("roo_dev", "5.0.0")
+        module_dir = self.add_module(extra_dependencies=(
+            'bazel_dep(name = "roo_dev", version = "4.5.6", '
+            'dev_dependency = True)\n'
+        ))
+        args = create_argument_parser().parse_args(["roo_consumer"])
+        with redirect_stdout(StringIO()):
+            self.assertTrue(update_library_files(
+                args.module_name,
+                latest_deps=not args.nolatest_deps,
+                skip_dev_dependencies=args.skip_dev_dependencies,
+                registry_dir=self.registry_dir,
+                base_dir=self.base_dir,
+            ))
+        self.assertIn(
+            'bazel_dep(name = "roo_dev", version = "5.0.0", dev_dependency = True)',
+            (module_dir / "MODULE.bazel").read_text(),
+        )
+        metadata = json.loads((module_dir / "library.json").read_text())
+        self.assertEqual({"dejwk/roo_dep": ">=2.0.0"}, metadata["dependencies"])
+        properties = (module_dir / "library.properties").read_text()
+        self.assertIn("depends=roo_dep\n", properties)
+        self.assertNotIn("roo_dev", properties)
+
     def test_latest_updates_module_and_metadata(self):
         self.add_registry_version("roo_dep", "1.2.3")
         self.add_registry_version("roo_dep", "2.0.0")
