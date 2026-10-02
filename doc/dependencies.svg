@@ -439,8 +439,8 @@
 <!-- roo_transceivers&#45;&gt;roo_prefs -->
 <g id="edge36" class="edge">
 <title>roo_transceivers&#45;&gt;roo_prefs</title>
-<path fill="none" stroke="red" d="M278.06,-535.69C273.29,-534.5 268.51,-533.42 263.88,-532.5 190.09,-517.94 163.7,-546.45 95.62,-514.5 91.23,-512.44 75.39,-497.01 60.85,-482.32"/>
-<polygon fill="red" stroke="red" points="63.56,-480.08 54.05,-475.4 58.57,-484.99 63.56,-480.08"/>
+<path fill="none" stroke="red" d="M278.06,-535.69C273.29,-534.5 268.51,-533.42 263.88,-532.5 190.09,-517.94 163.7,-546.45 95.62,-514.5 80.16,-507.24 66.2,-494.51 55.48,-482.64"/>
+<polygon fill="red" stroke="red" points="58.43,-480.69 49.26,-475.38 53.11,-485.25 58.43,-480.69"/>
 <text xml:space="preserve" text-anchor="middle" x="122.25" y="-505" font-family="Times,serif" font-size="10.00" fill="red">2.0.2</text>
 <text xml:space="preserve" text-anchor="middle" x="122.25" y="-493.75" font-family="Times,serif" font-size="10.00" fill="red">(latest: 2.0.3)</text>
 </g>
@@ -473,8 +473,8 @@
 <!-- roo_wifi&#45;&gt;roo_prefs -->
 <g id="edge39" class="edge">
 <title>roo_wifi&#45;&gt;roo_prefs</title>
-<path fill="none" stroke="black" d="M192.28,-551.3C158.87,-549.07 106.11,-541.17 69.88,-514.5 59.57,-506.91 51.65,-495.41 45.9,-484.5"/>
-<polygon fill="black" stroke="black" points="49.17,-483.24 41.69,-475.73 42.86,-486.26 49.17,-483.24"/>
+<path fill="none" stroke="black" d="M192.38,-548.49C149.8,-543.17 76.88,-531.79 56.88,-514.5 48.26,-507.05 42.86,-496.01 39.48,-485.41"/>
+<polygon fill="black" stroke="black" points="42.86,-484.53 36.93,-475.75 36.1,-486.31 42.86,-484.53"/>
 </g>
 <!-- roo_wifi&#45;&gt;roo_scheduler -->
 <g id="edge40" class="edge">
@@ -538,25 +538,21 @@
 <!-- roo_windows_wifi -->
 <g id="node33" class="node">
 <title>roo_windows_wifi</title>
-<polygon fill="khaki" stroke="red" points="391.88,-751 273.88,-751 273.88,-710 391.88,-710 391.88,-751"/>
-<text xml:space="preserve" text-anchor="middle" x="332.88" y="-733.7" font-family="Times,serif" font-size="14.00">roo_windows_wifi</text>
-<text xml:space="preserve" text-anchor="middle" x="332.88" y="-717.2" font-family="Times,serif" font-size="14.00">1.1.4</text>
+<polygon fill="#b1dbab" stroke="black" points="483.88,-751 365.88,-751 365.88,-710 483.88,-710 483.88,-751"/>
+<text xml:space="preserve" text-anchor="middle" x="424.88" y="-733.7" font-family="Times,serif" font-size="14.00">roo_windows_wifi</text>
+<text xml:space="preserve" text-anchor="middle" x="424.88" y="-717.2" font-family="Times,serif" font-size="14.00">2.0.0</text>
 </g>
 <!-- roo_windows_wifi&#45;&gt;roo_wifi -->
 <g id="edge48" class="edge">
 <title>roo_windows_wifi&#45;&gt;roo_wifi</title>
-<path fill="none" stroke="red" d="M307.86,-709.69C291.01,-695.17 269.42,-674.12 255.62,-651.5 243.07,-630.92 234.91,-604.83 230.02,-584.82"/>
-<polygon fill="red" stroke="red" points="233.48,-584.27 227.84,-575.3 226.66,-585.83 233.48,-584.27"/>
-<text xml:space="preserve" text-anchor="middle" x="282.25" y="-632.75" font-family="Times,serif" font-size="10.00" fill="red">1.1.6</text>
-<text xml:space="preserve" text-anchor="middle" x="282.25" y="-621.5" font-family="Times,serif" font-size="10.00" fill="red">(latest: 3.0.0)</text>
+<path fill="none" stroke="black" d="M365.39,-716.39C348.58,-710.77 331.03,-702.9 316.88,-692 279.6,-663.31 252.12,-615.3 237.06,-584.14"/>
+<polygon fill="black" stroke="black" points="240.31,-582.83 232.89,-575.26 233.97,-585.8 240.31,-582.83"/>
 </g>
 <!-- roo_windows_wifi&#45;&gt;roo_windows -->
 <g id="edge49" class="edge">
 <title>roo_windows_wifi&#45;&gt;roo_windows</title>
-<path fill="none" stroke="red" d="M392.37,-719.34C503.02,-700.45 739.05,-660.14 847.39,-641.65"/>
-<polygon fill="red" stroke="red" points="847.95,-645.1 857.22,-639.97 846.77,-638.2 847.95,-645.1"/>
-<text xml:space="preserve" text-anchor="middle" x="696.14" y="-682.5" font-family="Times,serif" font-size="10.00" fill="red">1.7.0</text>
-<text xml:space="preserve" text-anchor="middle" x="696.14" y="-671.25" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.8.1)</text>
+<path fill="none" stroke="black" d="M484.09,-717.45C577.11,-698.51 756.23,-662.05 847.48,-643.48"/>
+<polygon fill="black" stroke="black" points="848.1,-646.92 857.2,-641.5 846.71,-640.06 848.1,-646.92"/>
 </g>
 </g>
 </svg>
