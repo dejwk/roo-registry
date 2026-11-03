@@ -1,0 +1,492 @@
+{
+  "date": "2026-11-04",
+  "backup_ref": "refs/backup/pico-io-before-phase-squash-20261104T192909",
+  "notes": [
+    "Earlier history-only rewrites preserved final contents. The Wire correction now removes an emulator-only roo_io workaround and dependent RTC assertion, and fixes the supported Arduino-Pico Wire emulation in focused roo_testing commits.",
+    "Client CI pins refer to the rewritten roo_testing filesystem phase.",
+    "Validation revision files preserve the exact original checkpoints.",
+    "Mapping an original commit to a review phase groups later fixes; intermediate snapshots can differ.",
+    "General changes from stages 4 and 6-7 are extracted into independent single-purpose commits; review values are lists because an original commit can span several purposes.",
+    "Bug-fix messages describe the faulty behavior and applicable contract; hardening, throughput and warning cleanups are identified accurately. The message-only rewrite preserves every source commit tree.",
+    "Current review revisions and Wire parity validation include these functional changes; historical matrix, board and intermediate test snapshots retain their actual tested hashes.",
+    "The storage review now selects PicoLittleFsMountImpl at the Pico LittleFS mount factory and removes GPIO presence detection. Only stages 6-7 and the following release commit were rewritten; the approved prefix through 31308dc1d7275181a31421c44be13cd85d8c063e is unchanged. Historical validation files retain their tested snapshots."
+  ],
+  "repositories": {
+    "roo_io": {
+      "previous_tip": "17ac13f2d042ab7b97e58f7e19823f0c9ebacd1c",
+      "review_tip": "5346cb5c5aa75e21045fc5b58d15368c0c714c01",
+      "commits": [
+        {
+          "original": "95f12bfa62e1594722a3c19b15be7998c7d930e1",
+          "review": [
+            "3758c5fa2e5fde5b07133c58d49ca53404ca5f04"
+          ],
+          "original_subject": "Pico I/O: Record the staged support and validation plan."
+        },
+        {
+          "original": "60db690808b4232c8ce72ec4cbf65e41f4ad8606",
+          "review": [
+            "1f8d4f11e398c340465a606fb827956eff0ebb4f"
+          ],
+          "original_subject": "Pico I/O stage 2: Separate portable and threaded facilities."
+        },
+        {
+          "original": "4e054f2693c92105795a3c48d66e6c35cd406f7d",
+          "review": [
+            "060e142c7e4d8e384248501732e6f6f8f1dfd324"
+          ],
+          "original_subject": "Pico I/O stage 3: Connect Arduino adapters to Pico."
+        },
+        {
+          "original": "20dd21f3e9fc68d91172edce153854fab8efac22",
+          "review": [
+            "53e82281428590a909813f1a285a4a792fba177b",
+            "ea8eb1dffad09b1e76dd5301908899d1e85af931",
+            "1f0ed58ac28b547a50202cb2d1586d2285486c64",
+            "88f50c14217ecba3b94eadc66452240f772b6fb2",
+            "b4a612c17bb1d4692dd1a9ee31d8cf3646284f3b",
+            "50a357e7c5b1eed9e21fd0d28c749ae2fbed5f7c"
+          ],
+          "original_subject": "Pico I/O stage 4: Restore adapter progress and cleanup contracts.",
+          "removed_scope": "Emulator-only Wire cleanup and its tests were removed; hardware-parity fixes live in roo_testing."
+        },
+        {
+          "original": "7ccf6afb5464c2e8a7f6986999d40fcf866a8c9d",
+          "review": [
+            "997e4aa728acb0a6f23f25002d31d768987adee5"
+          ],
+          "original_subject": "Pico I/O stage 5: Add native SDK transports."
+        },
+        {
+          "original": "ad14fdeff2da944555d4da2795caceb4ef51cc8b",
+          "review": [
+            "de7beaf02f895628a7f212ea5242fb1eb39bc85a",
+            "3660be79fb2238f4b90569e9250436218d9d1216",
+            "3be310bee0103302fbc9989b5317c65f7d4f748f",
+            "2f6d36f94d2c709d22dcefe5476660069e186172",
+            "f856cc6fa865b7d3a13af48cea40f444c31953aa"
+          ],
+          "original_subject": "Pico I/O stages 6-7: Complete and verify Arduino-Pico storage."
+        },
+        {
+          "original": "37890559fb0e37ea2095c3b4965349c7bd6d5096",
+          "review": [
+            "997e4aa728acb0a6f23f25002d31d768987adee5"
+          ],
+          "original_subject": "Pico I/O stage 5: Reject SDK-reserved I2C addresses before hardware calls."
+        },
+        {
+          "original": "0edcd114ace39507d5aa464d328438e95cd1225c",
+          "review": [
+            "cbba52f0a573661c5b4923d2b00bd95a62c10321",
+            "f856cc6fa865b7d3a13af48cea40f444c31953aa"
+          ],
+          "original_subject": "Pico I/O stage 7: Close directory files before releasing the mount."
+        },
+        {
+          "original": "0b9484da62dac9fa921ff2b3112d9572d2089c26",
+          "review": [
+            "23a7a07583ef992a59d5b10558fa5ce6f064ef93",
+            "cbba52f0a573661c5b4923d2b00bd95a62c10321",
+            "b4e6179451bbb1b38fee557caf946fb8ea2bd000",
+            "31c48580f1954c25814eaadaba7ff040a4145016",
+            "f856cc6fa865b7d3a13af48cea40f444c31953aa"
+          ],
+          "original_subject": "Pico I/O stage 7: Preserve mount lifetime through file closure and remounts."
+        },
+        {
+          "original": "d77aea5216eb1a56253e616b0e6d9721f1d8a443",
+          "review": [
+            "5346cb5c5aa75e21045fc5b58d15368c0c714c01"
+          ],
+          "original_subject": "Pico I/O stage 8: Align profiles and prepare roo_io 2.5.0."
+        },
+        {
+          "original": "8611733c59811c3d651e87c73efae3cb8d5a7604",
+          "review": [
+            "f856cc6fa865b7d3a13af48cea40f444c31953aa"
+          ],
+          "original_subject": "Pico I/O stages 6-7: Preserve LittleFS ancestors and qualify Zero storage."
+        },
+        {
+          "original": "58f319daf1af162d048a519e81be98ce27f643e3",
+          "review": [
+            "50a357e7c5b1eed9e21fd0d28c749ae2fbed5f7c",
+            "49c1061ec7c1b2a86532cd4a74d37ef68a86f97d"
+          ],
+          "original_subject": "Pico I/O stage 4: Preserve Arduino stream errors through close."
+        },
+        {
+          "original": "7eaa87ad21f4542ab7eaaebfe695d80a221b3a41",
+          "review": [],
+          "original_subject": "Pico I/O stage 4: Explain Wire receive cleanup.",
+          "removed_scope": "Emulator-only Wire cleanup and its tests were removed; hardware-parity fixes live in roo_testing."
+        },
+        {
+          "original": "77f3f10f24644336b6108960355902952455add3",
+          "review": [
+            "53e82281428590a909813f1a285a4a792fba177b"
+          ],
+          "original_subject": "Pico I/O stage 4: Restore bounded Arduino bulk reads."
+        },
+        {
+          "original": "17ac13f2d042ab7b97e58f7e19823f0c9ebacd1c",
+          "review": [
+            "31308dc1d7275181a31421c44be13cd85d8c063e",
+            "f856cc6fa865b7d3a13af48cea40f444c31953aa"
+          ],
+          "original_subject": "Pico I/O stage 6: Add automatic Pico SD card detection."
+        }
+      ]
+    },
+    "roo_testing": {
+      "previous_tip": "baea968ef92739075e3e51db84b6932b0ebb41b7",
+      "review_tip": "966a69c31b67cf57d22bc1b9fa5a6ccee28e9bc0",
+      "commits": [
+        {
+          "original": "147aef992d27b45bb037b27cdd59cb73e656975e",
+          "review": [
+            "bc713e1ab7598be49b79ba5d9f69e7df59590814"
+          ],
+          "original_subject": "Pico I/O stage 7: Emulate Pico filesystems through the core FS API."
+        },
+        {
+          "original": "442f6ffe4e2b743b04d4879c44b88af1a2a44981",
+          "review": [
+            "fd3ca59bd06e1e5d85e77d670279e7e33a53bb99"
+          ],
+          "original_subject": "Pico I/O stage 8: Prepare roo_testing 2.5.0 for coordinated clients."
+        },
+        {
+          "original": "baa0dd6ad537dca9fceb29bc6889ad181ef4b261",
+          "review": [
+            "bc713e1ab7598be49b79ba5d9f69e7df59590814"
+          ],
+          "original_subject": "Pico I/O stage 7: Reproduce LittleFS parent-directory pruning."
+        },
+        {
+          "original": "baea968ef92739075e3e51db84b6932b0ebb41b7",
+          "review": [
+            "bc713e1ab7598be49b79ba5d9f69e7df59590814"
+          ],
+          "original_subject": "Pico I/O stage 7: Model SD SPI presence probes."
+        }
+      ],
+      "additional_review_commits": [
+        "7cceed7c82c9b65eb96c6710c6f3fadec06ae3cc",
+        "27aed03a8212c2bb69d92267b308c166f1a4040e",
+        "99ac7ec4a1e5c8e9f3269d92bbc210e72d1e4550",
+        "966a69c31b67cf57d22bc1b9fa5a6ccee28e9bc0"
+      ]
+    },
+    "roo_threads": {
+      "previous_tip": "27c8471b6381ba5a2cae8b1e989163de4878c979",
+      "review_tip": "47be96c8a29df38a52a0b978f9733290a203d39f",
+      "commits": [
+        {
+          "original": "95f32e303de6426cb50e08f98b980982eeb7dd57",
+          "review": [
+            "9819411a002c145e7dfebbdd61423b689a96c5a9"
+          ],
+          "original_subject": "Pico I/O stage 1: Follow the physical Pico runtime."
+        },
+        {
+          "original": "27c8471b6381ba5a2cae8b1e989163de4878c979",
+          "review": [
+            "47be96c8a29df38a52a0b978f9733290a203d39f"
+          ],
+          "original_subject": "Pico I/O stage 8: Validate threaded examples and prepare roo_threads 1.3.0."
+        }
+      ]
+    },
+    "roo_logging": {
+      "previous_tip": "eb95eee4dd70bfc2be5bb806e9ddf38a0f1c85b3",
+      "review_tip": "07829a7381a95e8cd9d5c4348fdd870b59a23066",
+      "commits": [
+        {
+          "original": "2790e537ecc64521809189109b01fb034cb489c3",
+          "review": [
+            "2790e537ecc64521809189109b01fb034cb489c3"
+          ],
+          "original_subject": "Pico I/O stage 1: Make logging independent of framework streams."
+        },
+        {
+          "original": "eb95eee4dd70bfc2be5bb806e9ddf38a0f1c85b3",
+          "review": [
+            "07829a7381a95e8cd9d5c4348fdd870b59a23066"
+          ],
+          "original_subject": "Pico I/O stage 8: Validate portable logging and prepare roo_logging 1.6.0."
+        }
+      ]
+    },
+    "roo_time": {
+      "previous_tip": "d5c4fa0ace4f268e6b6973a1fbec64a2bec3e3de",
+      "review_tip": "9dd8ba3d202e3e4af0ad3577c8ce89332e9ad252",
+      "commits": [
+        {
+          "original": "d5c4fa0ace4f268e6b6973a1fbec64a2bec3e3de",
+          "review": [
+            "9dd8ba3d202e3e4af0ad3577c8ce89332e9ad252"
+          ],
+          "original_subject": "Pico I/O stage 8: Align time backend tests and prepare roo_time 2.1.0."
+        }
+      ]
+    },
+    "roo_rtc": {
+      "previous_tip": "c298d95af6549b12595611f33cb542abe2fca726",
+      "review_tip": "a38a1edc709a0dc9719eefce94fb99932d8f41da",
+      "commits": [
+        {
+          "original": "c298d95af6549b12595611f33cb542abe2fca726",
+          "review": [
+            "a38a1edc709a0dc9719eefce94fb99932d8f41da"
+          ],
+          "original_subject": "Pico I/O stage 8: Verify every RTC driver on the Pico runtimes."
+        }
+      ]
+    },
+    "roo_display": {
+      "previous_tip": "79d1d1a42ae31b3fe379608021acab38ebbe4493",
+      "review_tip": "546324371b8275a6008081333717b9df4366a298",
+      "commits": [
+        {
+          "original": "79d1d1a42ae31b3fe379608021acab38ebbe4493",
+          "review": [
+            "546324371b8275a6008081333717b9df4366a298"
+          ],
+          "original_subject": "Pico I/O stage 8: Qualify the focused XPT2046 target across platforms."
+        }
+      ]
+    },
+    "roo-registry": {
+      "previous_tip": "05667c3a32dee330d9b3cd6b551290807d011de6",
+      "review_tip": "containing commit",
+      "commits": [
+        {
+          "original": "b2f42015a4ad8e4d1981b39211fe6a0e375b85e1",
+          "review": [
+            "containing commit"
+          ],
+          "original_subject": "Pico I/O stage 8: Record reproducible cross-library qualification."
+        },
+        {
+          "original": "05667c3a32dee330d9b3cd6b551290807d011de6",
+          "review": [
+            "containing commit"
+          ],
+          "original_subject": "Pico I/O stage 8: Record RP2040-Zero storage qualification."
+        }
+      ]
+    }
+  },
+  "schema_version": 2,
+  "refinements": [
+    {
+      "date": "2026-11-04",
+      "backup_ref": "refs/backup/before-pico-storage-split-20261104T204508",
+      "previous_roo_io_tip": "50e8a5c028cc76f44add53ceae74a996cf8bb00d",
+      "review_roo_io_tip": "62ac09be220071be5c6bc7f424cdedc49f2a7884",
+      "split_commits": [
+        {
+          "previous": "32809d718436bd1c63a2a5432c92f87bd82b077d",
+          "review": [
+            "2522d94815afd9a3e11b5cff44d0a63748b6c7f5",
+            "9e992a2560eba3a28296c69c1765fd219c9f4d21",
+            "f517a7108310fd2281b073dec0410a4b400ad078",
+            "b92f05d8d664d453ebf170fdf4fa5407fa93acc5",
+            "d5fb6936167b454c42de3818565392bb7391467e",
+            "cf6aebe0ece347005eb538244c2e9d72570126b1",
+            "4fee45e4d448a55659ad10fde077cda1cef9427e",
+            "1dc500e5b45a4c5b64e56e31cc31e92cf8167f3c",
+            "84f9dbd7ce852ed9b000503a954d66db61abf7bd"
+          ]
+        },
+        {
+          "previous": "79b7dec9cdcb497f2c11a4a7cb019f807685e2e9",
+          "review": [
+            "05a2c16cd53182a0e39afd021ccecf4999d78bd7",
+            "3349c3082b28bdc6061039d409c026d708ef3aae",
+            "64a5c868288168cbf7411a64b3627de59e2d4b8a",
+            "665f55800e6f0080007c636957502b71f58f3b02",
+            "e460354b9efc0675525449336ddd211e195a3255",
+            "bd06f30e41f67189a18baa74ad90d88715f1d02d",
+            "de54dbce763c4772bad2aad5883a916604589b3d",
+            "1b60dd2af528bb7a508428c225f3f419bbdb14b1",
+            "20e91bc63d21f426a26642d021b63e0c908efc16",
+            "45e57cef1e23374ec789527fa4ab827f659ef192"
+          ]
+        }
+      ],
+      "reparented_commits": [
+        {
+          "previous": "5449780caac4346497b78b55c5376db90428f350",
+          "review": "249c9d166ac59b5e395bfff60063763d8100803d"
+        },
+        {
+          "previous": "50e8a5c028cc76f44add53ceae74a996cf8bb00d",
+          "review": "62ac09be220071be5c6bc7f424cdedc49f2a7884"
+        }
+      ],
+      "intermediate_validation": "17 isolated snapshots passed targeted ASAN tests; see atomic_review_validation.json.",
+      "final_roo_io_tree_identical": true
+    },
+    {
+      "date": "2026-11-04",
+      "operation": "Clarify bug-fix commit messages",
+      "backup_ref": "refs/backup/before-bug-message-clarification-20261104T211642",
+      "source_trees_identical": true,
+      "repositories": {
+        "roo_io": {
+          "previous_tip": "3e8c74069c09c9c21885babb4442e6193de7f867",
+          "review_tip": "62ac09be220071be5c6bc7f424cdedc49f2a7884",
+          "reworded_commits": [
+            "468c2baffa981eade4bb1cf4de8eb4832459d103",
+            "74d7060c58910f3dee7860b27d47de4fb17d8b4a",
+            "7f567cf924a8e319692987655e1debdba7730d19",
+            "99b643815f5e23a1405cf6368e28da81b3af5a88",
+            "6580b80f55bb8343a045153d4bb9e4828fff6206",
+            "5e8913b0a4d6e39d0385d567b0f96d358712b8d8",
+            "489626fb6947f89ba1fe82b739bee4c2bc09b0a2",
+            "74204a7a59f2c5ca38c49302c8d5490446d15a07",
+            "605fdc4644095dc918ab3d966fb4b5f8e6bddac4",
+            "473462ae3b398cc99d372ff3bc5eb149f587ce9e",
+            "407edbe40cd30a088d4c39d2b4399820c72c1a8f",
+            "50a8adfd93348a530695b75c818f2018439dffa1",
+            "5a5a415e229b82c186f6e9e581b65bdd4a64a984",
+            "7967c587fab31269832885f88f210b97e5892053",
+            "ab550dac639671c04572d1968bdfe870afc166d5",
+            "b5db24db19a4dc0ab5105c198cd170843e5b6236",
+            "a0d1bc51fcfa4604ee338e5cd8cc48b18d03cf36"
+          ],
+          "commit_mapping": {
+            "95f12bfa62e1594722a3c19b15be7998c7d930e1": "95f12bfa62e1594722a3c19b15be7998c7d930e1",
+            "60db690808b4232c8ce72ec4cbf65e41f4ad8606": "60db690808b4232c8ce72ec4cbf65e41f4ad8606",
+            "4e054f2693c92105795a3c48d66e6c35cd406f7d": "4e054f2693c92105795a3c48d66e6c35cd406f7d",
+            "468c2baffa981eade4bb1cf4de8eb4832459d103": "2522d94815afd9a3e11b5cff44d0a63748b6c7f5",
+            "74d7060c58910f3dee7860b27d47de4fb17d8b4a": "9e992a2560eba3a28296c69c1765fd219c9f4d21",
+            "7f567cf924a8e319692987655e1debdba7730d19": "f517a7108310fd2281b073dec0410a4b400ad078",
+            "99b643815f5e23a1405cf6368e28da81b3af5a88": "b92f05d8d664d453ebf170fdf4fa5407fa93acc5",
+            "6580b80f55bb8343a045153d4bb9e4828fff6206": "d5fb6936167b454c42de3818565392bb7391467e",
+            "5e8913b0a4d6e39d0385d567b0f96d358712b8d8": "cf6aebe0ece347005eb538244c2e9d72570126b1",
+            "489626fb6947f89ba1fe82b739bee4c2bc09b0a2": "4fee45e4d448a55659ad10fde077cda1cef9427e",
+            "74204a7a59f2c5ca38c49302c8d5490446d15a07": "1dc500e5b45a4c5b64e56e31cc31e92cf8167f3c",
+            "d8cfa27350c0eb0c6c5a741f18dd512c1c7b1500": "84f9dbd7ce852ed9b000503a954d66db61abf7bd",
+            "605fdc4644095dc918ab3d966fb4b5f8e6bddac4": "249c9d166ac59b5e395bfff60063763d8100803d",
+            "473462ae3b398cc99d372ff3bc5eb149f587ce9e": "05a2c16cd53182a0e39afd021ccecf4999d78bd7",
+            "407edbe40cd30a088d4c39d2b4399820c72c1a8f": "3349c3082b28bdc6061039d409c026d708ef3aae",
+            "50a8adfd93348a530695b75c818f2018439dffa1": "64a5c868288168cbf7411a64b3627de59e2d4b8a",
+            "5a5a415e229b82c186f6e9e581b65bdd4a64a984": "665f55800e6f0080007c636957502b71f58f3b02",
+            "7967c587fab31269832885f88f210b97e5892053": "e460354b9efc0675525449336ddd211e195a3255",
+            "ab550dac639671c04572d1968bdfe870afc166d5": "bd06f30e41f67189a18baa74ad90d88715f1d02d",
+            "b5db24db19a4dc0ab5105c198cd170843e5b6236": "de54dbce763c4772bad2aad5883a916604589b3d",
+            "b9a7df34684ff3effb990ee9d45587989ecfd62f": "1b60dd2af528bb7a508428c225f3f419bbdb14b1",
+            "e3663cd5a75df7a126ed4666887198efb23e59fe": "20e91bc63d21f426a26642d021b63e0c908efc16",
+            "a0d1bc51fcfa4604ee338e5cd8cc48b18d03cf36": "45e57cef1e23374ec789527fa4ab827f659ef192",
+            "3e8c74069c09c9c21885babb4442e6193de7f867": "62ac09be220071be5c6bc7f424cdedc49f2a7884"
+          }
+        },
+        "roo_threads": {
+          "previous_tip": "9bb80d84b66c9e6eebd3837991e8ded4dab2a414",
+          "review_tip": "47be96c8a29df38a52a0b978f9733290a203d39f",
+          "reworded_commits": [
+            "95f32e303de6426cb50e08f98b980982eeb7dd57"
+          ],
+          "commit_mapping": {
+            "95f32e303de6426cb50e08f98b980982eeb7dd57": "9819411a002c145e7dfebbdd61423b689a96c5a9",
+            "9bb80d84b66c9e6eebd3837991e8ded4dab2a414": "47be96c8a29df38a52a0b978f9733290a203d39f"
+          }
+        },
+        "roo_time": {
+          "previous_tip": "9557f75a8aafee0983eddceeaa5724a53bb8b7da",
+          "review_tip": "9dd8ba3d202e3e4af0ad3577c8ce89332e9ad252",
+          "reworded_commits": [
+            "9557f75a8aafee0983eddceeaa5724a53bb8b7da"
+          ],
+          "commit_mapping": {
+            "9557f75a8aafee0983eddceeaa5724a53bb8b7da": "9dd8ba3d202e3e4af0ad3577c8ce89332e9ad252"
+          }
+        }
+      }
+    },
+    {
+      "date": "2026-11-04",
+      "operation": "Correct Pico Wire emulation and remove production workaround from history",
+      "backup_ref": "refs/backup/before-wire-parity-20261104T214109",
+      "source_trees_identical": false,
+      "repositories": {
+        "roo_testing": {
+          "previous_tip": "fd3ca59bd06e1e5d85e77d670279e7e33a53bb99",
+          "review_tip": "966a69c31b67cf57d22bc1b9fa5a6ccee28e9bc0",
+          "commit_mapping": {},
+          "removed_commits": {},
+          "added_commits": [
+            "7cceed7c82c9b65eb96c6710c6f3fadec06ae3cc",
+            "27aed03a8212c2bb69d92267b308c166f1a4040e",
+            "99ac7ec4a1e5c8e9f3269d92bbc210e72d1e4550",
+            "966a69c31b67cf57d22bc1b9fa5a6ccee28e9bc0"
+          ]
+        },
+        "roo_io": {
+          "previous_tip": "62ac09be220071be5c6bc7f424cdedc49f2a7884",
+          "review_tip": "4bcc4f92a258467980208da5fbe609b128d2e1df",
+          "commit_mapping": {
+            "95f12bfa62e1594722a3c19b15be7998c7d930e1": "3758c5fa2e5fde5b07133c58d49ca53404ca5f04",
+            "60db690808b4232c8ce72ec4cbf65e41f4ad8606": "1f8d4f11e398c340465a606fb827956eff0ebb4f",
+            "4e054f2693c92105795a3c48d66e6c35cd406f7d": "060e142c7e4d8e384248501732e6f6f8f1dfd324",
+            "9e992a2560eba3a28296c69c1765fd219c9f4d21": "53e82281428590a909813f1a285a4a792fba177b",
+            "f517a7108310fd2281b073dec0410a4b400ad078": "ea8eb1dffad09b1e76dd5301908899d1e85af931",
+            "b92f05d8d664d453ebf170fdf4fa5407fa93acc5": "1f0ed58ac28b547a50202cb2d1586d2285486c64",
+            "d5fb6936167b454c42de3818565392bb7391467e": "88f50c14217ecba3b94eadc66452240f772b6fb2",
+            "cf6aebe0ece347005eb538244c2e9d72570126b1": "b4a612c17bb1d4692dd1a9ee31d8cf3646284f3b",
+            "4fee45e4d448a55659ad10fde077cda1cef9427e": "50a357e7c5b1eed9e21fd0d28c749ae2fbed5f7c",
+            "1dc500e5b45a4c5b64e56e31cc31e92cf8167f3c": "49c1061ec7c1b2a86532cd4a74d37ef68a86f97d",
+            "249c9d166ac59b5e395bfff60063763d8100803d": "997e4aa728acb0a6f23f25002d31d768987adee5",
+            "05a2c16cd53182a0e39afd021ccecf4999d78bd7": "de7beaf02f895628a7f212ea5242fb1eb39bc85a",
+            "3349c3082b28bdc6061039d409c026d708ef3aae": "23a7a07583ef992a59d5b10558fa5ce6f064ef93",
+            "64a5c868288168cbf7411a64b3627de59e2d4b8a": "cbba52f0a573661c5b4923d2b00bd95a62c10321",
+            "665f55800e6f0080007c636957502b71f58f3b02": "b4e6179451bbb1b38fee557caf946fb8ea2bd000",
+            "e460354b9efc0675525449336ddd211e195a3255": "31c48580f1954c25814eaadaba7ff040a4145016",
+            "bd06f30e41f67189a18baa74ad90d88715f1d02d": "3be310bee0103302fbc9989b5317c65f7d4f748f",
+            "de54dbce763c4772bad2aad5883a916604589b3d": "2f6d36f94d2c709d22dcefe5476660069e186172",
+            "1b60dd2af528bb7a508428c225f3f419bbdb14b1": "3660be79fb2238f4b90569e9250436218d9d1216",
+            "20e91bc63d21f426a26642d021b63e0c908efc16": "31308dc1d7275181a31421c44be13cd85d8c063e",
+            "45e57cef1e23374ec789527fa4ab827f659ef192": "b027cc53b523d9784f96de6e490654602ab15100",
+            "62ac09be220071be5c6bc7f424cdedc49f2a7884": "4bcc4f92a258467980208da5fbe609b128d2e1df"
+          },
+          "removed_commits": {
+            "2522d94815afd9a3e11b5cff44d0a63748b6c7f5": "Emulator-only receive-buffer workaround removed.",
+            "84f9dbd7ce852ed9b000503a954d66db61abf7bd": "Regression asserted artificial emulator buffer/ownership behavior; replaced in roo_testing."
+          },
+          "added_commits": []
+        },
+        "roo_rtc": {
+          "previous_tip": "d00c9f32770398bf6881cf5df1cb26e14cea439d",
+          "review_tip": "a38a1edc709a0dc9719eefce94fb99932d8f41da",
+          "commit_mapping": {
+            "d00c9f32770398bf6881cf5df1cb26e14cea439d": "a38a1edc709a0dc9719eefce94fb99932d8f41da"
+          },
+          "removed_commits": {},
+          "added_commits": []
+        }
+      }
+    },
+    {
+      "date": "2026-11-04",
+      "operation": "Localize parent preservation in the Pico LittleFS mount and defer GPIO detection",
+      "backup_ref": "refs/backup/before-pico-mount-localization-20261104T223437",
+      "source_trees_identical": false,
+      "repositories": {
+        "roo_io": {
+          "previous_tip": "4bcc4f92a258467980208da5fbe609b128d2e1df",
+          "review_tip": "5346cb5c5aa75e21045fc5b58d15368c0c714c01",
+          "preserved_prefix_tip": "31308dc1d7275181a31421c44be13cd85d8c063e",
+          "commit_mapping": {
+            "b027cc53b523d9784f96de6e490654602ab15100": "f856cc6fa865b7d3a13af48cea40f444c31953aa",
+            "4bcc4f92a258467980208da5fbe609b128d2e1df": "5346cb5c5aa75e21045fc5b58d15368c0c714c01"
+          }
+        }
+      },
+      "validation": "storage_review_validation.json"
+    }
+  ]
+}

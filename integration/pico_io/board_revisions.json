@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-03",
+  "board": "waveshare_rp2040_zero",
+  "flash_bytes": 2097152,
+  "filesystem_size": "0.5m",
+  "arduino_pico_version": "5.4.3",
+  "framework_package": "1.50403.0",
+  "sd_connected": false,
+  "firmware_revisions": {
+    "roo_backport": "77aa81a729a40b21c4bd5a69e8abba09863cc281",
+    "roo_flags": "10615db8cfb68a9099843f32241e711968483ecc",
+    "roo_logging": "eb95eee4dd70bfc2be5bb806e9ddf38a0f1c85b3",
+    "roo_threads": "27c8471b6381ba5a2cae8b1e989163de4878c979",
+    "roo_time": "d5c4fa0ace4f268e6b6973a1fbec64a2bec3e3de",
+    "roo_io": "8611733c59811c3d651e87c73efae3cb8d5a7604"
+  },
+  "host_regression_revisions": {
+    "roo_io": "58f319daf1af162d048a519e81be98ce27f643e3",
+    "roo_testing": "baa0dd6ad537dca9fceb29bc6889ad181ef4b261",
+    "roo_threads": "27c8471b6381ba5a2cae8b1e989163de4878c979",
+    "roo_logging": "eb95eee4dd70bfc2be5bb806e9ddf38a0f1c85b3",
+    "roo_time": "d5c4fa0ace4f268e6b6973a1fbec64a2bec3e3de",
+    "roo_rtc": "c298d95af6549b12595611f33cb542abe2fca726",
+    "roo_display": "79d1d1a42ae31b3fe379608021acab38ebbe4493"
+  },
+  "firmware_uf2_sha256": {
+    "pico": "820b03b4e966b69e2a5f3a5c9eb572e00378d02e72955507ccb13593c36e6bfb",
+    "pico_freertos": "c97c9644b1dba16e5ad5ffa551cf2b909aa45ef2085eb6a71be0c73d342faa0d"
+  },
+  "original_flash_restored_byte_for_byte": true
+}

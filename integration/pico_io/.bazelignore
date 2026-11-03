@@ -1,0 +1,4 @@
+bazel-pico_io
+bazel-out
+bazel-bin
+bazel-testlogs

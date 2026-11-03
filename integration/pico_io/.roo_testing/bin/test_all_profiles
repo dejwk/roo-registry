@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Canonical source:
+# https://github.com/dejwk/roo_testing/blob/main/.roo_testing/bin/test_all_profiles
+#
+# Mixed roo_testing workspaces vendor this file beside .roo_testing/bin/bazel.
+
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+bazel_launcher="${ROO_TESTING_BAZEL:-${script_dir}/bazel}"
+expect_config_value=false
+
+if (($# == 0)); then
+  set -- ...
+fi
+
+for arg in "$@"; do
+  if [[ "${arg}" == "--" ]]; then
+    break
+  fi
+
+  if $expect_config_value; then
+    case "${arg}" in
+      roo_testing_arduino_*|roo_testing_idf_*|roo_testing_pico_*)
+        printf >&2 '%s\n' \
+          "ERROR: .roo_testing/bin/test_all_profiles selects all nine profiles; do not pass --config ${arg}."
+        exit 2
+        ;;
+    esac
+    expect_config_value=false
+    continue
+  fi
+
+  case "${arg}" in
+    --config) expect_config_value=true ;;
+    --config=roo_testing_arduino_*|--config=roo_testing_idf_*|--config=roo_testing_pico_*)
+      printf >&2 '%s\n' \
+        "ERROR: .roo_testing/bin/test_all_profiles selects all nine profiles; do not pass ${arg}."
+      exit 2
+      ;;
+  esac
+done
+
+# Keep the supported matrix explicit; do not invent future combinations.
+profiles=(
+  arduino_esp32 idf_esp32
+  arduino_esp32s3 idf_esp32s3
+  arduino_esp32c3 idf_esp32c3
+  pico_rp2040 arduino_rp2040 arduino_rp2040_freertos
+)
+for profile in "${profiles[@]}"; do
+  printf >&2 'INFO: roo_testing: testing %s.\n' "${profile//_/ }"
+  "${bazel_launcher}" test "--config=roo_testing_${profile}" "$@"
+done

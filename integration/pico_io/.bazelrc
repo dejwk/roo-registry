@@ -1,0 +1,25 @@
+common --registry="https://raw.githubusercontent.com/dejwk/roo-registry/main/" --registry="https://bcr.bazel.build"
+
+# AddressSanitizer: bazel test ... --config=asan
+import %workspace%/.roo_testing/bazelrc/common/asan.bazelrc
+import %workspace%/.roo_testing/bazelrc/esp32/base.bazelrc
+import %workspace%/.roo_testing/bazelrc/esp32/idf.bazelrc
+import %workspace%/.roo_testing/bazelrc/esp32/arduino.bazelrc
+import %workspace%/.roo_testing/bazelrc/esp32s3/base.bazelrc
+import %workspace%/.roo_testing/bazelrc/esp32s3/idf.bazelrc
+import %workspace%/.roo_testing/bazelrc/esp32s3/arduino.bazelrc
+import %workspace%/.roo_testing/bazelrc/esp32c3/base.bazelrc
+import %workspace%/.roo_testing/bazelrc/esp32c3/idf.bazelrc
+import %workspace%/.roo_testing/bazelrc/esp32c3/arduino.bazelrc
+import %workspace%/.roo_testing/bazelrc/rp2040/base.bazelrc
+import %workspace%/.roo_testing/bazelrc/rp2040/pico.bazelrc
+import %workspace%/.roo_testing/bazelrc/rp2040/arduino.bazelrc
+
+# Bazelisk invokes .roo_testing/bin/bazel, which defaults configured commands to
+# Arduino only when the caller did not select a frontend. Keeping the default
+# out of rc options lets explicit IDF replace it instead of accumulating copts.
+
+# GCC 14 can emit spurious maybe-uninitialized warnings in std::regex with ASAN.
+build:asan --per_file_copt=.*glog\+.*logging\.cc@-Wno-maybe-uninitialized
+
+import %workspace%/.roo_testing/bazelrc/rp2040/freertos.bazelrc

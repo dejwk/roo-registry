@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Validate sibling checkouts serially without changing the global disk cache.
+set -euo pipefail
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
+profiles=(arduino_esp32 idf_esp32 arduino_esp32s3 idf_esp32s3 arduino_esp32c3 idf_esp32c3 pico_rp2040 arduino_rp2040 arduino_rp2040_freertos)
+for sanitizer in normal asan; do
+  sanitizer_args=()
+  if [[ "${sanitizer}" == asan ]]; then sanitizer_args=(--config=asan); fi
+  for profile in "${profiles[@]}"; do
+    consumer_targets=(@roo_rtc//...)
+    case "${profile}" in
+      *rp2040*) consumer_targets+=(//:rtc_consumer_test) ;;
+    esac
+    if [[ "${profile}" != pico_rp2040 ]]; then
+      consumer_targets+=(@roo_display//:xpt2046_transport_test)
+    fi
+    case "${profile}" in
+      arduino_esp32|idf_esp32) consumer_targets+=(@roo_display//:touch_xpt2046_test) ;;
+    esac
+    # Batch avoids retaining another server alongside application workspaces.
+    bazel --batch test @roo_io//... @roo_logging//... @roo_threads//... @roo_time//... \
+      "${consumer_targets[@]}" "--config=roo_testing_${profile}" \
+      "${sanitizer_args[@]}" --test_output=errors "$@"
+  done
+done

@@ -1,0 +1,255 @@
+{
+  "date": "2026-11-04",
+  "scope": "Historical intermediate-snapshot test results. The Wire rewrite changes current roo_io trees; these results are not claims that current review trees were tested. Current review commits are linked separately; see wire_parity_validation.json for new qualification.",
+  "snapshots": [
+    {
+      "commit": "9e992a2560eba3a28296c69c1765fd219c9f4d21",
+      "purpose": "stream_tryread",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/pico:stream_contract_test"
+      ],
+      "result": "Executed 1 out of 1 test: 1 test passes.",
+      "originally_tested_commit": "74d7060c58910f3dee7860b27d47de4fb17d8b4a",
+      "tree": "140f557ea19f5c93902732d054b8fc8a3ed150f8",
+      "current_review_commit": "53e82281428590a909813f1a285a4a792fba177b",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "f517a7108310fd2281b073dec0410a4b400ad078",
+      "purpose": "stream_blocking_read",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/pico:stream_contract_test"
+      ],
+      "result": "Executed 1 out of 1 test: 1 test passes.",
+      "originally_tested_commit": "7f567cf924a8e319692987655e1debdba7730d19",
+      "tree": "3a7e639e607152226f5f6c042a0d617bbc6616a8",
+      "current_review_commit": "ea8eb1dffad09b1e76dd5301908899d1e85af931",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "b92f05d8d664d453ebf170fdf4fa5407fa93acc5",
+      "purpose": "stream_write",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/pico:stream_contract_test"
+      ],
+      "result": "Executed 1 out of 1 test: 1 test passes.",
+      "originally_tested_commit": "99b643815f5e23a1405cf6368e28da81b3af5a88",
+      "tree": "8baabbffca80a1462b9858be10db23a58e26f80c",
+      "current_review_commit": "1f0ed58ac28b547a50202cb2d1586d2285486c64",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "d5fb6936167b454c42de3818565392bb7391467e",
+      "purpose": "stream_write_fully",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/pico:stream_contract_test"
+      ],
+      "result": "Executed 1 out of 1 test: 1 test passes.",
+      "originally_tested_commit": "6580b80f55bb8343a045153d4bb9e4828fff6206",
+      "tree": "12d970f06e0a5ea9c0028a7f9091f0fcb4da3da6",
+      "current_review_commit": "88f50c14217ecba3b94eadc66452240f772b6fb2",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "cf6aebe0ece347005eb538244c2e9d72570126b1",
+      "purpose": "stream_flush",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/pico:stream_contract_test"
+      ],
+      "result": "Executed 1 out of 1 test: 1 test passes.",
+      "originally_tested_commit": "5e8913b0a4d6e39d0385d567b0f96d358712b8d8",
+      "tree": "e47814500928caa60a9316dd41059df7c7c2407f",
+      "current_review_commit": "b4a612c17bb1d4692dd1a9ee31d8cf3646284f3b",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "4fee45e4d448a55659ad10fde077cda1cef9427e",
+      "purpose": "stream_close",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/pico:stream_contract_test"
+      ],
+      "result": "Executed 1 out of 1 test: 1 test passes.",
+      "originally_tested_commit": "489626fb6947f89ba1fe82b739bee4c2bc09b0a2",
+      "tree": "d62229a1f77e8d202c3e9a199569d70bf20f07d4",
+      "current_review_commit": "50a357e7c5b1eed9e21fd0d28c749ae2fbed5f7c",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "1dc500e5b45a4c5b64e56e31cc31e92cf8167f3c",
+      "purpose": "stream_destructor",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/pico:stream_contract_test"
+      ],
+      "result": "Executed 1 out of 1 test: 1 test passes.",
+      "originally_tested_commit": "74204a7a59f2c5ca38c49302c8d5490446d15a07",
+      "tree": "ed27cb629efdc60e13efd21627ab8340535c7fbd",
+      "current_review_commit": "49c1061ec7c1b2a86532cd4a74d37ef68a86f97d",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "84f9dbd7ce852ed9b000503a954d66db61abf7bd",
+      "purpose": "pico_wire_test",
+      "profile": "roo_testing_arduino_rp2040_freertos",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/pico:arduino_transport_auto_test",
+        "@roo_io//test/pico:arduino_transport_manual_test"
+      ],
+      "result": "Executed 2 out of 2 tests: 2 tests pass.",
+      "originally_tested_commit": "d8cfa27350c0eb0c6c5a741f18dd512c1c7b1500",
+      "tree": "13d597f776f83ce6a2151398beae15d09dfaeb5b",
+      "current_review_commit": null,
+      "removed_scope": "Regression asserted artificial emulator buffer/ownership behavior; replaced in roo_testing.",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "05a2c16cd53182a0e39afd021ccecf4999d78bd7",
+      "purpose": "esp32_capabilities",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/fs/...",
+        "@roo_io//:esp32_arduino_sdspi"
+      ],
+      "result": "Executed 3 out of 5 tests: 5 tests pass.",
+      "originally_tested_commit": "473462ae3b398cc99d372ff3bc5eb149f587ce9e",
+      "tree": "f2fcd31302e3a95db5dfcc4028b34398157c0e97",
+      "current_review_commit": "de7beaf02f895628a7f212ea5242fb1eb39bc85a",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "3349c3082b28bdc6061039d409c026d708ef3aae",
+      "purpose": "stale_mounts",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/fs/...",
+        "@roo_io//:esp32_arduino_sdspi"
+      ],
+      "result": "Executed 4 out of 5 tests: 5 tests pass.",
+      "originally_tested_commit": "407edbe40cd30a088d4c39d2b4399820c72c1a8f",
+      "tree": "bbf6923c1b18c749f0a87afb00d047bfecdfa848",
+      "current_review_commit": "23a7a07583ef992a59d5b10558fa5ce6f064ef93",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "64a5c868288168cbf7411a64b3627de59e2d4b8a",
+      "purpose": "close_order",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/fs/...",
+        "@roo_io//:esp32_arduino_sdspi"
+      ],
+      "result": "Executed 3 out of 5 tests: 5 tests pass.",
+      "originally_tested_commit": "50a8adfd93348a530695b75c818f2018439dffa1",
+      "tree": "05336c609a7f5ce95981efb4e2b8337dffdf2ad2",
+      "current_review_commit": "cbba52f0a573661c5b4923d2b00bd95a62c10321",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "665f55800e6f0080007c636957502b71f58f3b02",
+      "purpose": "zero_length_io",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/fs/...",
+        "@roo_io//:esp32_arduino_sdspi"
+      ],
+      "result": "Executed 3 out of 5 tests: 5 tests pass.",
+      "originally_tested_commit": "5a5a415e229b82c186f6e9e581b65bdd4a64a984",
+      "tree": "2ca1a81c479cee94cc997c0b1b4e22ed3b4b66aa",
+      "current_review_commit": "b4e6179451bbb1b38fee557caf946fb8ea2bd000",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "e460354b9efc0675525449336ddd211e195a3255",
+      "purpose": "cached_sd_unmount",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/fs/...",
+        "@roo_io//:esp32_arduino_sdspi"
+      ],
+      "result": "Executed 2 out of 5 tests: 5 tests pass.",
+      "originally_tested_commit": "7967c587fab31269832885f88f210b97e5892053",
+      "tree": "fe048c48d3bf6987ef0fce48b768b81c592ecea9",
+      "current_review_commit": "31c48580f1954c25814eaadaba7ff040a4145016",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "bd06f30e41f67189a18baa74ad90d88715f1d02d",
+      "purpose": "sd_mount_preflight",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/fs/...",
+        "@roo_io//:esp32_arduino_sdspi"
+      ],
+      "result": "Executed 0 out of 5 tests: 5 tests pass.",
+      "originally_tested_commit": "ab550dac639671c04572d1968bdfe870afc166d5",
+      "tree": "4203bdf26276eb12fe05fd2a12a5bd3c23931a0d",
+      "current_review_commit": "3be310bee0103302fbc9989b5317c65f7d4f748f",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "de54dbce763c4772bad2aad5883a916604589b3d",
+      "purpose": "sd_member_order",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/fs/...",
+        "@roo_io//:esp32_arduino_sdspi"
+      ],
+      "result": "Executed 0 out of 5 tests: 5 tests pass.",
+      "originally_tested_commit": "b5db24db19a4dc0ab5105c198cd170843e5b6236",
+      "tree": "26421e65597c55551c8f40af44598115804d8b16",
+      "current_review_commit": "2f6d36f94d2c709d22dcefe5476660069e186172",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "1b60dd2af528bb7a508428c225f3f419bbdb14b1",
+      "purpose": "arduino_fs_runtime",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/fs/...",
+        "@roo_io//:esp32_arduino_sdspi"
+      ],
+      "result": "Executed 3 out of 5 tests: 5 tests pass.",
+      "originally_tested_commit": "b9a7df34684ff3effb990ee9d45587989ecfd62f",
+      "tree": "d9a44c3309531ba7bdf26da113fb64da6fcb4ee3",
+      "current_review_commit": "3660be79fb2238f4b90569e9250436218d9d1216",
+      "current_review_tree_matches_tested_snapshot": false
+    },
+    {
+      "commit": "20e91bc63d21f426a26642d021b63e0c908efc16",
+      "purpose": "shared_sd_probes",
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@roo_io//test/fs/...",
+        "@roo_io//:esp32_arduino_sdspi"
+      ],
+      "result": "Executed 0 out of 5 tests: 5 tests pass.",
+      "originally_tested_commit": "e3663cd5a75df7a126ed4666887198efb23e59fe",
+      "tree": "9458567a920b9ab499eef37d305a72807ee31edc",
+      "current_review_commit": "31308dc1d7275181a31421c44be13cd85d8c063e",
+      "current_review_tree_matches_tested_snapshot": false
+    }
+  ]
+}

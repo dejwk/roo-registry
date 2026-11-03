@@ -1,0 +1,86 @@
+{
+  "roo_io": {
+    "version": "2.5.0",
+    "commit": "5346cb5c5aa75e21045fc5b58d15368c0c714c01",
+    "base": "9e42ed0f1ab4dbf6263840e8065e7d810bbdd587",
+    "commits": [
+      "3758c5fa2e Pico I/O: Record the staged support and validation plan.",
+      "1f8d4f11e3 Pico I/O stage 2: Separate portable and threaded facilities.",
+      "060e142c7e Pico I/O stage 3: Connect Arduino adapters to Pico.",
+      "53e8228142 Validate bounded Arduino stream tryRead requests.",
+      "ea8eb1dffa Preserve progress and status in blocking Arduino stream reads.",
+      "1f0ed58ac2 Propagate errors from Arduino stream writes.",
+      "88f50c1421 Retry partial Arduino stream writes to completion.",
+      "b4a612c17b Flush borrowed Arduino streams and propagate backend errors.",
+      "50a357e7c5 Preserve Arduino stream errors when closing a view.",
+      "49c1061ec7 Flush Arduino output views during concrete destruction.",
+      "997e4aa728 Pico I/O stage 5: Add native SDK I2C, SPI and UART transports.",
+      "de7beaf02f Declare ESP32 backend capability boundaries in Bazel.",
+      "23a7a07583 Prevent stale handles from unmounting replacement filesystems.",
+      "cbba52f0a5 Close Arduino file handles before releasing their mounts.",
+      "b4e6179451 Preserve Arduino file-stream status on zero-length I/O.",
+      "31c48580f1 Release cached Arduino SD mounts before wrapper destruction.",
+      "3be310bee0 Check media presence before mounting generic Arduino SD.",
+      "2f6d36f94d Initialize Arduino SD members in declaration order.",
+      "3660be79fb Compile Arduino filesystem adapters without RTTI or exceptions.",
+      "31308dc1d7 Share Arduino SD presence probes between platform backends.",
+      "f856cc6fa8 Pico I/O stages 6-7: Add Arduino-Pico SD and LittleFS support.",
+      "5346cb5c5a Pico I/O stage 8: Align profiles and prepare roo_io 2.5.0."
+    ]
+  },
+  "roo_testing": {
+    "version": "2.5.0",
+    "commit": "966a69c31b67cf57d22bc1b9fa5a6ccee28e9bc0",
+    "base": "7ae174a77c3f62c0c6d8df47e3aa842cd0708e75",
+    "commits": [
+      "bc713e1ab7 Pico I/O stage 7: Emulate Pico filesystems and SD presence commands.",
+      "fd3ca59bd0 Pico I/O stage 8: Prepare roo_testing 2.5.0 for coordinated clients.",
+      "7cceed7c82 Match Arduino-Pico Wire buffer and lifecycle behavior.",
+      "27aed03a82 Remove artificial task reservations from Pico Wire emulation.",
+      "99ac7ec4a1 Match Arduino-Pico Wire pin-selection checks.",
+      "966a69c31b Emulate Arduino-Pico Wire address-only probes."
+    ]
+  },
+  "roo_threads": {
+    "version": "1.3.0",
+    "commit": "47be96c8a29df38a52a0b978f9733290a203d39f",
+    "base": "9f4aac616c0ddec4e55cdd3a3a806c64665ace7e",
+    "commits": [
+      "9819411a00 Pico I/O stage 1: Follow the physical Pico runtime.",
+      "47be96c8a2 Pico I/O stage 8: Validate threaded examples and prepare roo_threads 1.3.0."
+    ]
+  },
+  "roo_logging": {
+    "version": "1.6.0",
+    "commit": "07829a7381a95e8cd9d5c4348fdd870b59a23066",
+    "base": "d4d47082eb81e6d82a27c29d2e1fa452ed8eb932",
+    "commits": [
+      "2790e537ec Pico I/O stage 1: Make logging independent of framework streams.",
+      "07829a7381 Pico I/O stage 8: Validate portable logging and prepare roo_logging 1.6.0."
+    ]
+  },
+  "roo_time": {
+    "version": "2.1.0",
+    "commit": "9dd8ba3d202e3e4af0ad3577c8ce89332e9ad252",
+    "base": "b384f5c5a4ba41b3a7b5c6baae6d4ddde0e604a3",
+    "commits": [
+      "9dd8ba3d20 Pico I/O stage 8: Align time backend tests and prepare roo_time 2.1.0."
+    ]
+  },
+  "roo_rtc": {
+    "version": "0.1.0",
+    "commit": "a38a1edc709a0dc9719eefce94fb99932d8f41da",
+    "base": "f6e93d1e4bb14265f6ad44e1dad15ed16667fabf",
+    "commits": [
+      "a38a1edc70 Pico I/O stage 8: Verify every RTC driver on the Pico runtimes."
+    ]
+  },
+  "roo_display": {
+    "version": "3.5.0",
+    "commit": "546324371b8275a6008081333717b9df4366a298",
+    "base": "29baf9f6c3e386a7f8ef5c03384670d1edde46b1",
+    "commits": [
+      "546324371b Pico I/O stage 8: Qualify the focused XPT2046 target across platforms."
+    ]
+  }
+}

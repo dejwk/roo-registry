@@ -1,0 +1,36 @@
+ROO_IO_STORAGE_SMOKE runtime=freertos
+SKIP SD: no module configured
+PASS mount
+PASS test directory available
+PASS mkdir
+PASS write block
+PASS write block
+PASS write block
+PASS write block
+PASS flush
+PASS append
+PASS stat size
+PASS existing file rejected
+PASS rename
+PASS directory entry
+PASS directory basename
+PASS directory end
+PASS eager unmount
+PASS remount
+PASS flash block readback
+PASS flash block readback
+PASS flash block readback
+PASS flash block readback
+PASS appended readback
+PASS seek readback
+PASS zero read preserves status
+PASS file retains mount
+PASS file close releases mount
+PASS read-only mount
+PASS stale handle preserves fresh mount
+PASS remove
+PASS rmdir
+PASS lazy mount
+PASS lazy mount retained
+PASS lazy wrapper destruction unmounts
+ROO_IO_STORAGE_RESULT=PASS

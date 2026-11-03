@@ -1,0 +1,119 @@
+{
+  "date": "2026-11-04",
+  "scope": "Host emulation and consumer regressions after Wire parity corrections and removal of the production workaround. No new hardware tests.",
+  "reference": {
+    "emulation_core": "Arduino-Pico 6.3.1 pinned in roo_testing",
+    "installed_hardware_core": "Arduino-Pico 5.4.3 source comparison; no board was flashed"
+  },
+  "revisions": {
+    "roo_io": {
+      "commit": "4bcc4f92a258467980208da5fbe609b128d2e1df",
+      "tree": "338c2edd34aa03bd3af5d8f65665d1083c5d033f"
+    },
+    "roo_testing": {
+      "commit": "966a69c31b67cf57d22bc1b9fa5a6ccee28e9bc0",
+      "tree": "4be0617bcb794f488b7919377746cd9136f0d06b"
+    },
+    "roo_threads": {
+      "commit": "47be96c8a29df38a52a0b978f9733290a203d39f",
+      "tree": "47e9552c59d94ad2fa4ae056305925054e36b638"
+    },
+    "roo_logging": {
+      "commit": "07829a7381a95e8cd9d5c4348fdd870b59a23066",
+      "tree": "63838e8a29d22e84afb35190100a3182ee7b92fa"
+    },
+    "roo_time": {
+      "commit": "9dd8ba3d202e3e4af0ad3577c8ce89332e9ad252",
+      "tree": "16ef26527cdeafd82c3b688f5df77f3bf2f635d4"
+    },
+    "roo_rtc": {
+      "commit": "a38a1edc709a0dc9719eefce94fb99932d8f41da",
+      "tree": "7c95c637bf43ffb70a4c60103f8181ffa4e380a8"
+    },
+    "roo_display": {
+      "commit": "546324371b8275a6008081333717b9df4366a298",
+      "tree": "c38c19114fb5a614633c2daf775e1eca69e32e6e"
+    }
+  },
+  "wire_commits": [
+    "7cceed7c82c9b65eb96c6710c6f3fadec06ae3cc",
+    "27aed03a8212c2bb69d92267b308c166f1a4040e",
+    "99ac7ec4a1e5c8e9f3269d92bbc210e72d1e4550",
+    "966a69c31b67cf57d22bc1b9fa5a6ccee28e9bc0"
+  ],
+  "removed_roo_io_commits": {
+    "2522d94815afd9a3e11b5cff44d0a63748b6c7f5": "Emulator-only receive-buffer workaround removed.",
+    "84f9dbd7ce852ed9b000503a954d66db61abf7bd": "Regression asserted artificial emulator buffer/ownership behavior; replaced in roo_testing."
+  },
+  "checks": [
+    "Oversized/zero reads preserve buffered data and perform no transfer.",
+    "flush is a no-op for RX and TX; repeated begin calls preserve active state.",
+    "Buffer resizing, write limits, stopped operations, NACK and timeout state match the core.",
+    "Unread RX, rejected reads and no-STOP transfers do not retain a task reservation.",
+    "An application mutex protects full Wire exchanges; unsynchronized tasks share TX/RX state.",
+    "Pin setters accept the current live route and fail explicitly for invalid changes.",
+    "Address-only probes return ACK/NACK without payload and always finish with STOP.",
+    "All 22 rewritten roo_io review commits contain no discardReceived workaround; unrelated changes/messages are preserved."
+  ],
+  "runs": [
+    {
+      "profile": "roo_testing_arduino_rp2040",
+      "asan": false,
+      "targets": [
+        "@roo_testing//:arduino_pico_tests",
+        "@@roo_io+//test/pico:all",
+        "@@roo_rtc+//..."
+      ],
+      "result": "Executed 2 out of 44 tests: 42 tests pass and 2 were skipped.",
+      "log": "/home/dawidk/.cache/roo_testing/pico-io-validation/wire-final-pico.log"
+    },
+    {
+      "profile": "roo_testing_arduino_rp2040_freertos",
+      "asan": false,
+      "targets": [
+        "@roo_testing//:arduino_pico_freertos_tests",
+        "@@roo_io+//test/pico:all",
+        "@@roo_rtc+//..."
+      ],
+      "result": "Executed 29 out of 35 tests: 35 tests pass.",
+      "log": "/home/dawidk/.cache/roo_testing/pico-io-validation/wire-final-freertos.log"
+    },
+    {
+      "profile": "roo_testing_arduino_rp2040",
+      "asan": true,
+      "targets": [
+        "@roo_testing//:arduino_pico_tests",
+        "@@roo_io+//test/pico:all",
+        "@@roo_rtc+//..."
+      ],
+      "result": "Executed 36 out of 44 tests: 42 tests pass and 2 were skipped.",
+      "log": "/home/dawidk/.cache/roo_testing/pico-io-validation/wire-final-pico-asan.log"
+    },
+    {
+      "profile": "roo_testing_arduino_rp2040_freertos",
+      "asan": true,
+      "targets": [
+        "@roo_testing//:arduino_pico_freertos_tests",
+        "@@roo_io+//test/pico:all",
+        "@@roo_rtc+//..."
+      ],
+      "result": "Executed 29 out of 35 tests: 35 tests pass.",
+      "log": "/home/dawidk/.cache/roo_testing/pico-io-validation/wire-final-freertos-asan.log"
+    },
+    {
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@@roo_rtc+//...",
+        "@@roo_io+//test/pico:stream_contract_test"
+      ],
+      "result": "Executed 10 out of 11 tests: 11 tests pass.",
+      "log": "/home/dawidk/.cache/roo_testing/pico-io-validation/wire-final-esp32-asan.log"
+    }
+  ],
+  "limitations": [
+    "Host operation locks protect emulator state; they do not make real Wire conversations thread-safe.",
+    "Address probes model device presence and address-clock time, without GPIO waveforms or clock stretching.",
+    "Slave, DMA, IRQ and other previously documented unsupported paths remain outside this synchronous master correction."
+  ]
+}

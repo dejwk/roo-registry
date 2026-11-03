@@ -1,0 +1,139 @@
+{
+  "date": "2026-11-04",
+  "scope": "Pico mount refactor and removal of GPIO presence detection. Host tests and ARM firmware compilation; no new board flashing or hardware qualification.",
+  "revisions": {
+    "roo_io": {
+      "commit": "5346cb5c5aa75e21045fc5b58d15368c0c714c01",
+      "tree": "06fc32432e64b3713b2082a3d2259a2ef33ddaa8"
+    },
+    "roo_testing": {
+      "commit": "966a69c31b67cf57d22bc1b9fa5a6ccee28e9bc0",
+      "tree": "4be0617bcb794f488b7919377746cd9136f0d06b"
+    },
+    "roo_threads": {
+      "commit": "47be96c8a29df38a52a0b978f9733290a203d39f",
+      "tree": "47e9552c59d94ad2fa4ae056305925054e36b638"
+    },
+    "roo_logging": {
+      "commit": "07829a7381a95e8cd9d5c4348fdd870b59a23066",
+      "tree": "63838e8a29d22e84afb35190100a3182ee7b92fa"
+    },
+    "roo_time": {
+      "commit": "9dd8ba3d202e3e4af0ad3577c8ce89332e9ad252",
+      "tree": "16ef26527cdeafd82c3b688f5df77f3bf2f635d4"
+    },
+    "roo_rtc": {
+      "commit": "a38a1edc709a0dc9719eefce94fb99932d8f41da",
+      "tree": "7c95c637bf43ffb70a4c60103f8181ffa4e380a8"
+    },
+    "roo_display": {
+      "commit": "546324371b8275a6008081333717b9df4366a298",
+      "tree": "c38c19114fb5a614633c2daf775e1eca69e32e6e"
+    }
+  },
+  "rewritten_commits": {
+    "b027cc53b523d9784f96de6e490654602ab15100": "f856cc6fa865b7d3a13af48cea40f444c31953aa",
+    "4bcc4f92a258467980208da5fbe609b128d2e1df": "5346cb5c5aa75e21045fc5b58d15368c0c714c01"
+  },
+  "preserved_prefix_tip": "31308dc1d7275181a31421c44be13cd85d8c063e",
+  "source_provenance": "Initial host tests ran on the edited working tree; rewriting preserved the tested source/build contents exactly. Later ASAN and isolated-commit tests and ARM compilation use the rewritten commits.",
+  "checks": [
+    "Pico LittleFS mount factory selects the subclass under ARDUINO_ARCH_RP2040.",
+    "Shared ArduinoMountImpl delegates deletion through a protected virtual hook; it has no parent-preservation flag or repair algorithm.",
+    "File removal and explicit rmdir retain ancestor paths.",
+    "Forced file and directory rename replacement use the subclass hook to restore pruned destination ancestors.",
+    "Parent-restoration failures return kUnknownIOError after deletion.",
+    "GPIO detection API, state, tests, voltage-model dependency and current documentation examples are removed; automatic SPI probes remain.",
+    "The approved prefix is byte-identical in Git; only stages 6-7 and stage 8 are rewritten."
+  ],
+  "runs": [
+    {
+      "profile": "roo_testing_arduino_rp2040",
+      "asan": false,
+      "targets": [
+        "@@roo_io+//test/pico:storage_test",
+        "@@roo_io+//test/pico:sd_detection_test"
+      ],
+      "roo_io_commit": "5346cb5c5aa75e21045fc5b58d15368c0c714c01",
+      "result": "Executed 2 out of 2 tests: 2 tests pass.",
+      "log": "/home/dawidk/.cache/roo_testing/pico-io-validation/storage-mount-pico-focused.log"
+    },
+    {
+      "profile": "roo_testing_arduino_rp2040",
+      "asan": true,
+      "targets": [
+        "@@roo_io+//test/pico:all",
+        "@roo_testing//test/arduino_pico:filesystem_test",
+        "@roo_testing//roo_testing/devices/storage/sd_spi:sd_spi_test"
+      ],
+      "roo_io_commit": "5346cb5c5aa75e21045fc5b58d15368c0c714c01",
+      "result": "Executed 2 out of 8 tests: 8 tests pass.",
+      "log": "/home/dawidk/.cache/roo_testing/pico-io-validation/storage-mount-pico-asan.log"
+    },
+    {
+      "profile": "roo_testing_arduino_rp2040_freertos",
+      "asan": false,
+      "targets": [
+        "@@roo_io+//test/pico:all",
+        "@roo_testing//test/arduino_pico:filesystem_test",
+        "@roo_testing//roo_testing/devices/storage/sd_spi:sd_spi_test"
+      ],
+      "roo_io_commit": "5346cb5c5aa75e21045fc5b58d15368c0c714c01",
+      "result": "Executed 2 out of 8 tests: 8 tests pass.",
+      "log": "/home/dawidk/.cache/roo_testing/pico-io-validation/storage-mount-freertos.log"
+    },
+    {
+      "profile": "roo_testing_arduino_rp2040_freertos",
+      "asan": true,
+      "targets": [
+        "@@roo_io+//test/pico:all",
+        "@roo_testing//test/arduino_pico:filesystem_test",
+        "@roo_testing//roo_testing/devices/storage/sd_spi:sd_spi_test"
+      ],
+      "roo_io_commit": "5346cb5c5aa75e21045fc5b58d15368c0c714c01",
+      "result": "Executed 2 out of 8 tests: 8 tests pass.",
+      "log": "/home/dawidk/.cache/roo_testing/pico-io-validation/storage-mount-freertos-asan.log"
+    },
+    {
+      "profile": "roo_testing_arduino_rp2040_freertos",
+      "asan": true,
+      "targets": [
+        "@@roo_io+//test/pico:storage_test",
+        "@@roo_io+//test/pico:sd_detection_test"
+      ],
+      "roo_io_commit": "f856cc6fa865b7d3a13af48cea40f444c31953aa",
+      "result": "Executed 0 out of 2 tests: 2 tests pass.",
+      "log": "/home/dawidk/.cache/roo_testing/pico-io-validation/storage-mount-phase6-freertos-asan.log"
+    },
+    {
+      "profile": "roo_testing_arduino_esp32",
+      "asan": true,
+      "targets": [
+        "@@roo_io+//test/fs/...",
+        "@@roo_io+//:esp32_arduino_sdspi"
+      ],
+      "roo_io_commit": "5346cb5c5aa75e21045fc5b58d15368c0c714c01",
+      "result": "Executed 3 out of 5 tests: 5 tests pass.",
+      "log": "/home/dawidk/.cache/roo_testing/pico-io-validation/storage-mount-esp32-asan.log"
+    }
+  ],
+  "firmware": {
+    "board": "waveshare_rp2040_zero",
+    "framework_package": "1.50403.0",
+    "core": "Arduino-Pico 5.4.3",
+    "environments": [
+      "pico",
+      "pico_freertos"
+    ],
+    "result": "Both SUCCESS",
+    "sd_enabled": true,
+    "exceptions": false,
+    "rtti": false,
+    "log": "/home/dawidk/.cache/roo_testing/pico-io-validation/storage-mount-firmware.log"
+  },
+  "limitations": [
+    "Parent deletion/restoration is not atomic and recreated directories do not retain their previous metadata.",
+    "GPIO detection is deferred pending a platform-independent digital-input API.",
+    "Physical SD qualification still requires a connected SD module; original board records remain historical."
+  ]
+}
