@@ -165,7 +165,7 @@ class GithubReleaseTest(unittest.TestCase):
 
     def test_find_ci_run_reports_github_cli_error(self):
         result = subprocess.CompletedProcess(
-            [], 1, "", "could not find any workflows named CI\n"
+            [], 1, "", "HTTP 403: Resource not accessible by integration\n"
         )
         with (
             mock.patch.object(github_release.subprocess, "run", return_value=result),
@@ -194,6 +194,9 @@ class GithubReleaseTest(unittest.TestCase):
                 Path("module"), "owner/repo", "abc123", tag="1.2.3"
             )
         self.assertEqual("abc123", commit_command[commit_command.index("--commit") + 1])
+        self.assertEqual(
+            "workflow.yml", commit_command[commit_command.index("--workflow") + 1]
+        )
         self.assertNotIn("--branch", commit_command)
         self.assertEqual("in_progress", tag_run["status"])
 

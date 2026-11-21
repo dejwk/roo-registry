@@ -17,6 +17,7 @@ from module_utils import parse_module_bazel
 from release_notes import read_top_entry
 
 CI_WORKFLOW = "CI"
+CI_WORKFLOW_FILE = "workflow.yml"
 POLL_INTERVAL_SECONDS = 10
 
 
@@ -162,7 +163,7 @@ def find_ci_run(
     command = [
         "gh", "run", "list",
         "--repo", repository,
-        "--workflow", CI_WORKFLOW,
+        "--workflow", CI_WORKFLOW_FILE,
         "--event", "push",
         "--commit", commit_sha,
         # GitHub CLI's --branch filter can return a stale tag run. Fetching and
