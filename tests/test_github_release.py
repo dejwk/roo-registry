@@ -163,6 +163,20 @@ class GithubReleaseTest(unittest.TestCase):
                 )
             )
 
+    def test_find_ci_run_reports_github_cli_error(self):
+        result = subprocess.CompletedProcess(
+            [], 1, "", "could not find any workflows named CI\n"
+        )
+        with (
+            mock.patch.object(github_release.subprocess, "run", return_value=result),
+            contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stderr(io.StringIO()) as errors,
+        ):
+            self.assertIsNone(
+                github_release.find_ci_run(Path("module"), "owner/repo", "abc123")
+            )
+        self.assertEqual(result.stderr, errors.getvalue())
+
     def test_find_ci_run_filters_tag_runs_by_head_branch_and_commit(self):
         result = subprocess.CompletedProcess(
             [],

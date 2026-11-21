@@ -171,7 +171,7 @@ def find_ci_run(
         "--limit", "100",
         "--json", "databaseId,status,conclusion,url,headBranch,headSha",
     ]
-    result = run_command(command, module_dir)
+    result = run_command(command, module_dir, check=True)
     if result.returncode:
         print("Error: could not query GitHub Actions runs")
         return None
