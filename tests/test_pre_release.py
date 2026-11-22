@@ -346,6 +346,10 @@ class PreReleaseTest(unittest.TestCase):
         self.assertFalse(repo.is_dirty(untracked_files=True))
         self.assertIn("Aborted without changing", output.getvalue())
 
+    def test_release_templates_leave_bazelisk_configuration_to_each_repository(self):
+        template_dir = BIN_DIR.parent / "template" / "push"
+        self.assertFalse((template_dir / ".bazeliskrc").exists())
+
     def test_missing_templates_stop_release_preparation(self):
         temp_dir, _base_dir, registry_dir, _module_dir = self.make_release_fixture()
         self.addCleanup(temp_dir.cleanup)
