@@ -18,7 +18,7 @@ digraph dependencies {
     "roo_icons" [label="roo_icons\n1.2.5", fillcolor="khaki", color="red"];
     "roo_io" [label="roo_io\n2.4.1", fillcolor="khaki", color="red"];
     "roo_locale" [label="roo_locale\n1.1.4", fillcolor="khaki", color="black"];
-    "roo_logging" [label="roo_logging\n1.6.0", fillcolor="khaki", color="red"];
+    "roo_logging" [label="roo_logging\n1.6.1", fillcolor="#b1dbab", color="black"];
     "roo_monitoring" [label="roo_monitoring\n1.1.5", fillcolor="khaki", color="red"];
     "roo_onewire" [label="roo_onewire\n2.0.14", fillcolor="khaki", color="red"];
     "roo_pb" [label="roo_pb\n0.1.1", fillcolor="khaki", color="black"];
@@ -39,7 +39,7 @@ digraph dependencies {
     "roo_windows_wifi" [label="roo_windows_wifi\n2.0.0", fillcolor="khaki", color="red"];
 
     // Dependencies
-    "roo_blink" -> "roo_logging" [color=red, fontcolor=red, label="1.5.11\n(latest: 1.6.0)"];
+    "roo_blink" -> "roo_logging" [color=red, fontcolor=red, label="1.5.11\n(latest: 1.6.1)"];
     "roo_blink" -> "roo_scheduler";
     "roo_collections" -> "roo_testing";
     "roo_collections" -> "roo_backport";
@@ -55,17 +55,17 @@ digraph dependencies {
     "roo_fonts_basic" -> "roo_display" [color=red, fontcolor=red, label="3.3.2\n(latest: 3.4.0)"];
     "roo_fonts_material" -> "roo_display" [color=red, fontcolor=red, label="3.3.0\n(latest: 3.4.0)"];
     "roo_icons" -> "roo_display" [color=red, fontcolor=red, label="3.3.0\n(latest: 3.4.0)"];
-    "roo_io" -> "roo_logging" [color=red, fontcolor=red, label="1.5.11\n(latest: 1.6.0)"];
+    "roo_io" -> "roo_logging" [color=red, fontcolor=red, label="1.5.11\n(latest: 1.6.1)"];
     "roo_logging" -> "roo_flags";
-    "roo_logging" -> "roo_threads" [color=red, fontcolor=red, label="1.3.1\n(latest: 1.4.0)"];
+    "roo_logging" -> "roo_threads";
     "roo_monitoring" -> "roo_collections" [color=red, fontcolor=red, label="1.4.8\n(latest: 2.0.2)"];
     "roo_monitoring" -> "roo_io" [color=red, fontcolor=red, label="2.4.0\n(latest: 2.4.1)"];
     "roo_onewire" -> "roo_scheduler";
     "roo_onewire" -> "roo_quantity";
     "roo_pb" -> "roo_io";
     "roo_powersafefs" -> "roo_threads";
-    "roo_prefs" -> "roo_logging" [color=red, fontcolor=red, label="1.5.11\n(latest: 1.6.0)"];
-    "roo_quantity" -> "roo_logging" [color=red, fontcolor=red, label="1.5.11\n(latest: 1.6.0)"];
+    "roo_prefs" -> "roo_logging" [color=red, fontcolor=red, label="1.5.11\n(latest: 1.6.1)"];
+    "roo_quantity" -> "roo_logging" [color=red, fontcolor=red, label="1.5.11\n(latest: 1.6.1)"];
     "roo_rtc" -> "roo_io" [color=red, fontcolor=red, label="2.5.0\n(latest: 2.4.1)"];
     "roo_scheduler" -> "roo_collections" [color=red, fontcolor=red, label="1.4.8\n(latest: 2.0.2)"];
     "roo_scheduler" -> "roo_threads" [color=red, fontcolor=red, label="1.2.9\n(latest: 1.4.0)"];
