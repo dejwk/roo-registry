@@ -8,7 +8,8 @@ Usage: python3 roo-registry/bin/update_library.py <module_name> [--nolatest_deps
 This script determines the base directory automatically based on its location
 and looks for module directories as siblings to roo-registry.
 The script will update existing library.json and library.properties files,
-preserving their existing content and only updating version information.
+preserving fields other than versions and dependencies. A library's
+.roo-release.json can exclude dependencies from those two manifests.
 
 By default, it also inspects the roo-registry/modules directory and updates Roo
 dependencies to the latest registered versions. With --nolatest_deps, exact
@@ -20,11 +21,30 @@ import json
 import argparse
 import re
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 # Add the bin directory to the path to import module_utils
 sys.path.insert(0, str(Path(__file__).parent))
 from module_utils import parse_module_bazel, Dependency, Version
+
+
+def read_hardware_dependency_exclusions(config_path: Path) -> Set[str]:
+    """Read the Bazel module names to omit from generated hardware manifests."""
+    try:
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return set()
+
+    if not isinstance(config, dict):
+        raise ValueError("expected a JSON object")
+    exclusions = config.get("hardware_dependency_exclusions", [])
+    if not isinstance(exclusions, list) or any(
+        not isinstance(name, str) or not name for name in exclusions
+    ):
+        raise ValueError(
+            "hardware_dependency_exclusions must be a list of module names"
+        )
+    return set(exclusions)
 
 
 def get_latest_versions_from_registry(registry_dir: Path) -> Dict[str, Version]:
@@ -430,6 +450,13 @@ def update_library_files(
             print("Use --force to proceed anyway.")
             return False
     
+    config_path = module_dir / ".roo-release.json"
+    try:
+        exclusions = read_hardware_dependency_exclusions(config_path)
+    except (OSError, ValueError) as error:
+        print(f"Error reading {config_path}: {error}")
+        return False
+
     if latest_deps:
         print("\nScanning registry for latest dependency versions...")
         latest_versions = get_latest_versions_from_registry(registry_dir)
@@ -457,7 +484,9 @@ def update_library_files(
             return False
         updated_dependencies = dependencies
     
-    # Update library files
+    manifest_dependencies = [
+        dep for dep in updated_dependencies if dep.name not in exclusions
+    ]
     library_json_path = module_dir / "library.json"
     library_properties_path = module_dir / "library.properties"
     
@@ -468,7 +497,7 @@ def update_library_files(
     if not update_library_json(
         library_json_path,
         parsed_version,
-        updated_dependencies,
+        manifest_dependencies,
         skip_dev_dependencies,
     ):
         success = False
@@ -478,7 +507,7 @@ def update_library_files(
     if not update_library_properties(
         library_properties_path,
         parsed_version,
-        updated_dependencies,
+        manifest_dependencies,
         skip_dev_dependencies,
     ):
         success = False

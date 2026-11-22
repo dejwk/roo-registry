@@ -238,6 +238,19 @@ python3 update_library.py roo_display --nolatest_deps
 - With `--nolatest_deps`, preserves exact dependency pins and fails before
   writing if an exact Roo dependency version is absent from the registry
 
+To omit a dependency from Arduino and PlatformIO metadata, add
+`.roo-release.json` alongside the library's `MODULE.bazel`. List the Bazel module
+names in `hardware_dependency_exclusions`.
+
+```json
+{
+    "hardware_dependency_exclusions": ["roo_transceivers"]
+}
+```
+
+Both updater modes and `pre_release.py` honor this list. Excluded dependencies
+remain eligible for Bazel version updates and exact-version validation.
+
 ### `update_module_versions.py`
 Updates all roo module version references across all modules in the registry.
 

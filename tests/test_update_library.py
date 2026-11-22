@@ -155,6 +155,50 @@ bazel_dep(
             (module_dir / "library.properties").read_text(),
         )
 
+    def test_hardware_exclusions_apply_in_both_update_modes(self):
+        self.add_registry_version("roo_dep", "1.2.3")
+        self.add_registry_version("roo_optional", "1.0.0")
+        self.add_registry_version("roo_optional", "2.0.0")
+        module_dir = self.add_module(
+            extra_dependencies='bazel_dep(name = "roo_optional", version = "1.0.0")\n'
+        )
+        module_path = module_dir / "MODULE.bazel"
+        original_module = module_path.read_text(encoding="utf-8")
+        self.assertTrue(self.update(latest_deps=False))
+        (module_dir / ".roo-release.json").write_text(
+            json.dumps({"hardware_dependency_exclusions": ["roo_optional"]}),
+            encoding="utf-8",
+        )
+
+        for latest_deps, expected_module in (
+            (False, original_module),
+            (True, original_module.replace('version = "1.0.0"', 'version = "2.0.0"')),
+        ):
+            with self.subTest(latest_deps=latest_deps):
+                self.assertTrue(self.update(latest_deps=latest_deps))
+                metadata = json.loads((module_dir / "library.json").read_text())
+                self.assertEqual({"dejwk/roo_dep": ">=1.2.3"}, metadata["dependencies"])
+                properties = (module_dir / "library.properties").read_text()
+                self.assertIn("depends=roo_dep\n", properties)
+                self.assertNotIn("roo_optional", properties)
+                self.assertEqual(expected_module, module_path.read_text(encoding="utf-8"))
+
+    def test_invalid_hardware_exclusions_fail_before_writes(self):
+        self.add_registry_version("roo_dep", "2.0.0")
+        module_dir = self.add_module()
+        (module_dir / ".roo-release.json").write_text(
+            json.dumps({"hardware_dependency_exclusions": "roo_dep"}),
+            encoding="utf-8",
+        )
+        snapshots = {path.name: path.read_bytes() for path in module_dir.iterdir()}
+
+        self.assertFalse(self.update(latest_deps=True))
+
+        self.assertEqual(
+            snapshots,
+            {path.name: path.read_bytes() for path in module_dir.iterdir()},
+        )
+
     def test_no_latest_rejects_missing_exact_version_before_writes(self):
         self.add_registry_version("roo_dep", "2.0.0")
         module_dir = self.add_module()
