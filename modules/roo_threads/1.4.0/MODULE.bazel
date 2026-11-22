@@ -1,0 +1,18 @@
+module(
+    name = "roo_threads",
+    version = "1.4.0",
+)
+
+bazel_dep(name = "rules_cc", version = "0.2.25")
+bazel_dep(name = "roo_testing", version = "2.7.0")
+bazel_dep(name = "googletest", version = "1.18.0.bcr.1")
+bazel_dep(name = "roo_time", version = "2.2.1")
+bazel_dep(name = "platforms", version = "1.1.0")
+
+# Bare-metal ISR tests need the processor-event and timer-alarm emulation
+# added after roo_testing 2.6.0. Use the registry release when it includes this.
+git_override(
+    module_name = "roo_testing",
+    remote = "https://github.com/dejwk/roo_testing.git",
+    commit = "20ab2beaef57fc6b36763c4055b58cd6a9ac6eb8",
+)
