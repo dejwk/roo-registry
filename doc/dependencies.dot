@@ -25,7 +25,7 @@ digraph dependencies {
     "roo_powersafefs" [label="roo_powersafefs\n1.1.1", fillcolor="#b1dbab", color="black"];
     "roo_prefs" [label="roo_prefs\n2.0.4", fillcolor="#b1dbab", color="red"];
     "roo_quantity" [label="roo_quantity\n1.1.12", fillcolor="#b1dbab", color="black"];
-    "roo_rtc" [label="roo_rtc\n0.1.0", fillcolor="khaki", color="black"];
+    "roo_rtc" [label="roo_rtc\n1.0.0", fillcolor="#b1dbab", color="black"];
     "roo_scheduler" [label="roo_scheduler\n2.4.0", fillcolor="#b1dbab", color="black"];
     "roo_testing" [label="roo_testing\n2.7.0", fillcolor="#b1dbab", color="black"];
     "roo_threads" [label="roo_threads\n1.4.0", fillcolor="#b1dbab", color="black"];

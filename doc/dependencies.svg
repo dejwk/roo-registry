@@ -390,9 +390,9 @@
 <!-- roo_rtc -->
 <g id="node22" class="node">
 <title>roo_rtc</title>
-<polygon fill="khaki" stroke="black" points="810.5,-434 743.5,-434 743.5,-396 810.5,-396 810.5,-434"/>
+<polygon fill="#b1dbab" stroke="black" points="810.5,-434 743.5,-434 743.5,-396 810.5,-396 810.5,-434"/>
 <text text-anchor="middle" x="777" y="-418.8" font-family="Times,serif" font-size="14.00">roo_rtc</text>
-<text text-anchor="middle" x="777" y="-403.8" font-family="Times,serif" font-size="14.00">0.1.0</text>
+<text text-anchor="middle" x="777" y="-403.8" font-family="Times,serif" font-size="14.00">1.0.0</text>
 </g>
 <!-- roo_rtc&#45;&gt;roo_io -->
 <g id="edge28" class="edge">
