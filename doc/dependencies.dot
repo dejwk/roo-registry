@@ -19,9 +19,9 @@ digraph dependencies {
     "roo_io" [label="roo_io\n2.5.0", fillcolor="#b1dbab", color="black"];
     "roo_locale" [label="roo_locale\n1.1.4", fillcolor="khaki", color="black"];
     "roo_logging" [label="roo_logging\n1.6.1", fillcolor="#b1dbab", color="black"];
-    "roo_monitoring" [label="roo_monitoring\n1.1.5", fillcolor="khaki", color="red"];
+    "roo_monitoring" [label="roo_monitoring\n1.1.5", fillcolor="plum", color="red"];
     "roo_onewire" [label="roo_onewire\n2.0.14", fillcolor="khaki", color="red"];
-    "roo_pb" [label="roo_pb\n0.1.1", fillcolor="khaki", color="red"];
+    "roo_pb" [label="roo_pb\n1.0.0", fillcolor="#b1dbab", color="black"];
     "roo_powersafefs" [label="roo_powersafefs\n1.1.1", fillcolor="#b1dbab", color="black"];
     "roo_prefs" [label="roo_prefs\n2.0.4", fillcolor="#b1dbab", color="red"];
     "roo_quantity" [label="roo_quantity\n1.1.12", fillcolor="#b1dbab", color="black"];
@@ -62,7 +62,7 @@ digraph dependencies {
     "roo_monitoring" -> "roo_io" [color=red, fontcolor=red, label="2.4.0\n(latest: 2.5.0)"];
     "roo_onewire" -> "roo_scheduler" [color=red, fontcolor=red, label="2.3.0\n(latest: 2.4.0)"];
     "roo_onewire" -> "roo_quantity" [color=red, fontcolor=red, label="1.1.11\n(latest: 1.1.12)"];
-    "roo_pb" -> "roo_io" [color=red, fontcolor=red, label="2.4.1\n(latest: 2.5.0)"];
+    "roo_pb" -> "roo_io";
     "roo_powersafefs" -> "roo_threads";
     "roo_prefs" -> "roo_io" [color=red, fontcolor=red, label="2.4.1\n(latest: 2.5.0)"];
     "roo_quantity" -> "roo_logging";
@@ -73,7 +73,7 @@ digraph dependencies {
     "roo_time" -> "roo_testing";
     "roo_time" -> "roo_backport";
     "roo_time_ds3231" -> "roo_io" [color=red, fontcolor=red, label="2.3.0\n(latest: 2.5.0)"];
-    "roo_transceivers" -> "roo_pb" [color=red, fontcolor=red, label="0.1.0\n(latest: 0.1.1)"];
+    "roo_transceivers" -> "roo_pb" [color=red, fontcolor=red, label="0.1.0\n(latest: 1.0.0)"];
     "roo_transceivers" -> "roo_collections" [color=red, fontcolor=red, label="1.4.8\n(latest: 2.0.2)"];
     "roo_transceivers" -> "roo_prefs" [color=red, fontcolor=red, label="2.0.2\n(latest: 2.0.4)"];
     "roo_transport" -> "roo_collections" [color=red, fontcolor=red, label="1.4.8\n(latest: 2.0.2)"];
