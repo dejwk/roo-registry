@@ -147,7 +147,7 @@
 <title>roo_windows</title>
 <polygon fill="#b1dbab" stroke="black" points="695.5,-626 586.5,-626 586.5,-588 695.5,-588 695.5,-626"/>
 <text text-anchor="middle" x="641" y="-610.8" font-family="Times,serif" font-size="14.00">roo_windows</text>
-<text text-anchor="middle" x="641" y="-595.8" font-family="Times,serif" font-size="14.00">1.11.0</text>
+<text text-anchor="middle" x="641" y="-595.8" font-family="Times,serif" font-size="14.00">1.11.1</text>
 </g>
 <!-- roo_dashboard&#45;&gt;roo_windows -->
 <g id="edge10" class="edge">
@@ -155,7 +155,7 @@
 <path fill="none" stroke="red" d="M720.56,-683.82C709.84,-672.18 695.4,-656.89 682,-644 678.26,-640.4 674.24,-636.69 670.23,-633.08"/>
 <polygon fill="red" stroke="red" points="672.42,-630.34 662.61,-626.32 667.77,-635.58 672.42,-630.34"/>
 <text text-anchor="middle" x="739" y="-658" font-family="Times,serif" font-size="10.00" fill="red">1.7.0</text>
-<text text-anchor="middle" x="739" y="-647" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.11.0)</text>
+<text text-anchor="middle" x="739" y="-647" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.11.1)</text>
 </g>
 <!-- roo_display -->
 <g id="node7" class="node">
@@ -533,7 +533,7 @@
 <path fill="none" stroke="red" d="M572.39,-683.88C585.32,-669.57 603.53,-649.44 617.93,-633.51"/>
 <polygon fill="red" stroke="red" points="620.55,-635.83 624.66,-626.07 615.36,-631.14 620.55,-635.83"/>
 <text text-anchor="middle" x="642" y="-658" font-family="Times,serif" font-size="10.00" fill="red">1.7.0</text>
-<text text-anchor="middle" x="642" y="-647" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.11.0)</text>
+<text text-anchor="middle" x="642" y="-647" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.11.1)</text>
 </g>
 <!-- roo_windows_wifi -->
 <g id="node33" class="node">
@@ -556,7 +556,7 @@
 <path fill="none" stroke="red" d="M408.28,-683.9C437.81,-671.86 477.95,-656.1 514,-644 534.17,-637.23 556.4,-630.64 576.56,-624.99"/>
 <polygon fill="red" stroke="red" points="577.57,-628.34 586.27,-622.29 575.69,-621.59 577.57,-628.34"/>
 <text text-anchor="middle" x="550" y="-658" font-family="Times,serif" font-size="10.00" fill="red">1.8.1</text>
-<text text-anchor="middle" x="550" y="-647" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.11.0)</text>
+<text text-anchor="middle" x="550" y="-647" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.11.1)</text>
 </g>
 </g>
 </svg>
