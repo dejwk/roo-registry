@@ -138,9 +138,9 @@
 <!-- roo_dashboard -->
 <g id="node6" class="node">
 <title>roo_dashboard</title>
-<polygon fill="khaki" stroke="red" points="807,-722 685,-722 685,-684 807,-684 807,-722"/>
+<polygon fill="#b1dbab" stroke="black" points="807,-722 685,-722 685,-684 807,-684 807,-722"/>
 <text text-anchor="middle" x="746" y="-706.8" font-family="Times,serif" font-size="14.00">roo_dashboard</text>
-<text text-anchor="middle" x="746" y="-691.8" font-family="Times,serif" font-size="14.00">1.0.2</text>
+<text text-anchor="middle" x="746" y="-691.8" font-family="Times,serif" font-size="14.00">1.1.0</text>
 </g>
 <!-- roo_windows -->
 <g id="node31" class="node">
@@ -152,10 +152,8 @@
 <!-- roo_dashboard&#45;&gt;roo_windows -->
 <g id="edge10" class="edge">
 <title>roo_dashboard&#45;&gt;roo_windows</title>
-<path fill="none" stroke="red" d="M721.78,-683.82C706.06,-672.18 685.03,-656.89 666,-644 659.94,-639.89 653.43,-635.64 647.07,-631.57"/>
-<polygon fill="red" stroke="red" points="648.84,-628.55 638.52,-626.14 645.09,-634.46 648.84,-628.55"/>
-<text text-anchor="middle" x="733" y="-658" font-family="Times,serif" font-size="10.00" fill="red">1.7.0</text>
-<text text-anchor="middle" x="733" y="-647" font-family="Times,serif" font-size="10.00" fill="red">(latest: 1.11.1)</text>
+<path fill="none" stroke="black" d="M721.78,-683.82C706.06,-672.18 685.03,-656.89 666,-644 659.94,-639.89 653.43,-635.64 647.07,-631.57"/>
+<polygon fill="black" stroke="black" points="648.84,-628.55 638.52,-626.14 645.09,-634.46 648.84,-628.55"/>
 </g>
 <!-- roo_display -->
 <g id="node7" class="node">
